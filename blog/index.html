@@ -4,121 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coach Berry - Blog | Hockey Tips, Drills & Strategies</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <script src="/footer.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-dark: #000000;
-            --primary: #1a1a1a;
-            --secondary: #2d2d2d;
-            --accent: #FF2400;
-            --accent-light: #FF3a1f;
-            --white: #ffffff;
-            --light-gray: #f8f9fa;
-            --text: #1a1a1a;
-            --text-light: #4a4a4a;
-            --border: #e0e0e0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            color: var(--text);
-            line-height: 1.6;
-            background: var(--light-gray);
-        }
-
-        /* Header & Navigation */
-        header {
-            background: var(--white);
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-        }
-
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--primary-dark);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo img {
-            max-height: 50px;
-            width: auto;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2.5rem;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
-            position: relative;
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover {
-            color: var(--accent);
-        }
-
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        .cta-nav {
-            background: var(--accent);
-            color: var(--white);
-            padding: 0.7rem 1.8rem;
-            border-radius: 25px;
-            font-weight: 600;
-        }
-
-        .cta-nav::after {
-            display: none;
-        }
-
-        .cta-nav:hover {
-            background: var(--accent-light);
-            color: var(--white);
-        }
+        /* Page-specific styles for blog page only */
 
         /* Hero Section */
         .hero {
@@ -543,25 +433,7 @@
     </style>
 </head>
 <body>
-    <!-- Header (IDENTICAL TO HOMEPAGE) -->
-    <header>
-        <nav>
-            <a href="/" class="logo"><img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo"></a>
-            <ul id="navMenu">
-                <li><a href="/">Home</a></li>
-                <li><a href="/#about">About</a></li>
-                <li><a href="/#services">Services</a></li>
-                <li><a href="/blog/">Blog</a></li>
-                <li><a href="/#content">Content</a></li>
-                <li><a href="/#membership" class="cta-nav">Join Now</a></li>
-            </ul>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
-    </header>
+    <!-- Header loaded from header.js -->
 
     <!-- Hero Section -->
     <section class="hero">
@@ -782,19 +654,7 @@
     </script>
 
     <script>
-        // Mobile Menu Toggle
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-
-        hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-        });
-
-        document.querySelectorAll('#navMenu a').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-            });
-        });
+        // Header mobile menu is handled by header.js
     </script>
 </body>
 </html>
