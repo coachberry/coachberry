@@ -26,10 +26,6 @@
             --danger: #f44336;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text);
@@ -53,14 +49,6 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
             max-width: 400px;
-        }
-
-        .login-box h1 {
-            text-align: center;
-            margin-bottom: 1rem;
-            color: var(--primary-dark);
-            font-size: 2rem;
-            display: none;
         }
 
         .login-box img {
@@ -125,21 +113,6 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .login-btn .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid var(--white);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .error-message {
@@ -258,404 +231,12 @@
             color: var(--primary-dark);
         }
 
-        .content-section {
+        .tab-content {
             display: none;
         }
 
-        .content-section.active {
+        .tab-content.active {
             display: block;
-        }
-
-        /* Overview Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border-top: 4px solid var(--accent);
-        }
-
-        .stat-card h3 {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--accent);
-        }
-
-        /* Forms */
-        .form-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-        }
-
-        .form-card h2 {
-            margin-bottom: 1.5rem;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-row.full {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-            color: var(--text);
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            padding: 0.9rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 200px;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
-        }
-
-        /* Category Tags */
-        .category-input {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            align-items: flex-start;
-            padding: 0.5rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            min-height: 40px;
-        }
-
-        .category-tag {
-            background: var(--accent);
-            color: var(--white);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .category-tag button {
-            background: none;
-            border: none;
-            color: var(--white);
-            cursor: pointer;
-            font-weight: bold;
-            padding: 0;
-            font-size: 1.2rem;
-            line-height: 1;
-        }
-
-        .category-input input {
-            border: none;
-            flex: 1;
-            min-width: 100px;
-            padding: 0.5rem;
-            font-size: 1rem;
-        }
-
-        .category-input input:focus {
-            outline: none;
-            box-shadow: none;
-            border: none;
-        }
-
-        /* Submit Button */
-        .submit-btn {
-            padding: 0.9rem 2rem;
-            background: var(--accent);
-            color: var(--white);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .submit-btn:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .submit-btn .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid var(--white);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 0.5rem;
-        }
-
-        /* Messages */
-        .message {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            display: none;
-            font-weight: 500;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .message.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid var(--success);
-        }
-
-        .message.error {
-            background: #ffebee;
-            color: #c62828;
-            border-left: 4px solid var(--danger);
-        }
-
-        /* Table */
-        .table-container {
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-top: 2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: var(--light-gray);
-            border-bottom: 2px solid var(--border);
-        }
-
-        th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody tr:hover {
-            background: var(--light-gray);
-        }
-
-        .action-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            margin-right: 0.5rem;
-        }
-
-        .action-btn-edit {
-            background: var(--accent);
-            color: var(--white);
-        }
-
-        .action-btn-edit:hover {
-            background: var(--accent-light);
-        }
-
-        .action-btn-delete {
-            background: var(--danger);
-            color: var(--white);
-        }
-
-        .action-btn-delete:hover {
-            background: #d32f2f;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 700px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            color: var(--text-light);
-            background: none;
-            border: none;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.3s ease;
-        }
-
-        .modal-close:hover {
-            color: var(--text);
-        }
-
-        /* Members Section */
-        .members-controls {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .members-controls input,
-        .members-controls select {
-            padding: 0.8rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        .members-controls input:focus,
-        .members-controls select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .members-controls input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .members-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .members-stat {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            border-top: 4px solid var(--accent);
-        }
-
-        .members-stat h4 {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .members-stat .count {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent);
-        }
-
-        .role-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            background: var(--accent);
-            color: var(--white);
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-right: 0.3rem;
-            text-transform: capitalize;
         }
 
         /* Responsive */
@@ -669,14 +250,6 @@
 
             main {
                 margin-left: 0;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
             }
 
             .logout-btn {
@@ -730,191 +303,32 @@
         <!-- Main Content -->
         <main>
             <div class="dashboard-header">
-                <h1>Admin Dashboard</h1>
+                <h1 id="pageTitle">Admin Dashboard</h1>
             </div>
 
             <!-- Overview Tab -->
-            <div class="content-section active" id="overview">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Members</h3>
-                        <div class="number" id="totalMembers">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Blog Posts</h3>
-                        <div class="number" id="totalBlogPosts">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Updates Posted</h3>
-                        <div class="number" id="totalUpdates">0</div>
-                    </div>
-                </div>
-            </div>
+            <div id="overview" class="tab-content active"></div>
 
             <!-- Members Tab -->
-            <div class="content-section" id="members">
-                <h2>Members Dashboard</h2>
+            <div id="members" class="tab-content"></div>
 
-                <!-- Stats -->
-                <div class="members-stats">
-                    <div class="members-stat">
-                        <h4>Total Members</h4>
-                        <div class="count" id="statTotalMembers">0</div>
-                    </div>
-                    <div class="members-stat">
-                        <h4>Players</h4>
-                        <div class="count" id="statPlayers">0</div>
-                    </div>
-                    <div class="members-stat">
-                        <h4>Coaches</h4>
-                        <div class="count" id="statCoaches">0</div>
-                    </div>
-                    <div class="members-stat">
-                        <h4>Parents</h4>
-                        <div class="count" id="statParents">0</div>
-                    </div>
-                </div>
-
-                <!-- Search and Filter -->
-                <div class="members-controls">
-                    <input type="text" id="memberSearch" class="search-input" placeholder="Search by name or email..." onkeyup="filterMembersTable()">
-                    <select id="memberRoleFilter" class="filter-select" onchange="filterMembersTable()">
-                        <option value="">All Roles</option>
-                        <option value="player">Players</option>
-                        <option value="coach">Coaches</option>
-                        <option value="parent">Parents</option>
-                    </select>
-                </div>
-
-                <!-- Members Table -->
-                <div class="table-container">
-                    <table id="memberTable">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Roles</th>
-                                <th>Joined</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="memberTableBody">
-                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading members...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Blog Posts Tab -->
-            <div class="content-section" id="blog">
-                <div class="form-card">
-                    <h2 id="blogFormTitle">Create New Blog Post</h2>
-                    <div class="message" id="blogMessage"></div>
-                    <form id="blogForm" onsubmit="handleBlogSubmit(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="blogTitle">Post Title *</label>
-                                <input type="text" id="blogTitle" name="title" placeholder="e.g., Top 5 Goaltending Tips" required>
-                            </div>
-                        </div>
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="blogContent">Post Content *</label>
-                                <textarea id="blogContent" name="content" placeholder="Write your blog post here..." required></textarea>
-                            </div>
-                        </div>
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="blogCategories">Categories (add multiple by typing and pressing Enter)</label>
-                                <div class="category-input" id="blogCategories">
-                                    <input type="text" id="categoryInput" placeholder="e.g., Goaltending" onkeypress="handleCategoryInput(event)">
-                                </div>
-                                <small style="color: var(--text-light); margin-top: 0.5rem;">Press Enter to add a category</small>
-                            </div>
-                        </div>
-                        <button type="submit" class="submit-btn" id="blogSubmitBtn">Publish Post</button>
-                        <button type="button" class="submit-btn" id="cancelEditBtn" style="background: var(--text-light); display: none; margin-top: 0.5rem;">Cancel Edit</button>
-                    </form>
-                </div>
-
-                <h2 style="margin-top: 2rem;">Recent Blog Posts</h2>
-                <div class="table-container">
-                    <table id="blogTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Categories</th>
-                                <th>Date Published</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="blogTableBody">
-                            <tr><td colspan="4" style="text-align: center; padding: 2rem;">No blog posts yet.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Blog Tab -->
+            <div id="blog" class="tab-content"></div>
 
             <!-- Updates Tab -->
-            <div class="content-section" id="updates">
-                <div class="form-card">
-                    <h2>Post a Quick Update</h2>
-                    <div class="message" id="updateMessage"></div>
-                    <form id="updateForm" onsubmit="handleUpdateSubmit(event)">
-                        <div class="form-row full">
-                            <div class="form-group">
-                                <label for="updateContent">Update Content *</label>
-                                <textarea id="updateContent" name="content" placeholder="Share a quick update, announcement, or news..." required></textarea>
-                            </div>
-                        </div>
-                        <button type="submit" class="submit-btn" id="updateSubmitBtn">Post Update</button>
-                    </form>
-                </div>
-
-                <h2 style="margin-top: 2rem;">Recent Updates</h2>
-                <div id="updatesList"></div>
-            </div>
+            <div id="updates" class="tab-content"></div>
         </main>
-    </div>
-
-    <!-- Member Details Modal -->
-    <div class="modal" id="memberModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeMemberModal()">&times;</button>
-            <h2>Member Details</h2>
-            <div id="memberDetails"></div>
-        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
-            authDomain: "coach-berry.firebaseapp.com",
-            projectId: "coach-berry",
-            storageBucket: "coach-berry.firebasestorage.app",
-            messagingSenderId: "170282824286",
-            appId: "1:170282824286:web:5387ec9826c38466c07acf"
-        };
+        import { firebaseConfig } from "./shared.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
         let currentUser = null;
-        let editingPostId = null;
-        let currentCategories = [];
-
-        // Utility function to escape HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
 
         // Auth State Change
         onAuthStateChanged(auth, (user) => {
@@ -922,7 +336,7 @@
                 currentUser = user;
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('dashboard').classList.remove('hidden');
-                loadDashboardData();
+                loadTabs();
             } else {
                 currentUser = null;
                 document.getElementById('loginPage').classList.remove('hidden');
@@ -939,7 +353,7 @@
             const errorDiv = document.getElementById('loginError');
 
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="loading"></span> Signing In...';
+            loginBtn.innerHTML = 'Signing In...';
             errorDiv.classList.remove('show');
 
             try {
@@ -963,488 +377,62 @@
 
         // Tab Switching
         window.switchTab = function(tabName) {
-            document.querySelectorAll('.content-section').forEach(el => {
+            // Update tab content display
+            document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.remove('active');
             });
+            document.getElementById(tabName).classList.add('active');
+
+            // Update menu items
             document.querySelectorAll('.menu-item').forEach(el => {
                 el.classList.remove('active');
             });
-
-            document.getElementById(tabName).classList.add('active');
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-            if (tabName === 'blog') {
-                loadBlogPosts();
-            } else if (tabName === 'members') {
-                loadMembers();
-            } else if (tabName === 'updates') {
-                loadUpdates();
-            }
+            // Update page title
+            const titles = {
+                overview: 'Overview',
+                members: 'Members',
+                blog: 'Blog Posts',
+                updates: 'Updates'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
+
+            // Load tab content
+            loadTabContent(tabName);
         };
 
-        // Dashboard Data
-        window.loadDashboardData = async function() {
-            try {
-                // Total Members
-                const membersQuery = query(collection(db, 'members'));
-                const membersSnapshot = await getDocs(membersQuery);
-                document.getElementById('totalMembers').textContent = membersSnapshot.size;
-
-                // Total Blog Posts
-                const postsQuery = query(collection(db, 'blogPosts'));
-                const postsSnapshot = await getDocs(postsQuery);
-                document.getElementById('totalBlogPosts').textContent = postsSnapshot.size;
-
-                // Total Updates
-                const updatesQuery = query(collection(db, 'updates'));
-                const updatesSnapshot = await getDocs(updatesQuery);
-                document.getElementById('totalUpdates').textContent = updatesSnapshot.size;
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-            }
-        };
-
-        // Category Input Handler
-        window.handleCategoryInput = function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const input = event.target;
-                const category = input.value.trim();
-                
-                if (category && !currentCategories.includes(category)) {
-                    currentCategories.push(category);
-                    renderCategories();
-                    input.value = '';
-                }
-            }
-        };
-
-        // Render Category Tags
-        function renderCategories() {
-            const container = document.getElementById('blogCategories');
-            const input = container.querySelector('input');
-            
-            // Clear and rebuild
-            container.innerHTML = '';
-            
-            currentCategories.forEach(category => {
-                const tag = document.createElement('div');
-                tag.className = 'category-tag';
-                tag.innerHTML = `
-                    ${category}
-                    <button type="button" onclick="removeCategory('${category}')">×</button>
-                `;
-                container.appendChild(tag);
-            });
-            
-            // Re-add input
-            const inputEl = document.createElement('input');
-            inputEl.type = 'text';
-            inputEl.id = 'categoryInput';
-            inputEl.placeholder = 'e.g., Goaltending';
-            inputEl.onkeypress = (e) => window.handleCategoryInput(e);
-            container.appendChild(inputEl);
+        // Load all tabs
+        async function loadTabs() {
+            await loadTabContent('overview');
         }
 
-        // Remove Category
-        window.removeCategory = function(category) {
-            currentCategories = currentCategories.filter(c => c !== category);
-            renderCategories();
-        };
-
-        // Normalize category name (capitalize first letter, lowercase rest)
-        function normalizeCategory(category) {
-            if (!category || typeof category !== 'string') return '';
-            return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        // Load individual tab content
+        async function loadTabContent(tabName) {
+            const container = document.getElementById(tabName);
+            
+            try {
+                const response = await fetch(`${tabName}.html`);
+                if (!response.ok) throw new Error(`Failed to load ${tabName}`);
+                const html = await response.text();
+                container.innerHTML = html;
+                
+                // Execute any scripts in the loaded content
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    newScript.type = script.type;
+                    newScript.textContent = script.textContent;
+                    container.appendChild(newScript);
+                });
+            } catch (error) {
+                console.error(`Error loading ${tabName}:`, error);
+                container.innerHTML = `<div style="padding: 2rem; text-align: center; color: #f44336;">Error loading ${tabName}. Please refresh the page.</div>`;
+            }
         }
 
-        // Blog Post Handler
-        window.handleBlogSubmit = async function(event) {
-            event.preventDefault();
-            const title = document.getElementById('blogTitle').value;
-            const content = document.getElementById('blogContent').value;
-            const submitBtn = document.getElementById('blogSubmitBtn');
-            const messageDiv = document.getElementById('blogMessage');
-            
-            // Normalize all categories
-            const normalizedCategories = currentCategories.map(cat => normalizeCategory(cat));
-
-            if (currentCategories.length === 0) {
-                messageDiv.textContent = 'Please add at least one category';
-                messageDiv.classList.add('show', 'error');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span> ' + (editingPostId ? 'Updating...' : 'Publishing...');
-            messageDiv.classList.remove('show');
-
-            try {
-                if (editingPostId) {
-                    // Update existing post
-                    await updateDoc(doc(db, 'blogPosts', editingPostId), {
-                        title: title,
-                        content: content,
-                        categories: normalizedCategories,
-                        dateModified: new Date()
-                    });
-
-                    messageDiv.textContent = '✓ Blog post updated successfully!';
-                    editingPostId = null;
-                    document.getElementById('cancelEditBtn').style.display = 'none';
-                    document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
-                } else {
-                    // Create new post
-                    await addDoc(collection(db, 'blogPosts'), {
-                        title: title,
-                        content: content,
-                        categories: normalizedCategories,
-                        datePublished: new Date(),
-                        author: currentUser.email
-                    });
-
-                    messageDiv.textContent = '✓ Blog post published successfully!';
-                }
-
-                messageDiv.classList.add('show', 'success');
-                document.getElementById('blogForm').reset();
-                currentCategories = [];
-                renderCategories();
-                loadBlogPosts();
-                loadDashboardData();
-
-                setTimeout(() => {
-                    messageDiv.classList.remove('show');
-                }, 3000);
-            } catch (error) {
-                messageDiv.textContent = 'Error: ' + error.message;
-                messageDiv.classList.add('show', 'error');
-                console.error('Error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = editingPostId ? 'Update Post' : 'Publish Post';
-            }
-        };
-
-        // Load Blog Posts
-        window.loadBlogPosts = async function() {
-            try {
-                const postsQuery = query(collection(db, 'blogPosts'), orderBy('datePublished', 'desc'));
-                const snapshot = await getDocs(postsQuery);
-                const tbody = document.getElementById('blogTableBody');
-                tbody.innerHTML = '';
-
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No blog posts yet.</td></tr>';
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const post = doc.data();
-                    const datePublished = post.datePublished ? new Date(post.datePublished.seconds * 1000).toLocaleDateString() : 'N/A';
-                    const categories = Array.isArray(post.categories) ? post.categories : [post.category];
-                    const categoryDisplay = categories.join(', ');
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${post.title}</strong></td>
-                        <td>${categoryDisplay}</td>
-                        <td>${datePublished}</td>
-                        <td>
-                            <button class="action-btn action-btn-edit" onclick="editBlogPost('${doc.id}')">Edit</button>
-                            <button class="action-btn action-btn-delete" onclick="deleteBlogPost('${doc.id}')">Delete</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading blog posts:', error);
-            }
-        };
-
-        // Edit Blog Post
-        window.editBlogPost = async function(postId) {
-            try {
-                const docSnap = await getDocs(query(collection(db, 'blogPosts')));
-                let post = null;
-                
-                docSnap.forEach(doc => {
-                    if (doc.id === postId) {
-                        post = doc.data();
-                    }
-                });
-
-                if (post) {
-                    document.getElementById('blogTitle').value = post.title;
-                    document.getElementById('blogContent').value = post.content;
-                    currentCategories = Array.isArray(post.categories) ? [...post.categories] : (post.category ? [post.category] : []);
-                    renderCategories();
-                    
-                    editingPostId = postId;
-                    document.getElementById('blogFormTitle').textContent = 'Edit Blog Post';
-                    document.getElementById('cancelEditBtn').style.display = 'block';
-                    
-                    // Scroll to form
-                    document.getElementById('blogForm').scrollIntoView({ behavior: 'smooth' });
-                }
-            } catch (error) {
-                alert('Error loading post: ' + error.message);
-            }
-        };
-
-        // Cancel Edit
-        document.getElementById('cancelEditBtn')?.addEventListener('click', function() {
-            editingPostId = null;
-            currentCategories = [];
-            document.getElementById('blogForm').reset();
-            renderCategories();
-            document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
-            this.style.display = 'none';
-        });
-
-        // Delete Blog Post
-        window.deleteBlogPost = async function(postId) {
-            if (confirm('Are you sure you want to delete this blog post?')) {
-                try {
-                    await deleteDoc(doc(db, 'blogPosts', postId));
-                    loadBlogPosts();
-                    loadDashboardData();
-                } catch (error) {
-                    alert('Error deleting post: ' + error.message);
-                }
-            }
-        };
-
-        let allMembersData = [];
-
-        // Load Members
-        window.loadMembers = async function() {
-            try {
-                const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
-                const snapshot = await getDocs(membersQuery);
-                allMembersData = [];
-
-                snapshot.forEach(doc => {
-                    allMembersData.push({
-                        id: doc.id,
-                        ...doc.data()
-                    });
-                });
-
-                updateMembersStats();
-                displayMembersTable(allMembersData);
-            } catch (error) {
-                console.error('Error loading members:', error);
-            }
-        };
-
-        // Update member statistics
-        function updateMembersStats() {
-            document.getElementById('statTotalMembers').textContent = allMembersData.length;
-            
-            const players = allMembersData.filter(m => m.roles && m.roles.includes('player')).length;
-            const coaches = allMembersData.filter(m => m.roles && m.roles.includes('coach')).length;
-            const parents = allMembersData.filter(m => m.roles && m.roles.includes('parent')).length;
-            
-            document.getElementById('statPlayers').textContent = players;
-            document.getElementById('statCoaches').textContent = coaches;
-            document.getElementById('statParents').textContent = parents;
-        }
-
-        // Display members in table
-        function displayMembersTable(members) {
-            const tbody = document.getElementById('memberTableBody');
-            tbody.innerHTML = '';
-
-            if (members.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No members found.</td></tr>';
-                return;
-            }
-
-            members.forEach(member => {
-                const dateJoined = member.dateJoined ? new Date(member.dateJoined.seconds * 1000).toLocaleDateString() : 'N/A';
-                const rolesBadges = (member.roles || []).map(role => `<span class="role-badge">${role}</span>`).join('');
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</strong></td>
-                    <td>${escapeHtml(member.email)}</td>
-                    <td>${escapeHtml(member.phone)}</td>
-                    <td>${rolesBadges}</td>
-                    <td>${dateJoined}</td>
-                    <td>
-                        <button class="action-btn action-btn-edit" onclick="viewMemberDetails('${member.id}')">View</button>
-                        <button class="action-btn action-btn-delete" onclick="deleteMember('${member.id}')">Delete</button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Filter members table
-        window.filterMembersTable = function() {
-            const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
-            const roleFilter = document.getElementById('memberRoleFilter').value;
-
-            const filtered = allMembersData.filter(member => {
-                const matchesSearch = 
-                    `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchTerm) ||
-                    member.email.toLowerCase().includes(searchTerm);
-                
-                const matchesRole = !roleFilter || (member.roles && member.roles.includes(roleFilter));
-
-                return matchesSearch && matchesRole;
-            });
-
-            displayMembersTable(filtered);
-        };
-
-        // Delete member
-        window.deleteMember = function(memberId) {
-            const member = allMembersData.find(m => m.id === memberId);
-            if (!member) return;
-
-            if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}?`)) {
-                deleteDoc(doc(db, 'members', memberId))
-                    .then(() => {
-                        alert(`${member.firstName} ${member.lastName} has been deleted`);
-                        loadMembers();
-                        loadDashboardData();
-                    })
-                    .catch(error => {
-                        alert('Error deleting member: ' + error.message);
-                    });
-            }
-        };
-
-        // View Member Details
-        window.viewMemberDetails = async function(memberId) {
-            try {
-                const membersQuery = query(collection(db, 'members'));
-                const snapshot = await getDocs(membersQuery);
-                let member = null;
-
-                snapshot.forEach(doc => {
-                    if (doc.id === memberId) {
-                        member = doc.data();
-                    }
-                });
-
-                if (member) {
-                    let html = `
-                        <p><strong>Name:</strong> ${member.firstName} ${member.lastName}</p>
-                        <p><strong>Email:</strong> ${member.email}</p>
-                        <p><strong>Phone:</strong> ${member.phone}</p>
-                        <p><strong>Roles:</strong> ${Array.isArray(member.roles) ? member.roles.join(', ') : member.role}</p>
-                    `;
-
-                    if (member.roles && member.roles.includes('parent') && member.children) {
-                        html += `<h4>Children:</h4>`;
-                        member.children.forEach((child, index) => {
-                            html += `<p><em>Child ${index + 1}:</em> Birth Year: ${child.birthYear}, Gender: ${child.gender}, Team: ${child.team || 'N/A'}</p>`;
-                        });
-                    }
-
-                    if (member.roles && member.roles.includes('coach')) {
-                        html += `
-                            <p><strong>Coaching Level:</strong> ${member.coachLevel || 'N/A'}</p>
-                            <p><strong>Team:</strong> ${member.teamCoach || 'N/A'}</p>
-                        `;
-                    }
-
-                    document.getElementById('memberDetails').innerHTML = html;
-                    document.getElementById('memberModal').classList.add('active');
-                }
-            } catch (error) {
-                alert('Error loading member details: ' + error.message);
-            }
-        };
-
-        // Close Member Modal
-        window.closeMemberModal = function() {
-            document.getElementById('memberModal').classList.remove('active');
-        };
-
-        // Update Handler
-        window.handleUpdateSubmit = async function(event) {
-            event.preventDefault();
-            const content = document.getElementById('updateContent').value;
-            const submitBtn = document.getElementById('updateSubmitBtn');
-            const messageDiv = document.getElementById('updateMessage');
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span> Posting...';
-            messageDiv.classList.remove('show');
-
-            try {
-                await addDoc(collection(db, 'updates'), {
-                    content: content,
-                    datePosted: new Date(),
-                    author: currentUser.email
-                });
-
-                messageDiv.textContent = '✓ Update posted successfully!';
-                messageDiv.classList.add('show', 'success');
-                document.getElementById('updateForm').reset();
-                loadUpdates();
-                loadDashboardData();
-
-                setTimeout(() => {
-                    messageDiv.classList.remove('show');
-                }, 3000);
-            } catch (error) {
-                messageDiv.textContent = 'Error posting update: ' + error.message;
-                messageDiv.classList.add('show', 'error');
-                console.error('Error:', error);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Post Update';
-            }
-        };
-
-        // Load Updates
-        window.loadUpdates = async function() {
-            try {
-                const updatesQuery = query(collection(db, 'updates'), orderBy('datePosted', 'desc'));
-                const snapshot = await getDocs(updatesQuery);
-                const updatesList = document.getElementById('updatesList');
-                updatesList.innerHTML = '';
-
-                if (snapshot.empty) {
-                    updatesList.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-light);">No updates yet.</div>';
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const update = doc.data();
-                    const datePosted = update.datePosted ? new Date(update.datePosted.seconds * 1000).toLocaleDateString() : 'N/A';
-                    
-                    const card = document.createElement('div');
-                    card.className = 'form-card';
-                    card.innerHTML = `
-                        <p style="margin-bottom: 1rem;">${update.content}</p>
-                        <small style="color: var(--text-light);">Posted on ${datePosted}</small>
-                        <button class="action-btn action-btn-delete" onclick="deleteUpdate('${doc.id}')" style="margin-top: 1rem;">Delete</button>
-                    `;
-                    updatesList.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error loading updates:', error);
-            }
-        };
-
-        // Delete Update
-        window.deleteUpdate = async function(updateId) {
-            if (confirm('Are you sure you want to delete this update?')) {
-                try {
-                    await deleteDoc(doc(db, 'updates', updateId));
-                    loadUpdates();
-                    loadDashboardData();
-                } catch (error) {
-                    alert('Error deleting update: ' + error.message);
-                }
-            }
-        };
+        // Expose currentUser
+        window.getCurrentUser = () => currentUser;
     </script>
 </body>
 </html>
