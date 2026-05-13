@@ -1,0 +1,75 @@
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid var(--accent);
+    }
+
+    .stat-card h3 {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card .number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+</style>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Members</h3>
+        <div class="number" id="totalMembers">0</div>
+    </div>
+    <div class="stat-card">
+        <h3>Blog Posts</h3>
+        <div class="number" id="totalBlogPosts">0</div>
+    </div>
+    <div class="stat-card">
+        <h3>Updates Posted</h3>
+        <div class="number" id="totalUpdates">0</div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { firebaseConfig } from "./shared.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadOverviewData() {
+        try {
+            // Load members
+            const membersSnapshot = await getDocs(collection(db, 'members'));
+            document.getElementById('totalMembers').textContent = membersSnapshot.size;
+
+            // Load blog posts
+            const postsSnapshot = await getDocs(collection(db, 'blogPosts'));
+            document.getElementById('totalBlogPosts').textContent = postsSnapshot.size;
+
+            // Load updates
+            const updatesSnapshot = await getDocs(collection(db, 'updates'));
+            document.getElementById('totalUpdates').textContent = updatesSnapshot.size;
+        } catch (error) {
+            console.error('Error loading overview data:', error);
+        }
+    }
+
+    loadOverviewData();
+</script>
