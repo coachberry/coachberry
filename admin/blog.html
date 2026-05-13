@@ -1,0 +1,467 @@
+<style>
+    .form-card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+
+    .form-card h2 {
+        margin-bottom: 1.5rem;
+        color: var(--primary-dark);
+        font-size: 1.5rem;
+    }
+
+    .message {
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        display: none;
+        font-weight: 500;
+    }
+
+    .message.show {
+        display: block;
+    }
+
+    .message.success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid var(--success);
+    }
+
+    .message.error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid var(--danger);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        color: var(--text);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.9rem;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+        font-family: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 200px;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
+    }
+
+    .category-input {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: flex-start;
+        padding: 0.5rem;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        min-height: 40px;
+    }
+
+    .category-tag {
+        background: var(--accent);
+        color: var(--white);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .category-tag button {
+        background: none;
+        border: none;
+        color: var(--white);
+        cursor: pointer;
+        font-weight: bold;
+        padding: 0;
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+
+    .category-input input {
+        border: none;
+        flex: 1;
+        min-width: 100px;
+        padding: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .category-input input:focus {
+        outline: none;
+        box-shadow: none;
+        border: none;
+    }
+
+    .submit-btn {
+        padding: 0.9rem 2rem;
+        background: var(--accent);
+        color: var(--white);
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .submit-btn:hover {
+        background: var(--accent-light);
+        transform: translateY(-2px);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .table-container {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-top: 2rem;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: var(--light-gray);
+        border-bottom: 2px solid var(--border);
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+        background: var(--light-gray);
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        margin-right: 0.5rem;
+    }
+
+    .action-btn-edit {
+        background: var(--accent);
+        color: var(--white);
+    }
+
+    .action-btn-edit:hover {
+        background: var(--accent-light);
+    }
+
+    .action-btn-delete {
+        background: var(--danger);
+        color: var(--white);
+    }
+
+    .action-btn-delete:hover {
+        background: #d32f2f;
+    }
+</style>
+
+<div class="form-card">
+    <h2 id="blogFormTitle">Create New Blog Post</h2>
+    <div class="message" id="blogMessage"></div>
+    <form id="blogForm" onsubmit="window.handleBlogSubmit(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="blogTitle">Post Title *</label>
+                <input type="text" id="blogTitle" name="title" placeholder="e.g., Top 5 Goaltending Tips" required>
+            </div>
+        </div>
+        <div class="form-row full">
+            <div class="form-group">
+                <label for="blogContent">Post Content *</label>
+                <textarea id="blogContent" name="content" placeholder="Write your blog post here..." required></textarea>
+            </div>
+        </div>
+        <div class="form-row full">
+            <div class="form-group">
+                <label for="blogCategories">Categories (add multiple by typing and pressing Enter)</label>
+                <div class="category-input" id="blogCategories">
+                    <input type="text" id="categoryInput" placeholder="e.g., Goaltending" onkeypress="window.handleCategoryInput(event)">
+                </div>
+                <small style="color: var(--text-light); margin-top: 0.5rem;">Press Enter to add a category</small>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn" id="blogSubmitBtn">Publish Post</button>
+        <button type="button" class="submit-btn" id="cancelEditBtn" style="background: var(--text-light); display: none; margin-top: 0.5rem;">Cancel Edit</button>
+    </form>
+</div>
+
+<h2 style="margin-top: 2rem;">Recent Blog Posts</h2>
+<div class="table-container">
+    <table id="blogTable">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Categories</th>
+                <th>Date Published</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="blogTableBody">
+            <tr><td colspan="4" style="text-align: center; padding: 2rem;">Loading blog posts...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { firebaseConfig, escapeHtml, normalizeCategory, getAllCategories, formatDate } from "./shared.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allBlogPosts = [];
+    let editingPostId = null;
+    let currentCategories = [];
+
+    function renderCategories() {
+        const container = document.getElementById('blogCategories');
+        const input = container.querySelector('input');
+        
+        container.innerHTML = '';
+        
+        currentCategories.forEach(category => {
+            const tag = document.createElement('div');
+            tag.className = 'category-tag';
+            tag.innerHTML = `
+                ${category}
+                <button type="button" onclick="window.removeCategory('${category}')">×</button>
+            `;
+            container.appendChild(tag);
+        });
+        
+        const inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.id = 'categoryInput';
+        inputEl.placeholder = 'e.g., Goaltending';
+        inputEl.onkeypress = (e) => window.handleCategoryInput(e);
+        container.appendChild(inputEl);
+    }
+
+    window.handleCategoryInput = function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            const input = event.target;
+            const category = input.value.trim();
+            
+            if (category && !currentCategories.includes(category)) {
+                currentCategories.push(category);
+                renderCategories();
+                document.getElementById('categoryInput').focus();
+            }
+        }
+    };
+
+    window.removeCategory = function(category) {
+        currentCategories = currentCategories.filter(c => c !== category);
+        renderCategories();
+    };
+
+    window.handleBlogSubmit = async function(event) {
+        event.preventDefault();
+        const title = document.getElementById('blogTitle').value;
+        const content = document.getElementById('blogContent').value;
+        const submitBtn = document.getElementById('blogSubmitBtn');
+        const messageDiv = document.getElementById('blogMessage');
+
+        if (currentCategories.length === 0) {
+            messageDiv.textContent = 'Please add at least one category';
+            messageDiv.classList.add('show', 'error');
+            return;
+        }
+
+        const normalizedCategories = currentCategories.map(normalizeCategory);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="loading"></span> ' + (editingPostId ? 'Updating...' : 'Publishing...');
+        messageDiv.classList.remove('show');
+
+        try {
+            if (editingPostId) {
+                await updateDoc(doc(db, 'blogPosts', editingPostId), {
+                    title: title,
+                    content: content,
+                    categories: normalizedCategories,
+                    dateModified: new Date()
+                });
+                messageDiv.textContent = '✓ Blog post updated successfully!';
+                editingPostId = null;
+                document.getElementById('cancelEditBtn').style.display = 'none';
+                document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
+            } else {
+                await addDoc(collection(db, 'blogPosts'), {
+                    title: title,
+                    content: content,
+                    categories: normalizedCategories,
+                    datePublished: new Date(),
+                    author: window.getCurrentUser().email
+                });
+                messageDiv.textContent = '✓ Blog post published successfully!';
+            }
+
+            messageDiv.classList.add('show', 'success');
+            document.getElementById('blogForm').reset();
+            currentCategories = [];
+            renderCategories();
+            loadBlogPosts();
+
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+            }, 3000);
+        } catch (error) {
+            messageDiv.textContent = 'Error: ' + error.message;
+            messageDiv.classList.add('show', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = editingPostId ? 'Update Post' : 'Publish Post';
+        }
+    };
+
+    async function loadBlogPosts() {
+        try {
+            const postsQuery = query(collection(db, 'blogPosts'), orderBy('datePublished', 'desc'));
+            const snapshot = await getDocs(postsQuery);
+            const tbody = document.getElementById('blogTableBody');
+            tbody.innerHTML = '';
+
+            allBlogPosts = [];
+            snapshot.forEach(doc => {
+                allBlogPosts.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+
+            if (allBlogPosts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No blog posts yet.</td></tr>';
+                return;
+            }
+
+            allBlogPosts.forEach(post => {
+                const datePublished = formatDate(post.datePublished);
+                const categories = getAllCategories(post);
+                const categoryDisplay = categories.join(', ');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(post.title)}</strong></td>
+                    <td>${escapeHtml(categoryDisplay)}</td>
+                    <td>${datePublished}</td>
+                    <td>
+                        <button class="action-btn action-btn-edit" onclick="window.editBlogPost('${post.id}')">Edit</button>
+                        <button class="action-btn action-btn-delete" onclick="window.deleteBlogPost('${post.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error loading blog posts:', error);
+        }
+    }
+
+    window.editBlogPost = function(postId) {
+        const post = allBlogPosts.find(p => p.id === postId);
+        if (!post) return;
+
+        document.getElementById('blogTitle').value = post.title;
+        document.getElementById('blogContent').value = post.content;
+        currentCategories = getAllCategories(post);
+        renderCategories();
+        
+        editingPostId = postId;
+        document.getElementById('blogFormTitle').textContent = 'Edit Blog Post';
+        document.getElementById('cancelEditBtn').style.display = 'block';
+        document.getElementById('blogForm').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    document.getElementById('cancelEditBtn').addEventListener('click', function() {
+        editingPostId = null;
+        currentCategories = [];
+        document.getElementById('blogForm').reset();
+        renderCategories();
+        document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
+        this.style.display = 'none';
+    });
+
+    window.deleteBlogPost = function(postId) {
+        const post = allBlogPosts.find(p => p.id === postId);
+        if (!post) return;
+
+        if (confirm(`Are you sure you want to delete "${post.title}"?`)) {
+            deleteDoc(doc(db, 'blogPosts', postId))
+                .then(() => {
+                    alert('Blog post deleted');
+                    loadBlogPosts();
+                })
+                .catch(error => {
+                    alert('Error deleting post: ' + error.message);
+                });
+        }
+    };
+
+    loadBlogPosts();
+</script>
