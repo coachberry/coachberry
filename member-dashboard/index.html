@@ -306,11 +306,65 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            <input type="tel" id="phone" required>
+                            <input type="tel" id="phone">
                         </div>
                     </div>
                     <button type="submit" class="save-btn">Update Profile</button>
                 </form>
+            </div>
+
+            <!-- Add Players Section (for Parents) -->
+            <div class="card" id="playersSection" style="display: none;">
+                <h2>My Players</h2>
+                <form id="playerForm" onsubmit="handleAddPlayer(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="playerName">Player Name</label>
+                            <input type="text" id="playerName" placeholder="Player's full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="playerBirthYear">Birth Year</label>
+                            <input type="number" id="playerBirthYear" placeholder="e.g., 2012" min="1980" max="2030" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="playerTeam">Current Team</label>
+                            <input type="text" id="playerTeam" placeholder="Team name (optional)">
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">Add Player</button>
+                </form>
+                <div id="playersList" style="margin-top: 2rem;"></div>
+            </div>
+
+            <!-- Team Organizations Section -->
+            <div class="card" id="teamsSection" style="display: none;">
+                <h2>Team Organizations</h2>
+                <form id="teamForm" onsubmit="handleAddTeam(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="teamName">Team Organization Name</label>
+                            <input type="text" id="teamName" placeholder="Team/organization name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamAgeGroup">Age Group</label>
+                            <input type="text" id="teamAgeGroup" placeholder="e.g., U12, U16, 18U" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="teamCity">City</label>
+                            <input type="text" id="teamCity" placeholder="City" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamState">State</label>
+                            <input type="text" id="teamState" placeholder="State abbreviation (e.g., TN)" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">Add Team</button>
+                </form>
+                <div id="teamsList" style="margin-top: 2rem;"></div>
             </div>
         </div>
 
@@ -419,6 +473,17 @@
                 document.getElementById('lastName').value = memberData.lastName || '';
                 document.getElementById('email').value = memberData.email || '';
                 document.getElementById('phone').value = memberData.phone || '';
+
+                // Show/hide sections based on roles
+                if (memberData.roles && memberData.roles.includes('parent')) {
+                    document.getElementById('playersSection').style.display = 'block';
+                    loadPlayersList();
+                }
+
+                if (memberData.roles && (memberData.roles.includes('coach') || memberData.roles.includes('parent'))) {
+                    document.getElementById('teamsSection').style.display = 'block';
+                    loadTeamsList();
+                }
 
                 // Load saved posts
                 loadSavedPosts();
@@ -588,6 +653,146 @@
                 console.error('Error loading messages:', error);
             }
         }
+
+        // Load players list
+        async function loadPlayersList() {
+            const container = document.getElementById('playersList');
+            const players = memberData.players || [];
+
+            container.innerHTML = '';
+            if (players.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No players added yet.</p>';
+                return;
+            }
+
+            players.forEach((player, index) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--light-gray); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;';
+                card.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(player.name)}</strong> - Born ${player.birthYear} ${player.team ? `(${escapeHtml(player.team)})` : ''}
+                    </div>
+                    <button type="button" onclick="window.removePlayer(${index})" style="padding: 0.5rem 1rem; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Remove</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Add player
+        window.handleAddPlayer = async function(event) {
+            event.preventDefault();
+
+            const playerName = document.getElementById('playerName').value;
+            const playerBirthYear = document.getElementById('playerBirthYear').value;
+            const playerTeam = document.getElementById('playerTeam').value;
+
+            if (!memberData.players) memberData.players = [];
+
+            memberData.players.push({
+                name: playerName,
+                birthYear: playerBirthYear,
+                team: playerTeam
+            });
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    players: memberData.players
+                });
+
+                document.getElementById('playerForm').reset();
+                loadPlayersList();
+            } catch (error) {
+                alert('Error adding player: ' + error.message);
+            }
+        };
+
+        // Remove player
+        window.removePlayer = async function(index) {
+            if (!confirm('Remove this player?')) return;
+
+            memberData.players.splice(index, 1);
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    players: memberData.players
+                });
+
+                loadPlayersList();
+            } catch (error) {
+                alert('Error removing player: ' + error.message);
+            }
+        };
+
+        // Load teams list
+        async function loadTeamsList() {
+            const container = document.getElementById('teamsList');
+            const teams = memberData.teams || [];
+
+            container.innerHTML = '';
+            if (teams.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-light); text-align: center;">No teams added yet.</p>';
+                return;
+            }
+
+            teams.forEach((team, index) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--light-gray); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;';
+                card.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(team.name)}</strong> - ${escapeHtml(team.ageGroup)} • ${escapeHtml(team.city)}, ${escapeHtml(team.state)}
+                    </div>
+                    <button type="button" onclick="window.removeTeam(${index})" style="padding: 0.5rem 1rem; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Remove</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Add team
+        window.handleAddTeam = async function(event) {
+            event.preventDefault();
+
+            const teamName = document.getElementById('teamName').value;
+            const teamAgeGroup = document.getElementById('teamAgeGroup').value;
+            const teamCity = document.getElementById('teamCity').value;
+            const teamState = document.getElementById('teamState').value;
+
+            if (!memberData.teams) memberData.teams = [];
+
+            memberData.teams.push({
+                name: teamName,
+                ageGroup: teamAgeGroup,
+                city: teamCity,
+                state: teamState
+            });
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    teams: memberData.teams
+                });
+
+                document.getElementById('teamForm').reset();
+                loadTeamsList();
+            } catch (error) {
+                alert('Error adding team: ' + error.message);
+            }
+        };
+
+        // Remove team
+        window.removeTeam = async function(index) {
+            if (!confirm('Remove this team?')) return;
+
+            memberData.teams.splice(index, 1);
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    teams: memberData.teams
+                });
+
+                loadTeamsList();
+            } catch (error) {
+                alert('Error removing team: ' + error.message);
+            }
+        };
 
         window.handleLogout = async function() {
             try {
