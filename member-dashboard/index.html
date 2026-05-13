@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Berry - Member Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <script src="/footer.js"></script>
+    <style>
+        .member-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-header {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            color: var(--primary-dark);
+        }
+
+        .logout-btn {
+            padding: 0.7rem 1.5rem;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .save-btn {
+            padding: 0.9rem 2rem;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid var(--success);
+        }
+
+        .saved-posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .post-card {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .post-card h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .post-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .remove-post-btn {
+            padding: 0.5rem 1rem;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .remove-post-btn:hover {
+            background: #d32f2f;
+        }
+
+        .messages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message-item {
+            background: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .message-item h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-dark);
+        }
+
+        .message-item .meta {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .message-item p {
+            margin: 0;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .compose-message {
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="member-container">
+        <div class="dashboard-header">
+            <h1>Member Dashboard</h1>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('profile')">👤 Profile</button>
+            <button class="tab-btn" onclick="switchTab('saved')">💾 Saved Content</button>
+            <button class="tab-btn" onclick="switchTab('messages')">💬 Messages</button>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content active">
+            <div class="card">
+                <h2>My Profile</h2>
+                <div class="message" id="profileMessage"></div>
+                <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" disabled style="background: var(--light-gray); cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">Update Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Saved Content Tab -->
+        <div id="saved" class="tab-content">
+            <div class="card">
+                <h2>Saved Blog Posts</h2>
+                <div id="savedPostsList" class="saved-posts-grid"></div>
+            </div>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages" class="tab-content">
+            <div class="card compose-message">
+                <h2>Send Message to Coach</h2>
+                <div class="message" id="messageMessage"></div>
+                <form id="messageForm" onsubmit="handleSendMessage(event)">
+                    <div class="form-group">
+                        <label for="messageSubject">Subject</label>
+                        <input type="text" id="messageSubject" placeholder="e.g., Question about drills" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="messageContent">Message</label>
+                        <textarea id="messageContent" placeholder="Type your message..." rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">Send Message</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Message History</h2>
+                <div class="messages-list" id="messagesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+            authDomain: "coach-berry.firebaseapp.com",
+            projectId: "coach-berry",
+            storageBucket: "coach-berry.firebasestorage.app",
+            messagingSenderId: "170282824286",
+            appId: "1:170282824286:web:5387ec9826c38466c07acf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let memberData = null;
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp.seconds * 1000);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '/member-login/';
+                return;
+            }
+
+            currentUser = user;
+            await loadMemberData();
+            loadMessages();
+        });
+
+        async function loadMemberData() {
+            try {
+                const q = query(collection(db, 'members'), where('email', '==', currentUser.email));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    alert('Member profile not found');
+                    signOut(auth);
+                    return;
+                }
+
+                memberData = snapshot.docs[0].data();
+                memberData.id = snapshot.docs[0].id;
+
+                // Check permissions
+                if (memberData.permissions && !memberData.permissions.viewDashboard) {
+                    alert('Your account does not have access to the member dashboard');
+                    await signOut(auth);
+                    window.location.href = '/';
+                    return;
+                }
+
+                // Load profile data
+                document.getElementById('firstName').value = memberData.firstName || '';
+                document.getElementById('lastName').value = memberData.lastName || '';
+                document.getElementById('email').value = memberData.email || '';
+                document.getElementById('phone').value = memberData.phone || '';
+
+                // Load saved posts
+                loadSavedPosts();
+            } catch (error) {
+                console.error('Error loading member data:', error);
+            }
+        }
+
+        async function loadSavedPosts() {
+            try {
+                const container = document.getElementById('savedPostsList');
+                const savedPosts = memberData.savedPosts || [];
+
+                if (savedPosts.length === 0) {
+                    container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No saved posts yet. Browse our blog and save posts to view them here!</div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                for (const postId of savedPosts) {
+                    try {
+                        const postSnap = await getDocs(query(collection(db, 'blogPosts'), where('__name__', '==', postId)));
+                        if (!postSnap.empty) {
+                            const post = postSnap.docs[0].data();
+                            const card = document.createElement('div');
+                            card.className = 'post-card';
+                            card.innerHTML = `
+                                <h3>${escapeHtml(post.title)}</h3>
+                                <p>${escapeHtml(post.content.substring(0, 100))}...</p>
+                                <button class="remove-post-btn" onclick="window.removePost('${postId}')">Remove</button>
+                            `;
+                            container.appendChild(card);
+                        }
+                    } catch (e) {
+                        console.error('Error loading post:', e);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading saved posts:', error);
+            }
+        }
+
+        window.removePost = async function(postId) {
+            if (!confirm('Remove this post from saved items?')) return;
+
+            try {
+                const updatedPosts = memberData.savedPosts.filter(id => id !== postId);
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    savedPosts: updatedPosts
+                });
+
+                memberData.savedPosts = updatedPosts;
+                loadSavedPosts();
+            } catch (error) {
+                alert('Error removing post: ' + error.message);
+            }
+        };
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        };
+
+        window.handleProfileUpdate = async function(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('.save-btn');
+            const msgDiv = document.getElementById('profileMessage');
+
+            btn.disabled = true;
+            msgDiv.classList.remove('show');
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    phone: document.getElementById('phone').value,
+                    profileUpdated: new Date()
+                });
+
+                msgDiv.textContent = '✓ Profile updated successfully!';
+                msgDiv.classList.add('show', 'success');
+            } catch (error) {
+                msgDiv.textContent = 'Error updating profile: ' + error.message;
+                msgDiv.classList.add('show', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        window.handleSendMessage = async function(event) {
+            event.preventDefault();
+
+            // Check permission
+            if (memberData.permissions && !memberData.permissions.useMessaging) {
+                alert('You do not have permission to use the messaging system');
+                return;
+            }
+
+            const subject = document.getElementById('messageSubject').value;
+            const content = document.getElementById('messageContent').value;
+            const btn = event.target.querySelector('.save-btn');
+            const msgDiv = document.getElementById('messageMessage');
+
+            btn.disabled = true;
+            msgDiv.classList.remove('show');
+
+            try {
+                await addDoc(collection(db, 'messages'), {
+                    from: currentUser.email,
+                    fromName: `${memberData.firstName} ${memberData.lastName}`,
+                    subject: subject,
+                    content: content,
+                    dateSent: new Date(),
+                    read: false
+                });
+
+                msgDiv.textContent = '✓ Message sent successfully!';
+                msgDiv.classList.add('show', 'success');
+                event.target.reset();
+                loadMessages();
+
+                setTimeout(() => msgDiv.classList.remove('show'), 3000);
+            } catch (error) {
+                msgDiv.textContent = 'Error sending message: ' + error.message;
+                msgDiv.classList.add('show', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        async function loadMessages() {
+            try {
+                const q = query(
+                    collection(db, 'messages'),
+                    where('from', '==', currentUser.email),
+                    orderBy('dateSent', 'desc')
+                );
+                const snapshot = await getDocs(q);
+                const container = document.getElementById('messagesList');
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<div class="empty-state">No messages yet. Send your first message above!</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const msg = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'message-item';
+                    card.innerHTML = `
+                        <h4>${escapeHtml(msg.subject)}</h4>
+                        <div class="meta">${formatDate(msg.dateSent)}</div>
+                        <p>${escapeHtml(msg.content)}</p>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                window.location.href = '/';
+            } catch (error) {
+                alert('Error logging out: ' + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
