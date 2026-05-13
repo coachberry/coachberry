@@ -1013,7 +1013,41 @@
             }
         }
 
-        // Update role display for Player, Coach, Parent sections
+        function addKidEntry() {
+            const container = document.getElementById('kidsContainer');
+            const entryCount = container.children.length + 1;
+            
+            const entry = document.createElement('div');
+            entry.className = 'kid-entry';
+            entry.innerHTML = `
+                <h5 style="color: var(--accent); margin-bottom: 1rem;">Child ${entryCount}</h5>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Birth Year</label>
+                        <input type="number" name="kidBirthYear" placeholder="e.g., 2012" min="1980" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select name="kidGender">
+                            <option value="">Select...</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Current Team</label>
+                    <input type="text" name="kidTeam" placeholder="Team name (optional)">
+                </div>
+                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
+            `;
+            container.appendChild(entry);
+        }
+    </script>
+
+    <script>
+        // Non-module functions for form display
         function updateRoleDisplay() {
             const rolePlayer = document.getElementById('rolePlayer').checked;
             const roleCoach = document.getElementById('roleCoach').checked;
@@ -1083,38 +1117,6 @@
                     </div>
                 </div>
                 ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-
-        function addKidEntry() {
-            const container = document.getElementById('kidsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'kid-entry';
-            entry.innerHTML = `
-                <h5 style="color: var(--accent); margin-bottom: 1rem;">Child ${entryCount}</h5>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Birth Year</label>
-                        <input type="number" name="kidBirthYear" placeholder="e.g., 2012" min="1980" max="2030">
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select name="kidGender">
-                            <option value="">Select...</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Current Team</label>
-                    <input type="text" name="kidTeam" placeholder="Team name (optional)">
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
             `;
             container.appendChild(entry);
         }
