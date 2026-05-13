@@ -3,813 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Berry - Hockey Coaching & Training</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="header.js"></script>
-    <script src="footer.js"></script>
+    <title>Coach Berry - Admin Dashboard</title>
     <style>
-        /* Page-specific styles for homepage only */
-        
-        /* Hero Section */
-        .hero {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #000000;
+            --primary: #1a1a1a;
+            --secondary: #2d2d2d;
+            --accent: #FF2400;
+            --accent-light: #FF3a1f;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --text: #1a1a1a;
+            --text-light: #4a4a4a;
+            --border: #e0e0e0;
+            --success: #4CAF50;
+            --danger: #f44336;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: var(--light-gray);
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: var(--white);
-            padding: 5rem 2rem;
-            text-align: center;
-            min-height: 700px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 600px;
-            height: 600px;
-            background: rgba(255, 36, 0, 0.08);
-            border-radius: 50%;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -5%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 36, 0, 0.05);
-            border-radius: 50%;
-            animation: float 10s ease-in-out infinite 1s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(40px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-
-        .hero h1 span {
-            color: var(--accent);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* About Section */
-        #about {
+        .login-box {
             background: var(--white);
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            margin-top: 3rem;
-        }
-
-        .about-image {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .about-image img {
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
+            max-width: 400px;
+        }
+
+        .login-box img {
+            max-width: 100%;
             height: auto;
-            display: block;
-        }
-
-        .about-text h3 {
-            font-size: 2rem;
-            color: var(--primary-dark);
             margin-bottom: 1.5rem;
-            font-weight: 700;
         }
 
-        .about-text p {
-            margin-bottom: 1.5rem;
-            line-height: 1.9;
-            font-size: 1.05rem;
-        }
-
-        .credentials-list {
-            background: var(--light-gray);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            border-left: 4px solid var(--accent);
-        }
-
-        .credentials-list h4 {
-            color: var(--accent);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .credentials-list ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .credentials-list li {
-            padding: 0.5rem 0;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .credentials-list li::before {
-            content: '✓ ';
-            color: var(--accent);
-            font-weight: 800;
-            margin-right: 0.8rem;
-        }
-
-        /* Services Section */
-        #services {
-            background: var(--light-gray);
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-
-        .service-card {
-            background: var(--white);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border-top: 5px solid var(--accent);
-        }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
-
-        .service-card h3 {
-            font-size: 1.6rem;
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .service-card p {
-            color: var(--text-light);
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-        }
-
-        .service-features {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .service-features li {
-            font-size: 0.95rem;
-            color: var(--text);
-            margin: 0.6rem 0;
-            list-style: none;
-        }
-
-        .service-features li::before {
-            content: '→ ';
-            color: var(--accent);
-            font-weight: 700;
-            margin-right: 0.5rem;
-        }
-
-        /* Content Hub Section */
-        #content {
-            background: var(--white);
-        }
-
-        .content-intro {
+        .login-box .subtitle {
             text-align: center;
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            font-size: 1.1rem;
-            color: var(--text-light);
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .content-card {
-            background: var(--light-gray);
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .content-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .content-card-icon {
-            font-size: 2.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .content-card h3 {
-            color: var(--primary-dark);
-            font-size: 1.4rem;
-            margin-bottom: 0.8rem;
-            font-weight: 700;
-        }
-
-        .content-card p {
-            font-size: 0.95rem;
-            color: var(--text-light);
-        }
-
-        /* Blog Section */
-        #blog {
-            background: var(--white);
-        }
-
-        /* Membership Section */
-        #membership {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: var(--white);
-        }
-
-        #membership h2 {
-            color: var(--white);
-        }
-
-        #membership h2::after {
-            background: var(--accent);
-        }
-
-        .membership-container {
-            max-width: 1000px;
-            margin: 3rem auto 0;
-        }
-
-        .membership-intro {
-            text-align: center;
-            margin-bottom: 3rem;
-            font-size: 1.1rem;
-            opacity: 0.95;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 2rem;
         }
 
         .form-group {
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
             font-weight: 600;
             margin-bottom: 0.6rem;
-            font-size: 0.95rem;
+            color: var(--text);
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group input {
             width: 100%;
             padding: 0.9rem;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid var(--border);
             border-radius: 6px;
-            font-family: inherit;
             font-size: 1rem;
-            background: rgba(255,255,255,0.95);
-            color: var(--text);
+            font-family: inherit;
             transition: all 0.3s ease;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
             border-color: var(--accent);
-            background: var(--white);
             box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .checkbox-group {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .form-submit {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .form-submit button {
-            flex: 1;
-            padding: 1.1rem;
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--accent);
+            color: var(--white);
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .form-submit .submit-btn {
-            background: var(--accent);
-            color: var(--white);
-        }
-
-        .form-submit .submit-btn:hover {
+        .login-btn:hover {
             background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 36, 0, 0.3);
         }
 
-        .form-submit .reset-btn {
-            background: rgba(255,255,255,0.2);
-            color: var(--white);
-            border: 2px solid rgba(255,255,255,0.3);
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        .form-submit .reset-btn:hover {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
-        }
-
-        .details-section {
-            background: rgba(0,0,0,0.2);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
             display: none;
+            border-left: 4px solid #c62828;
         }
 
-        .details-section.active {
+        .error-message.show {
             display: block;
         }
 
-        .details-section h4 {
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
         }
 
-        .kid-entry {
-            background: rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 3px solid var(--accent);
+        .hidden {
+            display: none !important;
         }
 
-        .add-kid-btn {
-            background: rgba(255, 36, 0, 0.8);
+        .sidebar {
+            width: 250px;
+            background: var(--primary-dark);
             color: var(--white);
-            border: none;
-            padding: 0.8rem 1.5rem;
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo img {
+            max-width: 100%;
+            height: auto;
+            max-height: 60px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 0.9rem 1rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: 600;
-            margin-top: 1rem;
             transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
-        .add-kid-btn:hover {
-            background: var(--accent);
-        }
-
-        .success-message {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid #4CAF50;
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
             color: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
+        }
+
+        .menu-item.active {
+            background: var(--accent);
+            color: var(--white);
+            border-left-color: var(--white);
+        }
+
+        .logout-btn {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            padding: 0.9rem;
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% - 2rem);
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        main {
+            margin-left: 250px;
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+        }
+
+        .tab-content {
             display: none;
-            text-align: center;
         }
 
-        .success-message.show {
+        .tab-content.active {
             display: block;
-            animation: slideDown 0.3s ease-out;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1.1rem;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .checkbox-group {
-                gap: 1rem;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-            }
-
-            .hero-buttons a {
+            .sidebar {
                 width: 100%;
-                text-align: center;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+
+            main {
+                margin-left: 0;
+            }
+
+            .logout-btn {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                right: auto;
+                width: 100%;
+                margin-top: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header loaded from header.js -->
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Elevate Your <span>Hockey Game</span></h1>
-            <p>Learn from Coach Matt Berry with 30+ years of playing experience and 8+ years of coaching expertise. Master goaltending, strategy, and game analysis.</p>
-            <div class="hero-buttons">
-                <a href="#services" class="cta-button">Explore Services</a>
-                <a href="#membership" class="cta-button cta-button-secondary">Become a Member</a>
-            </div>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo">
+            <div class="subtitle">Admin Dashboard</div>
+            <div class="error-message" id="loginError"></div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+            </form>
         </div>
-    </section>
+    </div>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <h2>About Coach Berry</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <h3>Hockey Coach & Goaltender Specialist</h3>
-                    <p>With 30+ years of playing experience across all positions and 8+ years of dedicated coaching, I'm passionate about developing players both on and off the ice through open communication and innovative training techniques.</p>
-                    <p>Currently, I'm the Owner/Lead Coach of 3D Hockey LLC, Head Coach of the U18 Nashvillains Summer Team, and Assistant Coach at Page-Summit High School. I've coached at every level from youth to university, including Stevenson University ACHA D2 & D3 and Johns Hopkins University.</p>
-                    <p>My coaching philosophy centers on individualized programs tailored to each player's unique needs and challenges, combined with high-quality video analysis and educational content.</p>
-                    
-                    <div class="credentials-list">
-                        <h4>Certifications & Credentials</h4>
-                        <ul>
-                            <li>USA Hockey Level 4 Coach (CEP #492091)</li>
-                            <li>USA Hockey Bronze Goaltending Certification</li>
-                            <li>USA Hockey Level 2 Officiating (ID #1182200)</li>
-                            <li>B.A. in Psychology - University of Maryland</li>
-                            <li>Google Project Management Professional</li>
-                            <li>HubSpot Inbound Certification</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); height: 400px; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 5rem;">🏒</div>
-                </div>
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry Logo">
             </div>
-        </div>
-    </section>
+            <ul class="sidebar-menu">
+                <li><a onclick="switchTab('overview')" class="menu-item active" data-tab="overview">📊 Overview</a></li>
+                <li><a onclick="switchTab('members')" class="menu-item" data-tab="members">👥 Members</a></li>
+                <li><a onclick="switchTab('blog')" class="menu-item" data-tab="blog">📝 Blog Posts</a></li>
+                <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
+            </ul>
+            <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+        </aside>
 
-    <!-- Services Section -->
-    <section id="services">
-        <div class="container">
-            <h2>Services & Programs</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🧤</div>
-                    <h3>Private Goaltender Coaching</h3>
-                    <p>One-on-one personalized coaching focused on goaltending fundamentals, positioning, and advanced techniques. Perfect for players looking to elevate their game.</p>
-                    <ul class="service-features">
-                        <li>Customized training plans</li>
-                        <li>Technique refinement</li>
-                        <li>Confidence building</li>
-                    </ul>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📊</div>
-                    <h3>Video Analysis Coaching</h3>
-                    <p>Deep-dive analysis of your game film. Identify strengths, weaknesses, and opportunities for improvement through detailed video breakdown and actionable feedback.</p>
-                    <ul class="service-features">
-                        <li>Game & practice footage review</li>
-                        <li>Performance metrics</li>
-                        <li>Custom training adjustments</li>
-                    </ul>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">⛺</div>
-                    <h3>Hockey Camps & Clinics</h3>
-                    <p>Intensive group training programs designed to build skills, foster team chemistry, and create an engaging learning environment for players of all levels.</p>
-                    <ul class="service-features">
-                        <li>Multi-day intensive programs</li>
-                        <li>Group & position-specific drills</li>
-                        <li>Tournament opportunities</li>
-                    </ul>
-                </div>
+        <main>
+            <div class="dashboard-header">
+                <h1 id="pageTitle">Admin Dashboard</h1>
             </div>
-        </div>
-    </section>
 
-    <!-- Content Hub Section -->
-    <section id="content">
-        <div class="container">
-            <h2>Hockey Knowledge Hub</h2>
-            <div class="content-intro">
-                <p>Access a comprehensive repository of hockey knowledge exclusively for our members. Learn strategies, drills, plays, and game analysis from a certified USA Hockey Level 4 Coach.</p>
-            </div>
-            <div class="content-grid">
-                <div class="content-card">
-                    <div class="content-card-icon">🎯</div>
-                    <h3>Hockey Drills</h3>
-                    <p>Step-by-step drill videos and instructions organized by position and skill level. From basics to advanced techniques.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">📋</div>
-                    <h3>Strategies & Plays</h3>
-                    <p>Learn offensive and defensive strategies, team plays, and game management tactics used at elite levels.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">🎬</div>
-                    <h3>Video Analysis</h3>
-                    <p>Professional game footage analysis, breakdowns, and coaching sessions demonstrating key concepts in action.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">💪</div>
-                    <h3>Training Plans</h3>
-                    <p>Structured training programs and practice plans for individual skill development and team preparation.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">🏆</div>
-                    <h3>Mental Game</h3>
-                    <p>Resources on confidence, focus, resilience, and the psychological aspects of competitive hockey.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">📚</div>
-                    <h3>Educational Guides</h3>
-                    <p>In-depth guides on positioning, skating techniques, goaltending fundamentals, and more.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section id="blog">
-        <div class="container">
-            <h2>Latest Blog Posts</h2>
-            <div class="content-intro">
-                <p>Discover hockey tips, strategies, drills, and coaching insights from Coach Matt Berry. Read our latest articles and improve your game.</p>
-            </div>
-            <div class="content-grid" id="recentBlogPosts">
-                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-light);">
-                    <p>Loading recent blog posts...</p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="blog/" class="cta-button">View All Blog Posts →</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Membership Section -->
-    <section id="membership">
-        <div class="container">
-            <h2>Join Coach Berry's Community</h2>
-            <div class="membership-container">
-                <div class="membership-intro">
-                    <p>Get free access to our hockey knowledge hub. Sign up with your information below to unlock drills, strategies, videos, and exclusive coaching content.</p>
-                </div>
-
-                <div class="success-message" id="successMessage">
-                    ✓ Welcome to Coach Berry's Community! Check your email for next steps.
-                </div>
-
-                <form id="membershipForm" onsubmit="handleMembershipSubmit(event)">
-                    <!-- Basic Info -->
-                    <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">Email Address *</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Role Selection (No Title) -->
-                    <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="rolePlayer" name="roles" value="player" onchange="updateRoleDisplay()">
-                                <label for="rolePlayer">Player</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="roleCoach" name="roles" value="coach" onchange="updateRoleDisplay()">
-                                <label for="roleCoach">Coach</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="roleParent" name="roles" value="parent" onchange="updateRoleDisplay()">
-                                <label for="roleParent">Parent</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Player Details -->
-                    <div class="details-section" id="playerDetails" style="display: none;">
-                        <h4>Your Playing Experience</h4>
-                        
-                        <div class="form-group">
-                            <label>Position</label>
-                            <div class="checkbox-group" style="margin-top: 0.5rem;">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posForward" name="positions" value="forward">
-                                    <label for="posForward">Forward</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posDefense" name="positions" value="defense">
-                                    <label for="posDefense">Defense</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posGoalie" name="positions" value="goalie">
-                                    <label for="posGoalie">Goalie</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="playerYearsExp">Years of Playing Experience</label>
-                                <input type="number" id="playerYearsExp" name="playerYearsExp" min="0" max="80">
-                            </div>
-                            <div class="form-group">
-                                <label for="playerBirthYear">Birth Year</label>
-                                <input type="number" id="playerBirthYear" name="playerBirthYear" min="1980" max="2030">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 1rem; display: block;">Current Teams</label>
-                            <div id="playerTeamsContainer"></div>
-                            <button type="button" class="add-kid-btn" onclick="addPlayerTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
-                        </div>
-                    </div>
-
-                    <!-- Coach Details -->
-                    <div class="details-section" id="coachDetails" style="display: none;">
-                        <h4>Your Coaching Experience</h4>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="coachYearsExp">Years of Coaching Experience</label>
-                                <input type="number" id="coachYearsExp" name="coachYearsExp" min="0" max="80">
-                            </div>
-                            <div class="form-group">
-                                <label for="coachUSALevel">USA Hockey Certification Level</label>
-                                <input type="number" id="coachUSALevel" name="coachUSALevel" min="0" max="5" placeholder="e.g., 1, 2, 3, 4, etc.">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 1rem; display: block;">Coaching Teams</label>
-                            <div id="coachTeamsContainer"></div>
-                            <button type="button" class="add-kid-btn" onclick="addCoachTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
-                        </div>
-                    </div>
-
-                    <!-- Parent Details -->
-                    <div class="details-section" id="parentDetails" style="display: none;">
-                        <h4>Your Child's Information</h4>
-                        <div id="kidsContainer"></div>
-                        <button type="button" class="add-kid-btn" onclick="addKidEntry()">+ Add Another Child</button>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="form-submit">
-                        <button type="submit" class="submit-btn">Create My Account</button>
-                        <button type="reset" class="reset-btn">Clear Form</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer loaded from footer.js -->
+            <div id="overview" class="tab-content active"></div>
+            <div id="members" class="tab-content"></div>
+            <div id="blog" class="tab-content"></div>
+            <div id="updates" class="tab-content"></div>
+        </main>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -822,301 +327,106 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // Membership Form Handler - Create Auth Account & Save Profile
-        function handleMembershipSubmit(event) {
+        let currentUser = null;
+
+        window.handleLogin = async function(event) {
             event.preventDefault();
-            
-            // Collect form data
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
             const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const roles = Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(cb => cb.value);
-            
-            if (roles.length === 0) {
-                alert('Please select at least one role');
-                return;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Signing In...';
+            errorDiv.classList.remove('show');
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                errorDiv.textContent = 'Invalid email or password';
+                errorDiv.classList.add('show');
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
             }
+        };
 
-            // Collect role-specific data
-            const memberData = {
-                firstName,
-                lastName,
-                email,
-                phone,
-                roles,
-                dateJoined: new Date(),
-                permissions: {
-                    viewDashboard: true,
-                    saveBlogPosts: true,
-                    useMessaging: true,
-                    viewContent: true
-                },
-                savedPosts: []
-            };
-
-            // Add parent data if role is parent
-            if (roles.includes('parent')) {
-                const children = [];
-                document.querySelectorAll('.kid-entry').forEach(entry => {
-                    const birthYear = entry.querySelector('input[name="kidBirthYear"]').value;
-                    const gender = entry.querySelector('select[name="kidGender"]').value;
-                    const team = entry.querySelector('input[name="kidTeam"]').value;
-                    
-                    if (birthYear) {
-                        children.push({ birthYear, gender, team });
-                    }
-                });
-                memberData.children = children;
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                alert('Error logging out: ' + error.message);
             }
+        };
 
-            // Add player data if role is player
-            if (roles.includes('player')) {
-                const positions = Array.from(document.querySelectorAll('input[name="positions"]:checked')).map(cb => cb.value);
-                const yearsExp = document.getElementById('playerYearsExp').value;
-                const birthYear = document.getElementById('playerBirthYear').value;
-                const teams = [];
-
-                document.querySelectorAll('.player-team-entry').forEach(entry => {
-                    const teamName = entry.querySelector('input[name="playerTeam"]').value;
-                    if (teamName) {
-                        teams.push(teamName);
-                    }
-                });
-
-                memberData.playerProfile = {
-                    positions: positions,
-                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
-                    birthYear: birthYear ? parseInt(birthYear) : null,
-                    teams: teams
-                };
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                switchTab('overview');
+            } else {
+                currentUser = null;
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
             }
-
-            // Add coach data if role is coach
-            if (roles.includes('coach')) {
-                const yearsExp = document.getElementById('coachYearsExp').value;
-                const usaLevel = document.getElementById('coachUSALevel').value;
-                const teams = [];
-
-                document.querySelectorAll('.coach-team-entry').forEach(entry => {
-                    const teamName = entry.querySelector('input[name="coachTeamName"]').value;
-                    const position = entry.querySelector('input[name="coachPosition"]').value;
-                    if (teamName || position) {
-                        teams.push({ 
-                            name: teamName, 
-                            position: position 
-                        });
-                    }
-                });
-
-                memberData.coachProfile = {
-                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
-                    usaHockeyLevel: usaLevel ? parseInt(usaLevel) : null,
-                    teams: teams
-                };
-            }
-
-            // Create account and save profile
-            const submitBtn = document.querySelector('#membershipForm .submit-btn');
-            const successMsg = document.getElementById('successMessage');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span> Creating Account...';
-            successMsg.classList.remove('show');
-
-            // Generate temporary password
-            const tempPassword = generatePassword();
-
-            // 1. Create Auth account
-            createUserWithEmailAndPassword(auth, email, tempPassword)
-                .then(async (userCredential) => {
-                    // 2. Save member profile to Firestore
-                    return addDoc(collection(db, 'members'), memberData);
-                })
-                .then(() => {
-                    // Success!
-                    successMsg.innerHTML = `
-                        <strong>✓ Account Created Successfully!</strong><br><br>
-                        Your member account is ready. You can now log in to your dashboard using:<br><br>
-                        <strong>Email:</strong> ${email}<br>
-                        <strong>Temporary Password:</strong> <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 3px; font-family: monospace;">${tempPassword}</code><br><br>
-                        <a href="/member-login/" style="color: var(--accent); text-decoration: none; font-weight: 600;">Go to Member Login →</a>
-                    `;
-                    successMsg.classList.add('show');
-                    document.getElementById('membershipForm').reset();
-                    
-                    // Reset role-specific sections
-                    document.getElementById('parentDetails').classList.remove('active');
-                    document.getElementById('coachDetails').classList.remove('active');
-                    document.getElementById('kidsContainer').innerHTML = '';
-
-                    // Scroll to success message
-                    successMsg.scrollIntoView({ behavior: 'smooth' });
-                })
-                .catch((error) => {
-                    let errorMsg = error.message;
-                    if (error.code === 'auth/email-already-in-use') {
-                        errorMsg = 'This email is already registered. Please log in or use a different email.';
-                    } else if (error.code === 'auth/weak-password') {
-                        errorMsg = 'There was an issue creating your account. Please try again.';
-                    }
-                    alert('Error creating account: ' + errorMsg);
-                    console.error('Error:', error);
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Create My Account';
-                });
-        }
-
-        // Generate temporary password
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-            let password = '';
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return password;
-        }
-
-        // Expose to window
-        window.handleMembershipSubmit = handleMembershipSubmit;
-
-        // Role checkbox handlers
-        const roleCheckboxes = document.querySelectorAll('input[name="roles"]');
-        roleCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateDetailsDisplay);
         });
 
-        function updateDetailsDisplay() {
-            const parentDetails = document.getElementById('parentDetails');
-            const coachDetails = document.getElementById('coachDetails');
-            const rolePlayer = document.getElementById('rolePlayer').checked;
-            const roleCoach = document.getElementById('roleCoach').checked;
-            const roleParent = document.getElementById('roleParent').checked;
+        window.getCurrentUser = () => currentUser;
+        window.getFirebaseConfig = () => firebaseConfig;
 
-            if (roleParent) {
-                parentDetails.classList.add('active');
-                if (document.getElementById('kidsContainer').children.length === 0) {
-                    addKidEntry();
+        window.switchTab = async function(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            const tabElement = document.getElementById(tabName);
+            tabElement.classList.add('active');
+
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            const titles = {
+                overview: 'Overview',
+                members: 'Members',
+                blog: 'Blog Posts',
+                updates: 'Updates'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
+
+            // Load tab content if not already loaded
+            if (tabElement.innerHTML.trim() === '') {
+                await loadTabContent(tabName);
+            }
+        };
+
+        async function loadTabContent(tabName) {
+            const tabElement = document.getElementById(tabName);
+            tabElement.innerHTML = '<div class="loading-spinner">Loading...</div>';
+
+            try {
+                const response = await fetch(`${tabName}.html`);
+                if (!response.ok) throw new Error(`Failed to load ${tabName}`);
+                const html = await response.text();
+                tabElement.innerHTML = html;
+
+                // Run any scripts in the loaded content
+                const scripts = tabElement.querySelectorAll('script');
+                for (const script of scripts) {
+                    const newScript = document.createElement('script');
+                    newScript.type = script.type || 'text/javascript';
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    tabElement.appendChild(newScript);
                 }
-            } else {
-                parentDetails.classList.remove('active');
+            } catch (error) {
+                console.error(`Error loading ${tabName}:`, error);
+                tabElement.innerHTML = `<div style="padding: 2rem; text-align: center; color: #f44336;">Error loading content. Please refresh the page.</div>`;
             }
-
-            if (roleCoach) {
-                coachDetails.classList.add('active');
-            } else {
-                coachDetails.classList.remove('active');
-            }
-        }
-
-        // Update role display for Player, Coach, Parent sections
-        function updateRoleDisplay() {
-            const rolePlayer = document.getElementById('rolePlayer').checked;
-            const roleCoach = document.getElementById('roleCoach').checked;
-            const roleParent = document.getElementById('roleParent').checked;
-
-            // Show/hide Player details
-            if (rolePlayer) {
-                document.getElementById('playerDetails').style.display = 'block';
-            } else {
-                document.getElementById('playerDetails').style.display = 'none';
-            }
-
-            // Show/hide Coach details
-            if (roleCoach) {
-                document.getElementById('coachDetails').style.display = 'block';
-            } else {
-                document.getElementById('coachDetails').style.display = 'none';
-            }
-
-            // Show/hide Parent details
-            if (roleParent) {
-                document.getElementById('parentDetails').style.display = 'block';
-                if (document.getElementById('kidsContainer').children.length === 0) {
-                    addKidEntry();
-                }
-            } else {
-                document.getElementById('parentDetails').style.display = 'none';
-            }
-        }
-
-        // Add player team
-        function addPlayerTeam() {
-            const container = document.getElementById('playerTeamsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'player-team-entry';
-            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
-            entry.innerHTML = `
-                <div class="form-group">
-                    <label>Team ${entryCount}</label>
-                    <input type="text" name="playerTeam" placeholder="Team name (optional)">
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-
-        // Add coach team
-        function addCoachTeam() {
-            const container = document.getElementById('coachTeamsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'coach-team-entry';
-            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
-            entry.innerHTML = `
-                <h5 style="color: var(--accent); margin-bottom: 1rem; margin-top: 0;">Team ${entryCount}</h5>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Team Name</label>
-                        <input type="text" name="coachTeamName" placeholder="Team name">
-                    </div>
-                    <div class="form-group">
-                        <label>Coaching Position</label>
-                        <input type="text" name="coachPosition" placeholder="e.g., Head Coach, Asst Coach, Goalie Coach">
-                    </div>
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-
-        function addKidEntry() {
-            const container = document.getElementById('kidsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'kid-entry';
-            entry.innerHTML = `
-                <h5 style="color: var(--accent); margin-bottom: 1rem;">Child ${entryCount}</h5>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Birth Year</label>
-                        <input type="number" name="kidBirthYear" placeholder="e.g., 2012" min="1980" max="2030">
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select name="kidGender">
-                            <option value="">Select...</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Current Team</label>
-                    <input type="text" name="kidTeam" placeholder="Team name (optional)">
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
-            `;
-            container.appendChild(entry);
         }
     </script>
 </body>
