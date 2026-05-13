@@ -3,7 +3,6 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
-        margin-bottom: 2rem;
     }
 
     .stat-card {
@@ -20,7 +19,6 @@
         font-weight: 600;
         text-transform: uppercase;
         margin-bottom: 0.5rem;
-        letter-spacing: 0.5px;
     }
 
     .stat-card .number {
@@ -48,22 +46,19 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-    import { firebaseConfig } from "./shared.js";
 
-    const app = initializeApp(firebaseConfig);
+    const config = window.getFirebaseConfig();
+    const app = initializeApp(config);
     const db = getFirestore(app);
 
     async function loadOverviewData() {
         try {
-            // Load members
             const membersSnapshot = await getDocs(collection(db, 'members'));
             document.getElementById('totalMembers').textContent = membersSnapshot.size;
 
-            // Load blog posts
             const postsSnapshot = await getDocs(collection(db, 'blogPosts'));
             document.getElementById('totalBlogPosts').textContent = postsSnapshot.size;
 
-            // Load updates
             const updatesSnapshot = await getDocs(collection(db, 'updates'));
             document.getElementById('totalUpdates').textContent = updatesSnapshot.size;
         } catch (error) {
