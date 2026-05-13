@@ -586,6 +586,78 @@
             color: var(--text);
         }
 
+        /* Members Section */
+        .members-controls {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .members-controls input,
+        .members-controls select {
+            padding: 0.8rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .members-controls input:focus,
+        .members-controls select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .members-controls input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .members-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .members-stat {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--accent);
+        }
+
+        .members-stat h4 {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .members-stat .count {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+            text-transform: capitalize;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -681,7 +753,40 @@
 
             <!-- Members Tab -->
             <div class="content-section" id="members">
-                <h2>Members</h2>
+                <h2>Members Dashboard</h2>
+
+                <!-- Stats -->
+                <div class="members-stats">
+                    <div class="members-stat">
+                        <h4>Total Members</h4>
+                        <div class="count" id="statTotalMembers">0</div>
+                    </div>
+                    <div class="members-stat">
+                        <h4>Players</h4>
+                        <div class="count" id="statPlayers">0</div>
+                    </div>
+                    <div class="members-stat">
+                        <h4>Coaches</h4>
+                        <div class="count" id="statCoaches">0</div>
+                    </div>
+                    <div class="members-stat">
+                        <h4>Parents</h4>
+                        <div class="count" id="statParents">0</div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="members-controls">
+                    <input type="text" id="memberSearch" class="search-input" placeholder="Search by name or email..." onkeyup="filterMembersTable()">
+                    <select id="memberRoleFilter" class="filter-select" onchange="filterMembersTable()">
+                        <option value="">All Roles</option>
+                        <option value="player">Players</option>
+                        <option value="coach">Coaches</option>
+                        <option value="parent">Parents</option>
+                    </select>
+                </div>
+
+                <!-- Members Table -->
                 <div class="table-container">
                     <table id="memberTable">
                         <thead>
@@ -690,11 +795,12 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Roles</th>
+                                <th>Joined</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="memberTableBody">
-                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">No members yet.</td></tr>
+                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading members...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -802,6 +908,13 @@
         let currentUser = null;
         let editingPostId = null;
         let currentCategories = [];
+
+        // Utility function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
         // Auth State Change
         onAuthStateChanged(auth, (user) => {
@@ -1102,38 +1215,105 @@
             }
         };
 
+        let allMembersData = [];
+
         // Load Members
         window.loadMembers = async function() {
             try {
                 const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
                 const snapshot = await getDocs(membersQuery);
-                const tbody = document.getElementById('memberTableBody');
-                tbody.innerHTML = '';
-
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No members yet.</td></tr>';
-                    return;
-                }
+                allMembersData = [];
 
                 snapshot.forEach(doc => {
-                    const member = doc.data();
-                    const dateJoined = member.dateJoined ? new Date(member.dateJoined.seconds * 1000).toLocaleDateString() : 'N/A';
-                    const roles = Array.isArray(member.roles) ? member.roles.join(', ') : (member.role || 'N/A');
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${member.firstName} ${member.lastName}</strong></td>
-                        <td>${member.email}</td>
-                        <td>${member.phone}</td>
-                        <td>${roles}</td>
-                        <td>
-                            <button class="action-btn action-btn-edit" onclick="viewMemberDetails('${doc.id}')">View</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+                    allMembersData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
                 });
+
+                updateMembersStats();
+                displayMembersTable(allMembersData);
             } catch (error) {
                 console.error('Error loading members:', error);
+            }
+        };
+
+        // Update member statistics
+        function updateMembersStats() {
+            document.getElementById('statTotalMembers').textContent = allMembersData.length;
+            
+            const players = allMembersData.filter(m => m.roles && m.roles.includes('player')).length;
+            const coaches = allMembersData.filter(m => m.roles && m.roles.includes('coach')).length;
+            const parents = allMembersData.filter(m => m.roles && m.roles.includes('parent')).length;
+            
+            document.getElementById('statPlayers').textContent = players;
+            document.getElementById('statCoaches').textContent = coaches;
+            document.getElementById('statParents').textContent = parents;
+        }
+
+        // Display members in table
+        function displayMembersTable(members) {
+            const tbody = document.getElementById('memberTableBody');
+            tbody.innerHTML = '';
+
+            if (members.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No members found.</td></tr>';
+                return;
+            }
+
+            members.forEach(member => {
+                const dateJoined = member.dateJoined ? new Date(member.dateJoined.seconds * 1000).toLocaleDateString() : 'N/A';
+                const rolesBadges = (member.roles || []).map(role => `<span class="role-badge">${role}</span>`).join('');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</strong></td>
+                    <td>${escapeHtml(member.email)}</td>
+                    <td>${escapeHtml(member.phone)}</td>
+                    <td>${rolesBadges}</td>
+                    <td>${dateJoined}</td>
+                    <td>
+                        <button class="action-btn action-btn-edit" onclick="viewMemberDetails('${member.id}')">View</button>
+                        <button class="action-btn action-btn-delete" onclick="deleteMember('${member.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filter members table
+        window.filterMembersTable = function() {
+            const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
+            const roleFilter = document.getElementById('memberRoleFilter').value;
+
+            const filtered = allMembersData.filter(member => {
+                const matchesSearch = 
+                    `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchTerm) ||
+                    member.email.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || (member.roles && member.roles.includes(roleFilter));
+
+                return matchesSearch && matchesRole;
+            });
+
+            displayMembersTable(filtered);
+        };
+
+        // Delete member
+        window.deleteMember = function(memberId) {
+            const member = allMembersData.find(m => m.id === memberId);
+            if (!member) return;
+
+            if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}?`)) {
+                deleteDoc(doc(db, 'members', memberId))
+                    .then(() => {
+                        alert(`${member.firstName} ${member.lastName} has been deleted`);
+                        loadMembers();
+                        loadDashboardData();
+                    })
+                    .catch(error => {
+                        alert('Error deleting member: ' + error.message);
+                    });
             }
         };
 
