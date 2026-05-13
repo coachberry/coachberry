@@ -39,13 +39,9 @@
 
     .form-row {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 1.5rem;
         margin-bottom: 1.5rem;
-    }
-
-    .form-row.full {
-        grid-template-columns: 1fr;
     }
 
     .form-group {
@@ -60,8 +56,7 @@
     }
 
     .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .form-group textarea {
         padding: 0.9rem;
         border: 2px solid var(--border);
         border-radius: 6px;
@@ -76,8 +71,7 @@
     }
 
     .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
+    .form-group textarea:focus {
         outline: none;
         border-color: var(--accent);
         box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
@@ -226,22 +220,21 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="blogTitle">Post Title *</label>
-                <input type="text" id="blogTitle" name="title" placeholder="e.g., Top 5 Goaltending Tips" required>
+                <input type="text" id="blogTitle" placeholder="e.g., Top 5 Goaltending Tips" required>
             </div>
         </div>
-        <div class="form-row full">
+        <div class="form-row">
             <div class="form-group">
                 <label for="blogContent">Post Content *</label>
-                <textarea id="blogContent" name="content" placeholder="Write your blog post here..." required></textarea>
+                <textarea id="blogContent" placeholder="Write your blog post here..." required></textarea>
             </div>
         </div>
-        <div class="form-row full">
+        <div class="form-row">
             <div class="form-group">
-                <label for="blogCategories">Categories (add multiple by typing and pressing Enter)</label>
+                <label>Categories (press Enter to add)</label>
                 <div class="category-input" id="blogCategories">
                     <input type="text" id="categoryInput" placeholder="e.g., Goaltending" onkeypress="window.handleCategoryInput(event)">
                 </div>
-                <small style="color: var(--text-light); margin-top: 0.5rem;">Press Enter to add a category</small>
             </div>
         </div>
         <button type="submit" class="submit-btn" id="blogSubmitBtn">Publish Post</button>
@@ -249,19 +242,19 @@
     </form>
 </div>
 
-<h2 style="margin-top: 2rem;">Recent Blog Posts</h2>
+<h2>Recent Blog Posts</h2>
 <div class="table-container">
     <table id="blogTable">
         <thead>
             <tr>
                 <th>Title</th>
                 <th>Categories</th>
-                <th>Date Published</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody id="blogTableBody">
-            <tr><td colspan="4" style="text-align: center; padding: 2rem;">Loading blog posts...</td></tr>
+            <tr><td colspan="4" style="text-align: center; padding: 2rem;">Loading...</td></tr>
         </tbody>
     </table>
 </div>
@@ -269,45 +262,61 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-    import { firebaseConfig, escapeHtml, normalizeCategory, getAllCategories, formatDate } from "./shared.js";
 
-    const app = initializeApp(firebaseConfig);
+    const config = window.getFirebaseConfig();
+    const app = initializeApp(config);
     const db = getFirestore(app);
 
     let allBlogPosts = [];
     let editingPostId = null;
     let currentCategories = [];
 
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function normalizeCategory(category) {
+        if (!category || typeof category !== 'string') return '';
+        return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+    }
+
+    function getAllCategories(post) {
+        if (Array.isArray(post.categories)) return post.categories;
+        if (post.category) return [post.category];
+        return [];
+    }
+
     function renderCategories() {
         const container = document.getElementById('blogCategories');
-        const input = container.querySelector('input');
-        
         container.innerHTML = '';
         
         currentCategories.forEach(category => {
             const tag = document.createElement('div');
             tag.className = 'category-tag';
-            tag.innerHTML = `
-                ${category}
-                <button type="button" onclick="window.removeCategory('${category}')">×</button>
-            `;
+            tag.innerHTML = `${category} <button type="button" onclick="window.removeCategory('${category}')">×</button>`;
             container.appendChild(tag);
         });
         
-        const inputEl = document.createElement('input');
-        inputEl.type = 'text';
-        inputEl.id = 'categoryInput';
-        inputEl.placeholder = 'e.g., Goaltending';
-        inputEl.onkeypress = (e) => window.handleCategoryInput(e);
-        container.appendChild(inputEl);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'categoryInput';
+        input.placeholder = 'e.g., Goaltending';
+        input.onkeypress = (e) => window.handleCategoryInput(e);
+        container.appendChild(input);
     }
 
     window.handleCategoryInput = function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            const input = event.target;
-            const category = input.value.trim();
-            
+            const category = event.target.value.trim();
             if (category && !currentCategories.includes(category)) {
                 currentCategories.push(category);
                 renderCategories();
@@ -335,32 +344,24 @@
         }
 
         const normalizedCategories = currentCategories.map(normalizeCategory);
-
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loading"></span> ' + (editingPostId ? 'Updating...' : 'Publishing...');
-        messageDiv.classList.remove('show');
 
         try {
             if (editingPostId) {
                 await updateDoc(doc(db, 'blogPosts', editingPostId), {
-                    title: title,
-                    content: content,
-                    categories: normalizedCategories,
-                    dateModified: new Date()
+                    title, content, categories: normalizedCategories, dateModified: new Date()
                 });
-                messageDiv.textContent = '✓ Blog post updated successfully!';
+                messageDiv.textContent = '✓ Updated successfully!';
                 editingPostId = null;
                 document.getElementById('cancelEditBtn').style.display = 'none';
                 document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
             } else {
                 await addDoc(collection(db, 'blogPosts'), {
-                    title: title,
-                    content: content,
-                    categories: normalizedCategories,
+                    title, content, categories: normalizedCategories,
                     datePublished: new Date(),
                     author: window.getCurrentUser().email
                 });
-                messageDiv.textContent = '✓ Blog post published successfully!';
+                messageDiv.textContent = '✓ Published successfully!';
             }
 
             messageDiv.classList.add('show', 'success');
@@ -368,49 +369,38 @@
             currentCategories = [];
             renderCategories();
             loadBlogPosts();
-
-            setTimeout(() => {
-                messageDiv.classList.remove('show');
-            }, 3000);
         } catch (error) {
             messageDiv.textContent = 'Error: ' + error.message;
             messageDiv.classList.add('show', 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = editingPostId ? 'Update Post' : 'Publish Post';
         }
     };
 
     async function loadBlogPosts() {
         try {
-            const postsQuery = query(collection(db, 'blogPosts'), orderBy('datePublished', 'desc'));
-            const snapshot = await getDocs(postsQuery);
+            const query_obj = query(collection(db, 'blogPosts'), orderBy('datePublished', 'desc'));
+            const snapshot = await getDocs(query_obj);
             const tbody = document.getElementById('blogTableBody');
             tbody.innerHTML = '';
 
             allBlogPosts = [];
             snapshot.forEach(doc => {
-                allBlogPosts.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+                allBlogPosts.push({ id: doc.id, ...doc.data() });
             });
 
             if (allBlogPosts.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No blog posts yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem;">No posts yet</td></tr>';
                 return;
             }
 
             allBlogPosts.forEach(post => {
-                const datePublished = formatDate(post.datePublished);
-                const categories = getAllCategories(post);
-                const categoryDisplay = categories.join(', ');
-                
+                const categories = getAllCategories(post).join(', ');
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><strong>${escapeHtml(post.title)}</strong></td>
-                    <td>${escapeHtml(categoryDisplay)}</td>
-                    <td>${datePublished}</td>
+                    <td>${escapeHtml(categories)}</td>
+                    <td>${formatDate(post.datePublished)}</td>
                     <td>
                         <button class="action-btn action-btn-edit" onclick="window.editBlogPost('${post.id}')">Edit</button>
                         <button class="action-btn action-btn-delete" onclick="window.deleteBlogPost('${post.id}')">Delete</button>
@@ -419,7 +409,7 @@
                 tbody.appendChild(row);
             });
         } catch (error) {
-            console.error('Error loading blog posts:', error);
+            console.error('Error:', error);
         }
     }
 
@@ -435,10 +425,9 @@
         editingPostId = postId;
         document.getElementById('blogFormTitle').textContent = 'Edit Blog Post';
         document.getElementById('cancelEditBtn').style.display = 'block';
-        document.getElementById('blogForm').scrollIntoView({ behavior: 'smooth' });
     };
 
-    document.getElementById('cancelEditBtn').addEventListener('click', function() {
+    document.getElementById('cancelEditBtn')?.addEventListener('click', function() {
         editingPostId = null;
         currentCategories = [];
         document.getElementById('blogForm').reset();
@@ -449,17 +438,12 @@
 
     window.deleteBlogPost = function(postId) {
         const post = allBlogPosts.find(p => p.id === postId);
-        if (!post) return;
-
-        if (confirm(`Are you sure you want to delete "${post.title}"?`)) {
+        if (confirm(`Delete "${post.title}"?`)) {
             deleteDoc(doc(db, 'blogPosts', postId))
                 .then(() => {
-                    alert('Blog post deleted');
                     loadBlogPosts();
                 })
-                .catch(error => {
-                    alert('Error deleting post: ' + error.message);
-                });
+                .catch(error => alert('Error: ' + error.message));
         }
     };
 
