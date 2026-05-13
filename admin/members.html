@@ -1,0 +1,426 @@
+<style>
+    .members-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .members-stat {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        border-top: 4px solid var(--accent);
+    }
+
+    .members-stat h4 {
+        color: var(--text-light);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .members-stat .count {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+
+    .members-controls {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .members-controls input,
+    .members-controls select {
+        padding: 0.8rem;
+        border: 2px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .members-controls input:focus,
+    .members-controls select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .members-controls input {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .table-container {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: var(--light-gray);
+        border-bottom: 2px solid var(--border);
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+        background: var(--light-gray);
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: var(--accent);
+        color: var(--white);
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-right: 0.3rem;
+        text-transform: capitalize;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        margin-right: 0.5rem;
+    }
+
+    .action-btn-edit {
+        background: var(--accent);
+        color: var(--white);
+    }
+
+    .action-btn-edit:hover {
+        background: var(--accent-light);
+    }
+
+    .action-btn-delete {
+        background: var(--danger);
+        color: var(--white);
+    }
+
+    .action-btn-delete:hover {
+        background: #d32f2f;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        overflow-y: auto;
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .modal-content {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+        color: var(--text);
+    }
+
+    .modal h2 {
+        margin-bottom: 1.5rem;
+        color: var(--primary-dark);
+    }
+
+    .member-info {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--light-gray);
+        border-radius: 6px;
+    }
+
+    .member-info label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        margin-bottom: 0.3rem;
+    }
+
+    .member-info p {
+        color: var(--text);
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="members-stats">
+    <div class="members-stat">
+        <h4>Total Members</h4>
+        <div class="count" id="statTotalMembers">0</div>
+    </div>
+    <div class="members-stat">
+        <h4>Players</h4>
+        <div class="count" id="statPlayers">0</div>
+    </div>
+    <div class="members-stat">
+        <h4>Coaches</h4>
+        <div class="count" id="statCoaches">0</div>
+    </div>
+    <div class="members-stat">
+        <h4>Parents</h4>
+        <div class="count" id="statParents">0</div>
+    </div>
+</div>
+
+<div class="members-controls">
+    <input type="text" id="memberSearch" placeholder="Search by name or email..." onkeyup="filterMembersTable()">
+    <select id="memberRoleFilter" onchange="filterMembersTable()">
+        <option value="">All Roles</option>
+        <option value="player">Players</option>
+        <option value="coach">Coaches</option>
+        <option value="parent">Parents</option>
+    </select>
+</div>
+
+<div class="table-container">
+    <table id="memberTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Roles</th>
+                <th>Joined</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="memberTableBody">
+            <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading members...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" id="memberModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeMemberModal()">&times;</button>
+        <h2>Member Details</h2>
+        <div id="memberDetails"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { firebaseConfig, escapeHtml, formatDate } from "./shared.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allMembersData = [];
+
+    async function loadMembers() {
+        try {
+            const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
+            const snapshot = await getDocs(membersQuery);
+            allMembersData = [];
+
+            snapshot.forEach(doc => {
+                allMembersData.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+
+            updateMembersStats();
+            displayMembersTable(allMembersData);
+        } catch (error) {
+            console.error('Error loading members:', error);
+        }
+    }
+
+    function updateMembersStats() {
+        document.getElementById('statTotalMembers').textContent = allMembersData.length;
+        
+        const players = allMembersData.filter(m => m.roles && m.roles.includes('player')).length;
+        const coaches = allMembersData.filter(m => m.roles && m.roles.includes('coach')).length;
+        const parents = allMembersData.filter(m => m.roles && m.roles.includes('parent')).length;
+        
+        document.getElementById('statPlayers').textContent = players;
+        document.getElementById('statCoaches').textContent = coaches;
+        document.getElementById('statParents').textContent = parents;
+    }
+
+    function displayMembersTable(members) {
+        const tbody = document.getElementById('memberTableBody');
+        tbody.innerHTML = '';
+
+        if (members.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No members found.</td></tr>';
+            return;
+        }
+
+        members.forEach(member => {
+            const dateJoined = formatDate(member.dateJoined);
+            const rolesBadges = (member.roles || []).map(role => `<span class="role-badge">${role}</span>`).join('');
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</strong></td>
+                <td>${escapeHtml(member.email)}</td>
+                <td>${escapeHtml(member.phone)}</td>
+                <td>${rolesBadges}</td>
+                <td>${dateJoined}</td>
+                <td>
+                    <button class="action-btn action-btn-edit" onclick="window.viewMemberDetails('${member.id}')">View</button>
+                    <button class="action-btn action-btn-delete" onclick="window.deleteMember('${member.id}')">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    window.filterMembersTable = function() {
+        const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
+        const roleFilter = document.getElementById('memberRoleFilter').value;
+
+        const filtered = allMembersData.filter(member => {
+            const matchesSearch = 
+                `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchTerm) ||
+                member.email.toLowerCase().includes(searchTerm);
+            
+            const matchesRole = !roleFilter || (member.roles && member.roles.includes(roleFilter));
+
+            return matchesSearch && matchesRole;
+        });
+
+        displayMembersTable(filtered);
+    };
+
+    window.viewMemberDetails = function(memberId) {
+        const member = allMembersData.find(m => m.id === memberId);
+        if (!member) return;
+
+        let html = `
+            <div class="member-info">
+                <label>Name</label>
+                <p>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</p>
+            </div>
+            <div class="member-info">
+                <label>Email</label>
+                <p>${escapeHtml(member.email)}</p>
+            </div>
+            <div class="member-info">
+                <label>Phone</label>
+                <p>${escapeHtml(member.phone)}</p>
+            </div>
+            <div class="member-info">
+                <label>Roles</label>
+                <p>${(member.roles || []).join(', ')}</p>
+            </div>
+        `;
+
+        if (member.roles && member.roles.includes('parent') && member.children && member.children.length > 0) {
+            html += `<div class="member-info"><label>Children</label><p>`;
+            member.children.forEach((child, index) => {
+                html += `Child ${index + 1}: Birth Year ${child.birthYear}, Gender: ${child.gender}${child.team ? `, Team: ${child.team}` : ''}<br>`;
+            });
+            html += `</p></div>`;
+        }
+
+        if (member.roles && member.roles.includes('coach')) {
+            html += `
+                <div class="member-info">
+                    <label>Coaching Level</label>
+                    <p>${member.coachLevel || 'Not specified'}</p>
+                </div>
+                <div class="member-info">
+                    <label>Current Team</label>
+                    <p>${member.teamCoach || 'Not specified'}</p>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="member-info">
+                <label>Date Joined</label>
+                <p>${formatDate(member.dateJoined)}</p>
+            </div>
+        `;
+
+        document.getElementById('memberDetails').innerHTML = html;
+        document.getElementById('memberModal').classList.add('active');
+    };
+
+    window.closeMemberModal = function() {
+        document.getElementById('memberModal').classList.remove('active');
+    };
+
+    window.deleteMember = function(memberId) {
+        const member = allMembersData.find(m => m.id === memberId);
+        if (!member) return;
+
+        if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}?`)) {
+            deleteDoc(doc(db, 'members', memberId))
+                .then(() => {
+                    alert(`${member.firstName} ${member.lastName} has been deleted`);
+                    loadMembers();
+                })
+                .catch(error => {
+                    alert('Error deleting member: ' + error.message);
+                });
+        }
+    };
+
+    loadMembers();
+</script>
