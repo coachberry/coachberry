@@ -1,12 +1,12 @@
 <style>
-    .members-stats {
+    .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
     }
 
-    .members-stat {
+    .stat-card {
         background: var(--white);
         padding: 1.5rem;
         border-radius: 12px;
@@ -14,20 +14,20 @@
         border-top: 4px solid var(--accent);
     }
 
-    .members-stat h4 {
+    .stat-card h4 {
         color: var(--text-light);
         font-size: 0.85rem;
         text-transform: uppercase;
         margin-bottom: 0.5rem;
     }
 
-    .members-stat .count {
+    .stat-card .count {
         font-size: 2rem;
         font-weight: 800;
         color: var(--accent);
     }
 
-    .members-controls {
+    .controls {
         background: var(--white);
         padding: 1.5rem;
         border-radius: 12px;
@@ -39,21 +39,21 @@
         align-items: center;
     }
 
-    .members-controls input,
-    .members-controls select {
+    .controls input,
+    .controls select {
         padding: 0.8rem;
         border: 2px solid var(--border);
         border-radius: 6px;
         font-size: 1rem;
     }
 
-    .members-controls input:focus,
-    .members-controls select:focus {
+    .controls input:focus,
+    .controls select:focus {
         outline: none;
         border-color: var(--accent);
     }
 
-    .members-controls input {
+    .controls input {
         flex: 1;
         min-width: 200px;
     }
@@ -170,7 +170,6 @@
         background: none;
         border: none;
         color: var(--text-light);
-        transition: color 0.3s ease;
     }
 
     .modal-close:hover {
@@ -204,26 +203,26 @@
     }
 </style>
 
-<div class="members-stats">
-    <div class="members-stat">
+<div class="stats-grid">
+    <div class="stat-card">
         <h4>Total Members</h4>
         <div class="count" id="statTotalMembers">0</div>
     </div>
-    <div class="members-stat">
+    <div class="stat-card">
         <h4>Players</h4>
         <div class="count" id="statPlayers">0</div>
     </div>
-    <div class="members-stat">
+    <div class="stat-card">
         <h4>Coaches</h4>
         <div class="count" id="statCoaches">0</div>
     </div>
-    <div class="members-stat">
+    <div class="stat-card">
         <h4>Parents</h4>
         <div class="count" id="statParents">0</div>
     </div>
 </div>
 
-<div class="members-controls">
+<div class="controls">
     <input type="text" id="memberSearch" placeholder="Search by name or email..." onkeyup="filterMembersTable()">
     <select id="memberRoleFilter" onchange="filterMembersTable()">
         <option value="">All Roles</option>
@@ -262,12 +261,24 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-    import { firebaseConfig, escapeHtml, formatDate } from "./shared.js";
 
-    const app = initializeApp(firebaseConfig);
+    const config = window.getFirebaseConfig();
+    const app = initializeApp(config);
     const db = getFirestore(app);
 
     let allMembersData = [];
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
 
     async function loadMembers() {
         try {
@@ -276,10 +287,7 @@
             allMembersData = [];
 
             snapshot.forEach(doc => {
-                allMembersData.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+                allMembersData.push({ id: doc.id, ...doc.data() });
             });
 
             updateMembersStats();
@@ -291,7 +299,6 @@
 
     function updateMembersStats() {
         document.getElementById('statTotalMembers').textContent = allMembersData.length;
-        
         const players = allMembersData.filter(m => m.roles && m.roles.includes('player')).length;
         const coaches = allMembersData.filter(m => m.roles && m.roles.includes('coach')).length;
         const parents = allMembersData.filter(m => m.roles && m.roles.includes('parent')).length;
@@ -335,12 +342,9 @@
         const roleFilter = document.getElementById('memberRoleFilter').value;
 
         const filtered = allMembersData.filter(member => {
-            const matchesSearch = 
-                `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchTerm) ||
-                member.email.toLowerCase().includes(searchTerm);
-            
+            const matchesSearch = `${member.firstName} ${member.lastName}`.toLowerCase().includes(searchTerm) ||
+                                 member.email.toLowerCase().includes(searchTerm);
             const matchesRole = !roleFilter || (member.roles && member.roles.includes(roleFilter));
-
             return matchesSearch && matchesRole;
         });
 
