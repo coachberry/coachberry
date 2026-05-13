@@ -210,12 +210,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -322,36 +318,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Footer */
-        footer {
-            background: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 2.5rem;
-            margin-top: 2rem;
-        }
-
-        footer p {
-            margin: 0.5rem 0;
-            opacity: 0.9;
-        }
-
-        /* Mobile Menu */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 5px;
-        }
-
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: var(--text);
-            border-radius: 2px;
-            transition: 0.3s;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             nav ul {
@@ -406,28 +372,6 @@
                 justify-content: flex-start;
                 overflow-x: auto;
                 padding-bottom: 0.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            nav {
-                padding: 1rem;
-            }
-
-            .logo img {
-                max-height: 35px;
-            }
-
-            .hero {
-                padding: 2rem 1rem;
-            }
-
-            .hero h1 {
-                font-size: 1.5rem;
-            }
-
-            .main-section {
-                padding: 2rem 1rem;
             }
         }
     </style>
@@ -503,12 +447,20 @@
         let allPosts = [];
         let currentFilter = 'all';
 
+        // Normalize category name (capitalize first letter, lowercase rest)
+        function normalizeCategory(category) {
+            if (!category || typeof category !== 'string') return '';
+            return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        }
+
         // Load blog posts
         async function loadBlogPosts() {
             try {
+                console.log('Loading blog posts...');
                 const postsQuery = query(collection(db, 'blogPosts'), orderBy('datePublished', 'desc'));
                 const snapshot = await getDocs(postsQuery);
                 
+                console.log('Total posts:', snapshot.size);
                 allPosts = [];
                 const categoriesSet = new Set();
                 
@@ -518,17 +470,25 @@
                         id: doc.id,
                         ...post
                     });
+
                     // Collect unique categories (handle both old and new format)
                     if (post.categories && Array.isArray(post.categories)) {
-                        post.categories.forEach(cat => categoriesSet.add(cat));
+                        post.categories.forEach(cat => {
+                            const normalized = normalizeCategory(cat);
+                            if (normalized) categoriesSet.add(normalized);
+                        });
                     } else if (post.category) {
-                        categoriesSet.add(post.category);
+                        const normalized = normalizeCategory(post.category);
+                        if (normalized) categoriesSet.add(normalized);
                     }
                 });
 
+                console.log('Categories:', Array.from(categoriesSet));
+                
                 // Generate filter buttons dynamically
                 generateFilterButtons(Array.from(categoriesSet).sort());
                 displayPosts();
+                console.log('Blog posts loaded successfully');
             } catch (error) {
                 console.error('Error loading blog posts:', error);
                 document.getElementById('loadingState').style.display = 'none';
@@ -563,9 +523,9 @@
                 filteredPosts = allPosts.filter(post => {
                     // Handle both old (category) and new (categories) format
                     if (Array.isArray(post.categories)) {
-                        return post.categories.includes(currentFilter);
+                        return post.categories.some(cat => normalizeCategory(cat) === currentFilter);
                     } else {
-                        return post.category === currentFilter;
+                        return normalizeCategory(post.category) === currentFilter;
                     }
                 });
             }
@@ -591,7 +551,9 @@
                 const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
 
                 // Handle both old (category) and new (categories) format
-                const primaryCategory = Array.isArray(post.categories) ? post.categories[0] : post.category;
+                const primaryCategory = Array.isArray(post.categories) 
+                    ? post.categories[0] 
+                    : post.category;
 
                 const card = document.createElement('div');
                 card.className = 'blog-card';
@@ -612,25 +574,18 @@
             });
         }
 
-        // Display posts
-        function displayPosts() {
-            const grid = document.getElementById('blogGrid');
-            const loading = document.getElementById('loadingState');
-            const empty = document.getElementById('emptyState');
+        // Filter posts
+        window.filterBlog = function(category) {
+            currentFilter = category;
 
-            loading.style.display = 'none';
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
 
-            let filteredPosts = allPosts;
-            if (currentFilter !== 'all') {
-                filteredPosts = allPosts.filter(post => {
-                    // Handle both old (category) and new (categories) format
-                    if (Array.isArray(post.categories)) {
-                        return post.categories.includes(currentFilter);
-                    } else {
-                        return post.category === currentFilter;
-                    }
-                });
-            }
+            displayPosts();
+        };
 
         // Open post modal
         window.openPost = function(postId) {
@@ -645,7 +600,13 @@
             });
 
             document.getElementById('modalTitle').textContent = post.title;
-            document.getElementById('modalCategory').innerHTML = `<span class="blog-category">${escapeHtml(post.category)}</span>`;
+            
+            // Handle both old and new category format
+            const categoryDisplay = Array.isArray(post.categories) 
+                ? post.categories.join(', ')
+                : post.category;
+            
+            document.getElementById('modalCategory').innerHTML = `<span class="blog-category">${escapeHtml(categoryDisplay)}</span>`;
             document.getElementById('modalDate').textContent = dateString;
             
             // Convert newlines to paragraphs
