@@ -33,7 +33,6 @@
             background: var(--light-gray);
         }
 
-        /* Login Page */
         .login-container {
             display: flex;
             justify-content: center;
@@ -129,7 +128,6 @@
             display: block;
         }
 
-        /* Dashboard */
         .dashboard {
             display: flex;
             min-height: 100vh;
@@ -139,7 +137,6 @@
             display: none !important;
         }
 
-        /* Sidebar */
         .sidebar {
             width: 250px;
             background: var(--primary-dark);
@@ -212,23 +209,16 @@
             background: #d32f2f;
         }
 
-        /* Main Content */
         main {
             margin-left: 250px;
             flex: 1;
             padding: 2rem;
         }
 
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
         .dashboard-header h1 {
             font-size: 2.5rem;
             color: var(--primary-dark);
+            margin-bottom: 2rem;
         }
 
         .tab-content {
@@ -239,7 +229,12 @@
             display: block;
         }
 
-        /* Responsive */
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -286,7 +281,6 @@
 
     <!-- Dashboard -->
     <div id="dashboard" class="dashboard hidden">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry Logo">
@@ -300,22 +294,14 @@
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
 
-        <!-- Main Content -->
         <main>
             <div class="dashboard-header">
                 <h1 id="pageTitle">Admin Dashboard</h1>
             </div>
 
-            <!-- Overview Tab -->
             <div id="overview" class="tab-content active"></div>
-
-            <!-- Members Tab -->
             <div id="members" class="tab-content"></div>
-
-            <!-- Blog Tab -->
             <div id="blog" class="tab-content"></div>
-
-            <!-- Updates Tab -->
             <div id="updates" class="tab-content"></div>
         </main>
     </div>
@@ -323,28 +309,21 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { firebaseConfig } from "./shared.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+            authDomain: "coach-berry.firebaseapp.com",
+            projectId: "coach-berry",
+            storageBucket: "coach-berry.firebasestorage.app",
+            messagingSenderId: "170282824286",
+            appId: "1:170282824286:web:5387ec9826c38466c07acf"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
         let currentUser = null;
 
-        // Auth State Change
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                loadTabs();
-            } else {
-                currentUser = null;
-                document.getElementById('loginPage').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-            }
-        });
-
-        // Login Handler
         window.handleLogin = async function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
@@ -366,7 +345,6 @@
             }
         };
 
-        // Logout Handler
         window.handleLogout = async function() {
             try {
                 await signOut(auth);
@@ -375,21 +353,34 @@
             }
         };
 
-        // Tab Switching
-        window.switchTab = function(tabName) {
-            // Update tab content display
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                switchTab('overview');
+            } else {
+                currentUser = null;
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+            }
+        });
+
+        window.getCurrentUser = () => currentUser;
+        window.getFirebaseConfig = () => firebaseConfig;
+
+        window.switchTab = async function(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.remove('active');
             });
-            document.getElementById(tabName).classList.add('active');
+            const tabElement = document.getElementById(tabName);
+            tabElement.classList.add('active');
 
-            // Update menu items
             document.querySelectorAll('.menu-item').forEach(el => {
                 el.classList.remove('active');
             });
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-            // Update page title
             const titles = {
                 overview: 'Overview',
                 members: 'Members',
@@ -398,41 +389,39 @@
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 
-            // Load tab content
-            loadTabContent(tabName);
+            // Load tab content if not already loaded
+            if (tabElement.innerHTML.trim() === '') {
+                await loadTabContent(tabName);
+            }
         };
 
-        // Load all tabs
-        async function loadTabs() {
-            await loadTabContent('overview');
-        }
-
-        // Load individual tab content
         async function loadTabContent(tabName) {
-            const container = document.getElementById(tabName);
-            
+            const tabElement = document.getElementById(tabName);
+            tabElement.innerHTML = '<div class="loading-spinner">Loading...</div>';
+
             try {
                 const response = await fetch(`${tabName}.html`);
                 if (!response.ok) throw new Error(`Failed to load ${tabName}`);
                 const html = await response.text();
-                container.innerHTML = html;
-                
-                // Execute any scripts in the loaded content
-                const scripts = container.querySelectorAll('script');
-                scripts.forEach(script => {
+                tabElement.innerHTML = html;
+
+                // Run any scripts in the loaded content
+                const scripts = tabElement.querySelectorAll('script');
+                for (const script of scripts) {
                     const newScript = document.createElement('script');
-                    newScript.type = script.type;
-                    newScript.textContent = script.textContent;
-                    container.appendChild(newScript);
-                });
+                    newScript.type = script.type || 'text/javascript';
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    tabElement.appendChild(newScript);
+                }
             } catch (error) {
                 console.error(`Error loading ${tabName}:`, error);
-                container.innerHTML = `<div style="padding: 2rem; text-align: center; color: #f44336;">Error loading ${tabName}. Please refresh the page.</div>`;
+                tabElement.innerHTML = `<div style="padding: 2rem; text-align: center; color: #f44336;">Error loading content. Please refresh the page.</div>`;
             }
         }
-
-        // Expose currentUser
-        window.getCurrentUser = () => currentUser;
     </script>
 </body>
 </html>
