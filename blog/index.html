@@ -318,6 +318,96 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Search Section */
+        .search-section {
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
+        }
+
+        .search-btn {
+            padding: 0.9rem 1.5rem;
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .clear-search-btn {
+            padding: 0.9rem 1.5rem;
+            background: var(--text-light);
+            color: var(--white);
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .clear-search-btn.show {
+            display: inline-block;
+        }
+
+        .clear-search-btn:hover {
+            background: var(--text);
+            transform: translateY(-2px);
+        }
+
+        .search-results-info {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .blog-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .blog-category-small {
+            display: inline-block;
+            background: rgba(255, 36, 0, 0.1);
+            color: var(--accent);
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             nav ul {
@@ -394,6 +484,16 @@
             <div class="blog-filters" id="filterButtons">
                 <button class="filter-btn active" onclick="filterBlog('all')">All Posts</button>
             </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by keywords (e.g., goalie pads, skate sharpening...)" onkeypress="handleSearchKeypress(event)">
+                <button class="search-btn" onclick="handleSearch()">Search</button>
+                <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()">Clear Search</button>
+            </div>
+
+            <!-- Search Results Info -->
+            <div class="search-results-info" id="searchResultsInfo" style="display: none;"></div>
 
             <!-- Loading State -->
             <div class="loading" id="loadingState">
@@ -551,19 +651,23 @@
                 const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
 
                 // Handle both old (category) and new (categories) format
-                const primaryCategory = Array.isArray(post.categories) 
-                    ? post.categories[0] 
-                    : post.category;
+                const allCategories = Array.isArray(post.categories) 
+                    ? post.categories 
+                    : (post.category ? [post.category] : []);
+
+                const categoriesHTML = allCategories.map(cat => 
+                    `<span class="blog-category-small">${escapeHtml(cat)}</span>`
+                ).join('');
 
                 const card = document.createElement('div');
                 card.className = 'blog-card';
                 card.innerHTML = `
                     <div class="blog-card-header">
                         <h3>${escapeHtml(post.title)}</h3>
-                        <div class="blog-category">${escapeHtml(primaryCategory)}</div>
                     </div>
                     <div class="blog-card-body">
-                        <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
+                        <div class="blog-categories">${categoriesHTML}</div>
+                        <p class="blog-excerpt" style="margin-top: 1rem;">${escapeHtml(excerpt)}</p>
                         <div class="blog-meta">
                             <span>${dateString}</span>
                             <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
@@ -573,10 +677,16 @@
                 grid.appendChild(card);
             });
         }
+        }
 
         // Filter posts
         window.filterBlog = function(category) {
             currentFilter = category;
+            
+            // Clear search if filtering by category
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.remove('show');
+            document.getElementById('searchResultsInfo').style.display = 'none';
 
             // Update active button
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -584,6 +694,116 @@
             });
             event.target.classList.add('active');
 
+            displayPosts();
+        };
+
+        // Search functionality
+        let currentSearch = '';
+
+        window.handleSearchKeypress = function(event) {
+            if (event.key === 'Enter') {
+                handleSearch();
+            }
+        };
+
+        window.handleSearch = function() {
+            currentSearch = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (currentSearch.length === 0) {
+                clearSearch();
+                return;
+            }
+
+            // Reset category filter when searching
+            currentFilter = 'all';
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.filter-btn[onclick*="'all'"]').classList.add('active');
+
+            // Filter posts by search
+            const grid = document.getElementById('blogGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+            const searchResultsInfo = document.getElementById('searchResultsInfo');
+
+            loading.style.display = 'none';
+
+            let searchResults = allPosts.filter(post => {
+                const title = post.title.toLowerCase();
+                const content = post.content.toLowerCase();
+                const categories = Array.isArray(post.categories) 
+                    ? post.categories.join(' ').toLowerCase()
+                    : (post.category ? post.category.toLowerCase() : '');
+                
+                return title.includes(currentSearch) || content.includes(currentSearch) || categories.includes(currentSearch);
+            });
+
+            searchResultsInfo.textContent = `Found ${searchResults.length} result${searchResults.length !== 1 ? 's' : ''} for "${escapeHtml(currentSearch)}"`;
+            searchResultsInfo.style.display = 'block';
+            document.getElementById('clearSearchBtn').classList.add('show');
+
+            if (searchResults.length === 0) {
+                empty.style.display = 'block';
+                grid.style.display = 'none';
+                return;
+            }
+
+            empty.style.display = 'none';
+            grid.style.display = 'grid';
+            grid.innerHTML = '';
+
+            searchResults.forEach(post => {
+                const date = post.datePublished ? new Date(post.datePublished.seconds * 1000) : new Date();
+                const dateString = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+
+                const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
+
+                // Handle both old (category) and new (categories) format
+                const allCategories = Array.isArray(post.categories) 
+                    ? post.categories 
+                    : (post.category ? [post.category] : []);
+
+                const categoriesHTML = allCategories.map(cat => 
+                    `<span class="blog-category-small">${escapeHtml(cat)}</span>`
+                ).join('');
+
+                const card = document.createElement('div');
+                card.className = 'blog-card';
+                card.innerHTML = `
+                    <div class="blog-card-header">
+                        <h3>${escapeHtml(post.title)}</h3>
+                    </div>
+                    <div class="blog-card-body">
+                        <div class="blog-categories">${categoriesHTML}</div>
+                        <p class="blog-excerpt" style="margin-top: 1rem;">${escapeHtml(excerpt)}</p>
+                        <div class="blog-meta">
+                            <span>${dateString}</span>
+                            <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        window.clearSearch = function() {
+            currentSearch = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').classList.remove('show');
+            document.getElementById('searchResultsInfo').style.display = 'none';
+            currentFilter = 'all';
+            
+            // Reset buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.filter-btn[onclick*="'all'"]').classList.add('active');
+            
             displayPosts();
         };
 
