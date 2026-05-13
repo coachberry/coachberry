@@ -939,6 +939,12 @@
             renderCategories();
         };
 
+        // Normalize category name (capitalize first letter, lowercase rest)
+        function normalizeCategory(category) {
+            if (!category || typeof category !== 'string') return '';
+            return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        }
+
         // Blog Post Handler
         window.handleBlogSubmit = async function(event) {
             event.preventDefault();
@@ -946,6 +952,9 @@
             const content = document.getElementById('blogContent').value;
             const submitBtn = document.getElementById('blogSubmitBtn');
             const messageDiv = document.getElementById('blogMessage');
+            
+            // Normalize all categories
+            const normalizedCategories = currentCategories.map(cat => normalizeCategory(cat));
 
             if (currentCategories.length === 0) {
                 messageDiv.textContent = 'Please add at least one category';
@@ -963,7 +972,7 @@
                     await updateDoc(doc(db, 'blogPosts', editingPostId), {
                         title: title,
                         content: content,
-                        categories: currentCategories,
+                        categories: normalizedCategories,
                         dateModified: new Date()
                     });
 
@@ -976,7 +985,7 @@
                     await addDoc(collection(db, 'blogPosts'), {
                         title: title,
                         content: content,
-                        categories: currentCategories,
+                        categories: normalizedCategories,
                         datePublished: new Date(),
                         author: currentUser.email
                     });
