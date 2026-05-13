@@ -447,11 +447,8 @@
     <section class="main-section">
         <div class="container">
             <!-- Filters -->
-            <div class="blog-filters">
+            <div class="blog-filters" id="filterButtons">
                 <button class="filter-btn active" onclick="filterBlog('all')">All Posts</button>
-                <button class="filter-btn" onclick="filterBlog('Goaltending')">Goaltending</button>
-                <button class="filter-btn" onclick="filterBlog('Drills')">Drills</button>
-                <button class="filter-btn" onclick="filterBlog('Strategy')">Strategy</button>
             </div>
 
             <!-- Loading State -->
@@ -513,19 +510,42 @@
                 const snapshot = await getDocs(postsQuery);
                 
                 allPosts = [];
+                const categoriesSet = new Set();
+                
                 snapshot.forEach(doc => {
+                    const post = doc.data();
                     allPosts.push({
                         id: doc.id,
-                        ...doc.data()
+                        ...post
                     });
+                    // Collect unique categories
+                    if (post.category) {
+                        categoriesSet.add(post.category);
+                    }
                 });
 
+                // Generate filter buttons dynamically
+                generateFilterButtons(Array.from(categoriesSet).sort());
                 displayPosts();
             } catch (error) {
                 console.error('Error loading blog posts:', error);
                 document.getElementById('loadingState').style.display = 'none';
                 document.getElementById('emptyState').style.display = 'block';
             }
+        }
+
+        // Generate filter buttons based on actual categories
+        function generateFilterButtons(categories) {
+            const filterContainer = document.getElementById('filterButtons');
+            filterContainer.innerHTML = '<button class="filter-btn active" onclick="filterBlog(\'all\')">All Posts</button>';
+            
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'filter-btn';
+                button.textContent = category;
+                button.onclick = () => filterBlog(category);
+                filterContainer.appendChild(button);
+            });
         }
 
         // Display posts
