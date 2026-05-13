@@ -518,8 +518,10 @@
                         id: doc.id,
                         ...post
                     });
-                    // Collect unique categories
-                    if (post.category) {
+                    // Collect unique categories (handle both old and new format)
+                    if (post.categories && Array.isArray(post.categories)) {
+                        post.categories.forEach(cat => categoriesSet.add(cat));
+                    } else if (post.category) {
                         categoriesSet.add(post.category);
                     }
                 });
@@ -581,12 +583,15 @@
 
                 const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
 
+                // Handle both old (category) and new (categories) format
+                const primaryCategory = Array.isArray(post.categories) ? post.categories[0] : post.category;
+
                 const card = document.createElement('div');
                 card.className = 'blog-card';
                 card.innerHTML = `
                     <div class="blog-card-header">
                         <h3>${escapeHtml(post.title)}</h3>
-                        <div class="blog-category">${escapeHtml(post.category)}</div>
+                        <div class="blog-category">${escapeHtml(primaryCategory)}</div>
                     </div>
                     <div class="blog-card-body">
                         <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
@@ -612,6 +617,26 @@
 
             displayPosts();
         };
+
+        // Display posts
+        function displayPosts() {
+            const grid = document.getElementById('blogGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            loading.style.display = 'none';
+
+            let filteredPosts = allPosts;
+            if (currentFilter !== 'all') {
+                filteredPosts = allPosts.filter(post => {
+                    // Handle both old (category) and new (categories) format
+                    if (Array.isArray(post.categories)) {
+                        return post.categories.includes(currentFilter);
+                    } else {
+                        return post.category === currentFilter;
+                    }
+                });
+            }
 
         // Open post modal
         window.openPost = function(postId) {
