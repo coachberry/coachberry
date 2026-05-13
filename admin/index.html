@@ -105,103 +105,88 @@
 
         .login-btn {
             width: 100%;
-            padding: 1rem;
+            padding: 0.9rem;
             background: var(--accent);
             color: var(--white);
             border: none;
             border-radius: 6px;
-            font-size: 1rem;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 1rem;
         }
 
         .login-btn:hover {
             background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 36, 0, 0.3);
         }
 
         .login-btn:disabled {
-            background: #ccc;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
+        .login-btn .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid var(--white);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .error-message {
-            background: rgba(244, 67, 54, 0.1);
-            border: 2px solid var(--danger);
-            color: var(--danger);
+            background: #ffebee;
+            color: #c62828;
             padding: 1rem;
             border-radius: 6px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             display: none;
+            border-left: 4px solid #c62828;
         }
 
         .error-message.show {
             display: block;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         /* Dashboard */
         .dashboard {
-            display: none;
+            display: flex;
             min-height: 100vh;
         }
 
-        .dashboard.active {
-            display: flex;
+        .hidden {
+            display: none !important;
         }
 
+        /* Sidebar */
         .sidebar {
             width: 250px;
             background: var(--primary-dark);
             color: var(--white);
-            padding: 2rem 0;
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
         }
 
         .sidebar-logo {
-            padding: 1rem 2rem 2rem;
-            border-bottom: 2px solid var(--accent);
-            margin-bottom: 2rem;
             text-align: center;
+            margin-bottom: 2rem;
         }
 
         .sidebar-logo img {
             max-width: 100%;
             height: auto;
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-logo h2 {
-            font-size: 1.4rem;
-            color: var(--white);
-            display: none;
-        }
-
-        .sidebar-logo .subtitle {
-            color: var(--accent);
-            font-size: 0.85rem;
-            font-weight: 600;
+            max-height: 60px;
         }
 
         .sidebar-menu {
@@ -209,26 +194,26 @@
         }
 
         .sidebar-menu li {
-            margin: 0;
+            margin-bottom: 0.5rem;
         }
 
-        .sidebar-menu a {
+        .menu-item {
             display: block;
-            padding: 1rem 2rem;
+            padding: 0.9rem 1rem;
             color: rgba(255,255,255,0.7);
             text-decoration: none;
+            border-radius: 6px;
+            cursor: pointer;
             transition: all 0.3s ease;
             border-left: 3px solid transparent;
-            cursor: pointer;
         }
 
-        .sidebar-menu a:hover {
-            background: var(--secondary);
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
             color: var(--white);
-            border-left-color: var(--accent);
         }
 
-        .sidebar-menu a.active {
+        .menu-item.active {
             background: var(--accent);
             color: var(--white);
             border-left-color: var(--white);
@@ -236,78 +221,55 @@
 
         .logout-btn {
             position: absolute;
-            bottom: 2rem;
-            left: 2rem;
-            right: 2rem;
-            padding: 0.8rem;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            padding: 0.9rem;
             background: var(--danger);
             color: var(--white);
             border: none;
             border-radius: 6px;
-            cursor: pointer;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
+            width: calc(100% - 2rem);
         }
 
         .logout-btn:hover {
             background: #d32f2f;
         }
 
-        .main-content {
+        /* Main Content */
+        main {
             margin-left: 250px;
-            padding: 2rem;
             flex: 1;
+            padding: 2rem;
         }
 
-        .content-section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header {
+        .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
         }
 
-        .header h1 {
-            font-size: 2rem;
+        .dashboard-header h1 {
+            font-size: 2.5rem;
             color: var(--primary-dark);
         }
 
-        .user-info {
-            background: var(--white);
-            padding: 1rem 1.5rem;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .content-section {
+            display: none;
         }
 
-        .user-info p {
-            margin: 0;
-            color: var(--text-light);
-            font-size: 0.9rem;
+        .content-section.active {
+            display: block;
         }
 
-        /* Cards */
+        /* Overview Stats */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -316,36 +278,38 @@
             background: var(--white);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             border-top: 4px solid var(--accent);
         }
 
         .stat-card h3 {
             color: var(--text-light);
             font-size: 0.9rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
         }
 
-        .stat-number {
+        .stat-card .number {
             font-size: 2.5rem;
             font-weight: 800;
-            color: var(--primary-dark);
+            color: var(--accent);
         }
 
-        /* Form */
+        /* Forms */
         .form-card {
             background: var(--white);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             margin-bottom: 2rem;
         }
 
         .form-card h2 {
             margin-bottom: 1.5rem;
             color: var(--primary-dark);
+            font-size: 1.5rem;
         }
 
         .form-row {
@@ -359,130 +323,133 @@
             grid-template-columns: 1fr;
         }
 
-        .form-group textarea {
-            width: 100%;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.6rem;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             padding: 0.9rem;
             border: 2px solid var(--border);
             border-radius: 6px;
-            font-family: inherit;
             font-size: 1rem;
-            resize: vertical;
-            min-height: 150px;
+            font-family: inherit;
             transition: all 0.3s ease;
         }
 
-        .form-group textarea:focus {
+        .form-group textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
         }
 
-        .submit-btn {
+        /* Category Tags */
+        .category-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: flex-start;
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            min-height: 40px;
+        }
+
+        .category-tag {
             background: var(--accent);
             color: var(--white);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .category-tag button {
+            background: none;
+            border: none;
+            color: var(--white);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .category-input input {
+            border: none;
+            flex: 1;
+            min-width: 100px;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .category-input input:focus {
+            outline: none;
+            box-shadow: none;
+            border: none;
+        }
+
+        /* Submit Button */
+        .submit-btn {
             padding: 0.9rem 2rem;
+            background: var(--accent);
+            color: var(--white);
             border: none;
             border-radius: 6px;
             font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1rem;
+            width: 100%;
         }
 
         .submit-btn:hover {
             background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 36, 0, 0.3);
         }
 
         .submit-btn:disabled {
-            background: #ccc;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        /* Tables */
-        .table-container {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: var(--light-gray);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tr:hover {
-            background: var(--light-gray);
-        }
-
-        .badge {
+        .submit-btn .loading {
             display: inline-block;
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .badge-player {
-            background: rgba(76, 175, 80, 0.2);
-            color: #2e7d32;
-        }
-
-        .badge-coach {
-            background: rgba(33, 150, 243, 0.2);
-            color: #1565c0;
-        }
-
-        .badge-parent {
-            background: rgba(255, 152, 0, 0.2);
-            color: #e65100;
-        }
-
-        .action-btn {
-            padding: 0.4rem 0.8rem;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid var(--white);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
             margin-right: 0.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
         }
 
-        .action-btn-view {
-            background: var(--accent);
-            color: var(--white);
-        }
-
-        .action-btn-delete {
-            background: var(--danger);
-            color: var(--white);
-        }
-
-        /* Success/Error Messages */
+        /* Messages */
         .message {
             padding: 1rem;
             border-radius: 6px;
             margin-bottom: 1.5rem;
             display: none;
-            animation: slideDown 0.3s ease-out;
+            font-weight: 500;
         }
 
         .message.show {
@@ -490,26 +457,79 @@
         }
 
         .message.success {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid var(--success);
+            background: #e8f5e9;
             color: #2e7d32;
+            border-left: 4px solid var(--success);
         }
 
         .message.error {
-            background: rgba(244, 67, 54, 0.2);
-            border: 2px solid var(--danger);
+            background: #ffebee;
             color: #c62828;
+            border-left: 4px solid var(--danger);
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Table */
+        .table-container {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-top: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--light-gray);
+            border-bottom: 2px solid var(--border);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            margin-right: 0.5rem;
+        }
+
+        .action-btn-edit {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .action-btn-edit:hover {
+            background: var(--accent-light);
+        }
+
+        .action-btn-delete {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .action-btn-delete:hover {
+            background: #d32f2f;
         }
 
         /* Modal */
@@ -521,8 +541,8 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s ease;
+            background-color: rgba(0,0,0,0.6);
+            overflow-y: auto;
         }
 
         .modal.active {
@@ -535,28 +555,35 @@
             background: var(--white);
             padding: 2rem;
             border-radius: 12px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
+            max-width: 700px;
+            width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-close {
-            float: right;
-            font-size: 1.5rem;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
             font-weight: bold;
             cursor: pointer;
             color: var(--text-light);
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: color 0.3s ease;
         }
 
         .modal-close:hover {
             color: var(--text);
-        }
-
-        .modal h2 {
-            margin-top: 0;
-            color: var(--primary-dark);
         }
 
         /* Responsive */
@@ -565,33 +592,11 @@
                 width: 100%;
                 height: auto;
                 position: relative;
-                padding: 1rem 0;
-            }
-
-            .main-content {
-                margin-left: 0;
                 padding: 1rem;
             }
 
-            .sidebar-menu {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.5rem;
-            }
-
-            .sidebar-menu a {
-                padding: 0.7rem 1rem;
-                border: 1px solid var(--border);
-                flex: 1;
-                min-width: 150px;
-                text-align: center;
-            }
-
-            .logout-btn {
-                position: static;
-                margin-top: 1rem;
-                width: auto;
+            main {
+                margin-left: 0;
             }
 
             .form-row {
@@ -602,33 +607,32 @@
                 grid-template-columns: 1fr;
             }
 
-            table {
-                font-size: 0.9rem;
-            }
-
-            td, th {
-                padding: 0.7rem;
+            .logout-btn {
+                position: relative;
+                bottom: auto;
+                left: auto;
+                right: auto;
+                width: 100%;
+                margin-top: 2rem;
             }
         }
     </style>
 </head>
 <body>
     <!-- Login Page -->
-    <div class="login-container" id="loginPage">
+    <div id="loginPage" class="login-container">
         <div class="login-box">
-            <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo" style="width: 320px; margin-bottom: 1.5rem;">
+            <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo">
             <div class="subtitle">Admin Dashboard</div>
-            
             <div class="error-message" id="loginError"></div>
-            
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="admin@example.com" required>
+                    <input type="email" id="email" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
             </form>
@@ -636,29 +640,25 @@
     </div>
 
     <!-- Dashboard -->
-    <div class="dashboard" id="dashboardPage">
+    <div id="dashboard" class="dashboard hidden">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-logo">
-                <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry Logo" style="width: 200px;">
-                <div class="subtitle">Admin</div>
+                <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry Logo">
             </div>
             <ul class="sidebar-menu">
                 <li><a onclick="switchTab('overview')" class="menu-item active" data-tab="overview">📊 Overview</a></li>
                 <li><a onclick="switchTab('members')" class="menu-item" data-tab="members">👥 Members</a></li>
                 <li><a onclick="switchTab('blog')" class="menu-item" data-tab="blog">📝 Blog Posts</a></li>
-                <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Quick Updates</a></li>
+                <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
             </ul>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="header">
-                <h1 id="pageTitle">Dashboard Overview</h1>
-                <div class="user-info">
-                    <p>Logged in as: <strong id="userEmail"></strong></p>
-                </div>
+        <main>
+            <div class="dashboard-header">
+                <h1>Admin Dashboard</h1>
             </div>
 
             <!-- Overview Tab -->
@@ -666,36 +666,35 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <h3>Total Members</h3>
-                        <div class="stat-number" id="totalMembers">0</div>
+                        <div class="number" id="totalMembers">0</div>
                     </div>
                     <div class="stat-card">
                         <h3>Blog Posts</h3>
-                        <div class="stat-number" id="totalPosts">0</div>
+                        <div class="number" id="totalBlogPosts">0</div>
                     </div>
                     <div class="stat-card">
-                        <h3>Quick Updates</h3>
-                        <div class="stat-number" id="totalUpdates">0</div>
+                        <h3>Updates Posted</h3>
+                        <div class="number" id="totalUpdates">0</div>
                     </div>
                 </div>
             </div>
 
             <!-- Members Tab -->
             <div class="content-section" id="members">
-                <div class="message" id="memberMessage"></div>
+                <h2>Members</h2>
                 <div class="table-container">
-                    <table id="membersTable">
+                    <table id="memberTable">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Roles</th>
-                                <th>Date Joined</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="membersTableBody">
-                            <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading members...</td></tr>
+                        <tbody id="memberTableBody">
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">No members yet.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -704,7 +703,7 @@
             <!-- Blog Posts Tab -->
             <div class="content-section" id="blog">
                 <div class="form-card">
-                    <h2>Create New Blog Post</h2>
+                    <h2 id="blogFormTitle">Create New Blog Post</h2>
                     <div class="message" id="blogMessage"></div>
                     <form id="blogForm" onsubmit="handleBlogSubmit(event)">
                         <div class="form-row">
@@ -719,13 +718,17 @@
                                 <textarea id="blogContent" name="content" placeholder="Write your blog post here..." required></textarea>
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row full">
                             <div class="form-group">
-                                <label for="blogCategory">Category *</label>
-                                <input type="text" id="blogCategory" name="category" placeholder="e.g., Goaltending, Drills, Strategy" required>
+                                <label for="blogCategories">Categories (add multiple by typing and pressing Enter)</label>
+                                <div class="category-input" id="blogCategories">
+                                    <input type="text" id="categoryInput" placeholder="e.g., Goaltending" onkeypress="handleCategoryInput(event)">
+                                </div>
+                                <small style="color: var(--text-light); margin-top: 0.5rem;">Press Enter to add a category</small>
                             </div>
                         </div>
                         <button type="submit" class="submit-btn" id="blogSubmitBtn">Publish Post</button>
+                        <button type="button" class="submit-btn" id="cancelEditBtn" style="background: var(--text-light); display: none; margin-top: 0.5rem;">Cancel Edit</button>
                     </form>
                 </div>
 
@@ -735,7 +738,7 @@
                         <thead>
                             <tr>
                                 <th>Title</th>
-                                <th>Category</th>
+                                <th>Categories</th>
                                 <th>Date Published</th>
                                 <th>Actions</th>
                             </tr>
@@ -747,7 +750,7 @@
                 </div>
             </div>
 
-            <!-- Quick Updates Tab -->
+            <!-- Updates Tab -->
             <div class="content-section" id="updates">
                 <div class="form-card">
                     <h2>Post a Quick Update</h2>
@@ -772,7 +775,7 @@
     <!-- Member Details Modal -->
     <div class="modal" id="memberModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeMemberModal()">&times;</span>
+            <button class="modal-close" onclick="closeMemberModal()">&times;</button>
             <h2>Member Details</h2>
             <div id="memberDetails"></div>
         </div>
@@ -781,7 +784,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc, updateDoc, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -797,19 +800,20 @@
         const db = getFirestore(app);
 
         let currentUser = null;
+        let editingPostId = null;
+        let currentCategories = [];
 
-        // Auth State Listener
+        // Auth State Change
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboardPage').classList.add('active');
-                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
                 loadDashboardData();
             } else {
                 currentUser = null;
-                document.getElementById('loginPage').style.display = 'flex';
-                document.getElementById('dashboardPage').classList.remove('active');
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
             }
         });
 
@@ -822,17 +826,14 @@
             const errorDiv = document.getElementById('loginError');
 
             loginBtn.disabled = true;
-            loginBtn.innerHTML = '<span class="loading"></span> Signing in...';
+            loginBtn.innerHTML = '<span class="loading"></span> Signing In...';
             errorDiv.classList.remove('show');
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                document.getElementById('loginForm').reset();
             } catch (error) {
-                errorDiv.textContent = 'Invalid email or password. Please try again.';
+                errorDiv.textContent = 'Invalid email or password';
                 errorDiv.classList.add('show');
-                console.error('Login error:', error);
-            } finally {
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Sign In';
             }
@@ -842,42 +843,34 @@
         window.handleLogout = async function() {
             try {
                 await signOut(auth);
-                document.getElementById('dashboardPage').classList.remove('active');
             } catch (error) {
-                console.error('Logout error:', error);
+                alert('Error logging out: ' + error.message);
             }
         };
 
         // Tab Switching
         window.switchTab = function(tabName) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.remove('active');
             });
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
+            document.querySelectorAll('.menu-item').forEach(el => {
+                el.classList.remove('active');
             });
 
-            // Show selected section
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 
-            // Update title
-            const titles = {
-                overview: '📊 Dashboard Overview',
-                members: '👥 Members',
-                blog: '📝 Blog Posts',
-                updates: '📢 Quick Updates'
-            };
-            document.getElementById('pageTitle').textContent = titles[tabName];
-
-            if (tabName === 'members') loadMembers();
-            if (tabName === 'blog') loadBlogPosts();
-            if (tabName === 'updates') loadUpdates();
+            if (tabName === 'blog') {
+                loadBlogPosts();
+            } else if (tabName === 'members') {
+                loadMembers();
+            } else if (tabName === 'updates') {
+                loadUpdates();
+            }
         };
 
-        // Load Dashboard Data
-        async function loadDashboardData() {
+        // Dashboard Data
+        window.loadDashboardData = async function() {
             try {
                 // Total Members
                 const membersQuery = query(collection(db, 'members'));
@@ -887,7 +880,7 @@
                 // Total Blog Posts
                 const postsQuery = query(collection(db, 'blogPosts'));
                 const postsSnapshot = await getDocs(postsQuery);
-                document.getElementById('totalPosts').textContent = postsSnapshot.size;
+                document.getElementById('totalBlogPosts').textContent = postsSnapshot.size;
 
                 // Total Updates
                 const updatesQuery = query(collection(db, 'updates'));
@@ -896,56 +889,54 @@
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
             }
-        }
+        };
 
-        // Load Members
-        window.loadMembers = async function() {
-            try {
-                const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
-                const snapshot = await getDocs(membersQuery);
-                const tbody = document.getElementById('membersTableBody');
-                tbody.innerHTML = '';
-
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem;">No members yet.</td></tr>';
-                    return;
+        // Category Input Handler
+        window.handleCategoryInput = function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = event.target;
+                const category = input.value.trim();
+                
+                if (category && !currentCategories.includes(category)) {
+                    currentCategories.push(category);
+                    renderCategories();
+                    input.value = '';
                 }
-
-                snapshot.forEach(doc => {
-                    const member = doc.data();
-                    const dateJoined = member.dateJoined ? new Date(member.dateJoined.seconds * 1000).toLocaleDateString() : 'N/A';
-                    const roles = member.roles ? member.roles.join(', ') : 'N/A';
-                    
-                    const badgeHTML = (member.roles || []).map(role => {
-                        return `<span class="badge badge-${role}">${role}</span>`;
-                    }).join(' ');
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${member.firstName} ${member.lastName}</td>
-                        <td>${member.email}</td>
-                        <td>${member.phone}</td>
-                        <td>${badgeHTML}</td>
-                        <td>${dateJoined}</td>
-                        <td>
-                            <button class="action-btn action-btn-view" onclick="viewMemberDetails('${doc.id}')">View</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading members:', error);
             }
         };
 
-        // View Member Details
-        window.viewMemberDetails = function(memberId) {
-            // This is a simplified version - in production, you'd fetch and display full details
-            alert('Member ID: ' + memberId + '\n\nFull member details would display here.');
-        };
+        // Render Category Tags
+        function renderCategories() {
+            const container = document.getElementById('blogCategories');
+            const input = container.querySelector('input');
+            
+            // Clear and rebuild
+            container.innerHTML = '';
+            
+            currentCategories.forEach(category => {
+                const tag = document.createElement('div');
+                tag.className = 'category-tag';
+                tag.innerHTML = `
+                    ${category}
+                    <button type="button" onclick="removeCategory('${category}')">×</button>
+                `;
+                container.appendChild(tag);
+            });
+            
+            // Re-add input
+            const inputEl = document.createElement('input');
+            inputEl.type = 'text';
+            inputEl.id = 'categoryInput';
+            inputEl.placeholder = 'e.g., Goaltending';
+            inputEl.onkeypress = (e) => window.handleCategoryInput(e);
+            container.appendChild(inputEl);
+        }
 
-        window.closeMemberModal = function() {
-            document.getElementById('memberModal').classList.remove('active');
+        // Remove Category
+        window.removeCategory = function(category) {
+            currentCategories = currentCategories.filter(c => c !== category);
+            renderCategories();
         };
 
         // Blog Post Handler
@@ -953,26 +944,50 @@
             event.preventDefault();
             const title = document.getElementById('blogTitle').value;
             const content = document.getElementById('blogContent').value;
-            const category = document.getElementById('blogCategory').value;
             const submitBtn = document.getElementById('blogSubmitBtn');
             const messageDiv = document.getElementById('blogMessage');
 
+            if (currentCategories.length === 0) {
+                messageDiv.textContent = 'Please add at least one category';
+                messageDiv.classList.add('show', 'error');
+                return;
+            }
+
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span> Publishing...';
+            submitBtn.innerHTML = '<span class="loading"></span> ' + (editingPostId ? 'Updating...' : 'Publishing...');
             messageDiv.classList.remove('show');
 
             try {
-                await addDoc(collection(db, 'blogPosts'), {
-                    title: title,
-                    content: content,
-                    category: category,
-                    datePublished: new Date(),
-                    author: currentUser.email
-                });
+                if (editingPostId) {
+                    // Update existing post
+                    await updateDoc(doc(db, 'blogPosts', editingPostId), {
+                        title: title,
+                        content: content,
+                        categories: currentCategories,
+                        dateModified: new Date()
+                    });
 
-                messageDiv.textContent = '✓ Blog post published successfully!';
+                    messageDiv.textContent = '✓ Blog post updated successfully!';
+                    editingPostId = null;
+                    document.getElementById('cancelEditBtn').style.display = 'none';
+                    document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
+                } else {
+                    // Create new post
+                    await addDoc(collection(db, 'blogPosts'), {
+                        title: title,
+                        content: content,
+                        categories: currentCategories,
+                        datePublished: new Date(),
+                        author: currentUser.email
+                    });
+
+                    messageDiv.textContent = '✓ Blog post published successfully!';
+                }
+
                 messageDiv.classList.add('show', 'success');
                 document.getElementById('blogForm').reset();
+                currentCategories = [];
+                renderCategories();
                 loadBlogPosts();
                 loadDashboardData();
 
@@ -980,12 +995,12 @@
                     messageDiv.classList.remove('show');
                 }, 3000);
             } catch (error) {
-                messageDiv.textContent = 'Error publishing post: ' + error.message;
+                messageDiv.textContent = 'Error: ' + error.message;
                 messageDiv.classList.add('show', 'error');
                 console.error('Error:', error);
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Publish Post';
+                submitBtn.innerHTML = editingPostId ? 'Update Post' : 'Publish Post';
             }
         };
 
@@ -1005,13 +1020,16 @@
                 snapshot.forEach(doc => {
                     const post = doc.data();
                     const datePublished = post.datePublished ? new Date(post.datePublished.seconds * 1000).toLocaleDateString() : 'N/A';
+                    const categories = Array.isArray(post.categories) ? post.categories : [post.category];
+                    const categoryDisplay = categories.join(', ');
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><strong>${post.title}</strong></td>
-                        <td>${post.category}</td>
+                        <td>${categoryDisplay}</td>
                         <td>${datePublished}</td>
                         <td>
+                            <button class="action-btn action-btn-edit" onclick="editBlogPost('${doc.id}')">Edit</button>
                             <button class="action-btn action-btn-delete" onclick="deleteBlogPost('${doc.id}')">Delete</button>
                         </td>
                     `;
@@ -1021,6 +1039,46 @@
                 console.error('Error loading blog posts:', error);
             }
         };
+
+        // Edit Blog Post
+        window.editBlogPost = async function(postId) {
+            try {
+                const docSnap = await getDocs(query(collection(db, 'blogPosts')));
+                let post = null;
+                
+                docSnap.forEach(doc => {
+                    if (doc.id === postId) {
+                        post = doc.data();
+                    }
+                });
+
+                if (post) {
+                    document.getElementById('blogTitle').value = post.title;
+                    document.getElementById('blogContent').value = post.content;
+                    currentCategories = Array.isArray(post.categories) ? [...post.categories] : (post.category ? [post.category] : []);
+                    renderCategories();
+                    
+                    editingPostId = postId;
+                    document.getElementById('blogFormTitle').textContent = 'Edit Blog Post';
+                    document.getElementById('cancelEditBtn').style.display = 'block';
+                    
+                    // Scroll to form
+                    document.getElementById('blogForm').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                alert('Error loading post: ' + error.message);
+            }
+        };
+
+        // Cancel Edit
+        document.getElementById('cancelEditBtn')?.addEventListener('click', function() {
+            editingPostId = null;
+            currentCategories = [];
+            document.getElementById('blogForm').reset();
+            renderCategories();
+            document.getElementById('blogFormTitle').textContent = 'Create New Blog Post';
+            this.style.display = 'none';
+        });
 
         // Delete Blog Post
         window.deleteBlogPost = async function(postId) {
@@ -1035,7 +1093,90 @@
             }
         };
 
-        // Quick Update Handler
+        // Load Members
+        window.loadMembers = async function() {
+            try {
+                const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
+                const snapshot = await getDocs(membersQuery);
+                const tbody = document.getElementById('memberTableBody');
+                tbody.innerHTML = '';
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No members yet.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const member = doc.data();
+                    const dateJoined = member.dateJoined ? new Date(member.dateJoined.seconds * 1000).toLocaleDateString() : 'N/A';
+                    const roles = Array.isArray(member.roles) ? member.roles.join(', ') : (member.role || 'N/A');
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${member.firstName} ${member.lastName}</strong></td>
+                        <td>${member.email}</td>
+                        <td>${member.phone}</td>
+                        <td>${roles}</td>
+                        <td>
+                            <button class="action-btn action-btn-edit" onclick="viewMemberDetails('${doc.id}')">View</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading members:', error);
+            }
+        };
+
+        // View Member Details
+        window.viewMemberDetails = async function(memberId) {
+            try {
+                const membersQuery = query(collection(db, 'members'));
+                const snapshot = await getDocs(membersQuery);
+                let member = null;
+
+                snapshot.forEach(doc => {
+                    if (doc.id === memberId) {
+                        member = doc.data();
+                    }
+                });
+
+                if (member) {
+                    let html = `
+                        <p><strong>Name:</strong> ${member.firstName} ${member.lastName}</p>
+                        <p><strong>Email:</strong> ${member.email}</p>
+                        <p><strong>Phone:</strong> ${member.phone}</p>
+                        <p><strong>Roles:</strong> ${Array.isArray(member.roles) ? member.roles.join(', ') : member.role}</p>
+                    `;
+
+                    if (member.roles && member.roles.includes('parent') && member.children) {
+                        html += `<h4>Children:</h4>`;
+                        member.children.forEach((child, index) => {
+                            html += `<p><em>Child ${index + 1}:</em> Birth Year: ${child.birthYear}, Gender: ${child.gender}, Team: ${child.team || 'N/A'}</p>`;
+                        });
+                    }
+
+                    if (member.roles && member.roles.includes('coach')) {
+                        html += `
+                            <p><strong>Coaching Level:</strong> ${member.coachLevel || 'N/A'}</p>
+                            <p><strong>Team:</strong> ${member.teamCoach || 'N/A'}</p>
+                        `;
+                    }
+
+                    document.getElementById('memberDetails').innerHTML = html;
+                    document.getElementById('memberModal').classList.add('active');
+                }
+            } catch (error) {
+                alert('Error loading member details: ' + error.message);
+            }
+        };
+
+        // Close Member Modal
+        window.closeMemberModal = function() {
+            document.getElementById('memberModal').classList.remove('active');
+        };
+
+        // Update Handler
         window.handleUpdateSubmit = async function(event) {
             event.preventDefault();
             const content = document.getElementById('updateContent').value;
@@ -1077,11 +1218,11 @@
             try {
                 const updatesQuery = query(collection(db, 'updates'), orderBy('datePosted', 'desc'));
                 const snapshot = await getDocs(updatesQuery);
-                const list = document.getElementById('updatesList');
-                list.innerHTML = '';
+                const updatesList = document.getElementById('updatesList');
+                updatesList.innerHTML = '';
 
                 if (snapshot.empty) {
-                    list.innerHTML = '<p style="text-align: center; color: var(--text-light);">No updates yet.</p>';
+                    updatesList.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-light);">No updates yet.</div>';
                     return;
                 }
 
@@ -1090,23 +1231,13 @@
                     const datePosted = update.datePosted ? new Date(update.datePosted.seconds * 1000).toLocaleDateString() : 'N/A';
                     
                     const card = document.createElement('div');
-                    card.style.background = 'var(--white)';
-                    card.style.padding = '1.5rem';
-                    card.style.marginBottom = '1rem';
-                    card.style.borderRadius = '8px';
-                    card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-                    card.style.borderLeft = '4px solid var(--accent)';
-
+                    card.className = 'form-card';
                     card.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div style="flex: 1;">
-                                <p style="margin: 0 0 0.5rem 0; color: var(--text);">${update.content}</p>
-                                <p style="margin: 0; color: var(--text-light); font-size: 0.85rem;">${datePosted}</p>
-                            </div>
-                            <button class="action-btn action-btn-delete" onclick="deleteUpdate('${doc.id}')">Delete</button>
-                        </div>
+                        <p style="margin-bottom: 1rem;">${update.content}</p>
+                        <small style="color: var(--text-light);">Posted on ${datePosted}</small>
+                        <button class="action-btn action-btn-delete" onclick="deleteUpdate('${doc.id}')" style="margin-top: 1rem;">Delete</button>
                     `;
-                    list.appendChild(card);
+                    updatesList.appendChild(card);
                 });
             } catch (error) {
                 console.error('Error loading updates:', error);
@@ -1125,11 +1256,6 @@
                 }
             }
         };
-
-        // Make functions globally available
-        window.loadMembers = window.loadMembers;
-        window.loadBlogPosts = window.loadBlogPosts;
-        window.loadUpdates = window.loadUpdates;
     </script>
 </body>
 </html>
