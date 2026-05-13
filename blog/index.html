@@ -103,6 +103,23 @@
             width: 100%;
         }
 
+        .cta-nav {
+            background: var(--accent);
+            color: var(--white);
+            padding: 0.7rem 1.8rem;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .cta-nav::after {
+            display: none;
+        }
+
+        .cta-nav:hover {
+            background: var(--accent-light);
+            color: var(--white);
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
@@ -429,10 +446,53 @@
             opacity: 0.9;
         }
 
+        /* Mobile Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             nav ul {
                 display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                padding: 1rem;
+                gap: 0;
+                z-index: 99;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav li {
+                padding: 1rem 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            nav li:last-child {
+                border-bottom: none;
+            }
+
+            .hamburger {
+                display: flex;
             }
 
             .hero h1 {
@@ -458,19 +518,48 @@
                 padding-bottom: 0.5rem;
             }
         }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .logo img {
+                max-height: 35px;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .main-section {
+                padding: 2rem 1rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header (IDENTICAL TO HOMEPAGE) -->
     <header>
         <nav>
             <a href="/" class="logo"><img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo"></a>
-            <ul>
+            <ul id="navMenu">
                 <li><a href="/">Home</a></li>
+                <li><a href="/#about">About</a></li>
                 <li><a href="/#services">Services</a></li>
                 <li><a href="/blog/">Blog</a></li>
-                <li><a href="/#membership">Join</a></li>
+                <li><a href="/#content">Content</a></li>
+                <li><a href="/#membership" class="cta-nav">Join Now</a></li>
             </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </nav>
     </header>
 
@@ -690,6 +779,22 @@
 
         // Load posts on page load
         loadBlogPosts();
+    </script>
+
+    <script>
+        // Mobile Menu Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        document.querySelectorAll('#navMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
+        });
     </script>
 </body>
 </html>
