@@ -560,7 +560,14 @@
 
             let filteredPosts = allPosts;
             if (currentFilter !== 'all') {
-                filteredPosts = allPosts.filter(post => post.category === currentFilter);
+                filteredPosts = allPosts.filter(post => {
+                    // Handle both old (category) and new (categories) format
+                    if (Array.isArray(post.categories)) {
+                        return post.categories.includes(currentFilter);
+                    } else {
+                        return post.category === currentFilter;
+                    }
+                });
             }
 
             if (filteredPosts.length === 0) {
@@ -604,19 +611,6 @@
                 grid.appendChild(card);
             });
         }
-
-        // Filter posts
-        window.filterBlog = function(category) {
-            currentFilter = category;
-
-            // Update active button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            displayPosts();
-        };
 
         // Display posts
         function displayPosts() {
