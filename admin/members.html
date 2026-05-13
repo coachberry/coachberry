@@ -155,10 +155,12 @@
         background: var(--white);
         padding: 2rem;
         border-radius: 12px;
-        max-width: 600px;
+        max-width: 700px;
         width: 100%;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
     }
 
     .modal-close {
@@ -200,6 +202,78 @@
     .member-info p {
         color: var(--text);
         font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .permission-section {
+        background: var(--light-gray);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+
+    .permission-section h3 {
+        margin-bottom: 1rem;
+        color: var(--text);
+        font-size: 1.1rem;
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .checkbox-item label {
+        cursor: pointer;
+        margin: 0;
+        font-weight: normal;
+        color: var(--text);
+    }
+
+    .save-permissions-btn {
+        margin-top: 1rem;
+        padding: 0.7rem 1.5rem;
+        background: var(--success);
+        color: var(--white);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .save-permissions-btn:hover {
+        background: #45a049;
+    }
+
+    .permission-message {
+        padding: 0.8rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        display: none;
+        font-weight: 500;
+    }
+
+    .permission-message.show {
+        display: block;
+    }
+
+    .permission-message.success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid var(--success);
     }
 </style>
 
@@ -253,20 +327,21 @@
 <div class="modal" id="memberModal">
     <div class="modal-content">
         <button class="modal-close" onclick="closeMemberModal()">&times;</button>
-        <h2>Member Details</h2>
+        <h2>Member Details & Permissions</h2>
         <div id="memberDetails"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
     const app = initializeApp(config);
     const db = getFirestore(app);
 
     let allMembersData = [];
+    let editingMemberId = null;
 
     function escapeHtml(text) {
         const div = document.createElement('div');
@@ -355,7 +430,10 @@
         const member = allMembersData.find(m => m.id === memberId);
         if (!member) return;
 
+        editingMemberId = memberId;
+
         let html = `
+            <div class="permission-message" id="permissionMessage"></div>
             <div class="member-info">
                 <label>Name</label>
                 <p>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</p>
@@ -400,14 +478,71 @@
                 <label>Date Joined</label>
                 <p>${formatDate(member.dateJoined)}</p>
             </div>
+
+            <div class="permission-section">
+                <h3>Member Permissions</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-view-dashboard" ${(member.permissions?.viewDashboard !== false) ? 'checked' : ''}>
+                        <label for="perm-view-dashboard">Can Access Member Dashboard</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-save-posts" ${(member.permissions?.saveBlogPosts !== false) ? 'checked' : ''}>
+                        <label for="perm-save-posts">Can Save Blog Posts</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-messaging" ${(member.permissions?.useMessaging !== false) ? 'checked' : ''}>
+                        <label for="perm-messaging">Can Use Messaging System</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="perm-view-content" ${(member.permissions?.viewContent !== false) ? 'checked' : ''}>
+                        <label for="perm-view-content">Can View Member Content</label>
+                    </div>
+                </div>
+                <button class="save-permissions-btn" onclick="window.savePermissions()">Save Permissions</button>
+            </div>
         `;
 
         document.getElementById('memberDetails').innerHTML = html;
         document.getElementById('memberModal').classList.add('active');
     };
 
+    window.savePermissions = async function() {
+        if (!editingMemberId) return;
+
+        const permissions = {
+            viewDashboard: document.getElementById('perm-view-dashboard').checked,
+            saveBlogPosts: document.getElementById('perm-save-posts').checked,
+            useMessaging: document.getElementById('perm-messaging').checked,
+            viewContent: document.getElementById('perm-view-content').checked
+        };
+
+        const messageDiv = document.getElementById('permissionMessage');
+
+        try {
+            await updateDoc(doc(db, 'members', editingMemberId), {
+                permissions: permissions,
+                permissionsUpdated: new Date()
+            });
+
+            messageDiv.textContent = '✓ Permissions updated successfully!';
+            messageDiv.classList.add('show', 'success');
+
+            setTimeout(() => {
+                messageDiv.classList.remove('show');
+            }, 3000);
+
+            loadMembers();
+        } catch (error) {
+            messageDiv.textContent = 'Error updating permissions: ' + error.message;
+            messageDiv.classList.add('show', 'error');
+            console.error('Error:', error);
+        }
+    };
+
     window.closeMemberModal = function() {
         document.getElementById('memberModal').classList.remove('active');
+        editingMemberId = null;
     };
 
     window.deleteMember = function(memberId) {
