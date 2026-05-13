@@ -141,7 +141,7 @@
             right: -10%;
             width: 600px;
             height: 600px;
-            background: rgba(255, 69, 0, 0.08);
+            background: rgba(255, 36, 0, 0.08);
             border-radius: 50%;
             animation: float 8s ease-in-out infinite;
         }
@@ -153,7 +153,7 @@
             left: -5%;
             width: 400px;
             height: 400px;
-            background: rgba(255, 69, 0, 0.05);
+            background: rgba(255, 36, 0, 0.05);
             border-radius: 50%;
             animation: float 10s ease-in-out infinite 1s;
         }
@@ -226,7 +226,7 @@
             background: var(--accent-light);
             border-color: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(255, 69, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(255, 36, 0, 0.3);
         }
 
         .cta-button-secondary {
@@ -468,6 +468,11 @@
             color: var(--text-light);
         }
 
+        /* Blog Section */
+        #blog {
+            background: var(--white);
+        }
+
         /* Membership Section */
         #membership {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
@@ -525,7 +530,7 @@
             outline: none;
             border-color: var(--accent);
             background: var(--white);
-            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
         }
 
         .form-row {
@@ -584,7 +589,7 @@
         .form-submit .submit-btn:hover {
             background: var(--accent-light);
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 69, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(255, 36, 0, 0.3);
         }
 
         .form-submit .reset-btn {
@@ -626,7 +631,7 @@
         }
 
         .add-kid-btn {
-            background: rgba(255, 69, 0, 0.8);
+            background: rgba(255, 36, 0, 0.8);
             color: var(--white);
             border: none;
             padding: 0.8rem 1.5rem;
@@ -639,6 +644,34 @@
 
         .add-kid-btn:hover {
             background: var(--accent);
+        }
+
+        /* Success Message */
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Footer */
@@ -669,34 +702,6 @@
             background: var(--text);
             border-radius: 2px;
             transition: 0.3s;
-        }
-
-        /* Success Message */
-        .success-message {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid #4CAF50;
-            color: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            display: none;
-            text-align: center;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         /* Responsive */
@@ -772,8 +777,8 @@
                 padding: 1rem;
             }
 
-            .logo {
-                font-size: 1.2rem;
+            .logo img {
+                max-height: 35px;
             }
 
             .hero {
@@ -799,7 +804,7 @@
     <!-- Header -->
     <header>
         <nav>
-            <a href="#" class="logo"><img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo" style="height: 40px; width: auto;"></a>
+            <a href="#" class="logo"><img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo"></a>
             <ul id="navMenu">
                 <li><a href="#about">About</a></li>
                 <li><a href="#services">Services</a></li>
@@ -939,10 +944,10 @@
     </section>
 
     <!-- Blog Section -->
-    <section id="blog" style="background: var(--white);">
+    <section id="blog">
         <div class="container">
             <h2>Latest Blog Posts</h2>
-            <div class="content-intro" style="margin-bottom: 3rem;">
+            <div class="content-intro">
                 <p>Discover hockey tips, strategies, drills, and coaching insights from Coach Matt Berry. Read our latest articles and improve your game.</p>
             </div>
             <div class="content-grid" id="recentBlogPosts">
@@ -1124,6 +1129,8 @@
         // Load blog posts on page load
         loadRecentBlogPosts();
     </script>
+
+    <script>
         // Mobile Menu Toggle
         const hamburger = document.getElementById('hamburger');
         const navMenu = document.getElementById('navMenu');
@@ -1150,15 +1157,6 @@
                 alert('Please select at least one role');
                 return;
             }
-
-            // In a real application, you would send this to a server
-            console.log({
-                firstName: formData.get('firstName'),
-                lastName: formData.get('lastName'),
-                email: formData.get('email'),
-                phone: formData.get('phone'),
-                roles: roles,
-            });
 
             // Show success message
             const successMsg = document.getElementById('successMessage');
@@ -1229,7 +1227,7 @@
                     <label>Current Team</label>
                     <input type="text" name="kidTeam" placeholder="Team name (optional)">
                 </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 69, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
+                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
             `;
             container.appendChild(entry);
         }
