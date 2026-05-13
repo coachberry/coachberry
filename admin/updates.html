@@ -31,19 +31,6 @@
         border-left: 4px solid var(--success);
     }
 
-    .message.error {
-        background: #ffebee;
-        color: #c62828;
-        border-left: 4px solid var(--danger);
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
     .form-group {
         display: flex;
         flex-direction: column;
@@ -63,7 +50,6 @@
         font-family: inherit;
         resize: vertical;
         min-height: 150px;
-        transition: all 0.3s ease;
     }
 
     .form-group textarea:focus {
@@ -87,20 +73,17 @@
 
     .submit-btn:hover {
         background: var(--accent-light);
-        transform: translateY(-2px);
     }
 
     .submit-btn:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-        transform: none;
     }
 
     .updates-list {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
-        margin-top: 2rem;
     }
 
     .update-card {
@@ -126,19 +109,15 @@
         color: var(--text-light);
     }
 
-    .action-btn {
+    .action-btn-delete {
         padding: 0.5rem 1rem;
+        background: var(--danger);
+        color: var(--white);
         border: none;
         border-radius: 4px;
         cursor: pointer;
         font-weight: 600;
         font-size: 0.85rem;
-        transition: all 0.3s ease;
-    }
-
-    .action-btn-delete {
-        background: var(--danger);
-        color: var(--white);
     }
 
     .action-btn-delete:hover {
@@ -156,28 +135,38 @@
     <h2>Post a Quick Update</h2>
     <div class="message" id="updateMessage"></div>
     <form id="updateForm" onsubmit="window.handleUpdateSubmit(event)">
-        <div class="form-row">
-            <div class="form-group">
-                <label for="updateContent">Update Content *</label>
-                <textarea id="updateContent" name="content" placeholder="Share a quick update, announcement, or news..." required></textarea>
-            </div>
+        <div class="form-group">
+            <label for="updateContent">Update Content *</label>
+            <textarea id="updateContent" placeholder="Share a quick update, announcement, or news..." required></textarea>
         </div>
         <button type="submit" class="submit-btn" id="updateSubmitBtn">Post Update</button>
     </form>
 </div>
 
-<h2 style="margin-top: 2rem;">Recent Updates</h2>
-<div id="updatesList"></div>
+<h2 style="margin-bottom: 2rem;">Recent Updates</h2>
+<div class="updates-list" id="updatesList"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-    import { firebaseConfig, escapeHtml, formatDate } from "./shared.js";
 
-    const app = initializeApp(firebaseConfig);
+    const config = window.getFirebaseConfig();
+    const app = initializeApp(config);
     const db = getFirestore(app);
 
     let allUpdates = [];
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
 
     window.handleUpdateSubmit = async function(event) {
         event.preventDefault();
@@ -186,47 +175,38 @@
         const messageDiv = document.getElementById('updateMessage');
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="loading"></span> Posting...';
         messageDiv.classList.remove('show');
 
         try {
             await addDoc(collection(db, 'updates'), {
-                content: content,
-                datePosted: new Date(),
+                content, datePosted: new Date(),
                 author: window.getCurrentUser().email
             });
 
-            messageDiv.textContent = '✓ Update posted successfully!';
+            messageDiv.textContent = '✓ Update posted!';
             messageDiv.classList.add('show', 'success');
             document.getElementById('updateForm').reset();
             loadUpdates();
 
-            setTimeout(() => {
-                messageDiv.classList.remove('show');
-            }, 3000);
+            setTimeout(() => messageDiv.classList.remove('show'), 3000);
         } catch (error) {
-            messageDiv.textContent = 'Error posting update: ' + error.message;
+            messageDiv.textContent = 'Error: ' + error.message;
             messageDiv.classList.add('show', 'error');
-            console.error('Error:', error);
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Post Update';
         }
     };
 
     async function loadUpdates() {
         try {
-            const updatesQuery = query(collection(db, 'updates'), orderBy('datePosted', 'desc'));
-            const snapshot = await getDocs(updatesQuery);
+            const query_obj = query(collection(db, 'updates'), orderBy('datePosted', 'desc'));
+            const snapshot = await getDocs(query_obj);
             const updatesList = document.getElementById('updatesList');
             updatesList.innerHTML = '';
 
             allUpdates = [];
             snapshot.forEach(doc => {
-                allUpdates.push({
-                    id: doc.id,
-                    ...doc.data()
-                });
+                allUpdates.push({ id: doc.id, ...doc.data() });
             });
 
             if (allUpdates.length === 0) {
@@ -235,33 +215,27 @@
             }
 
             allUpdates.forEach(update => {
-                const datePosted = formatDate(update.datePosted);
-                
                 const card = document.createElement('div');
                 card.className = 'update-card';
                 card.innerHTML = `
                     <p>${escapeHtml(update.content)}</p>
                     <div class="update-meta">
-                        <span>${datePosted}</span>
-                        <button class="action-btn action-btn-delete" onclick="window.deleteUpdate('${update.id}')">Delete</button>
+                        <span>${formatDate(update.datePosted)}</span>
+                        <button class="action-btn-delete" onclick="window.deleteUpdate('${update.id}')">Delete</button>
                     </div>
                 `;
                 updatesList.appendChild(card);
             });
         } catch (error) {
-            console.error('Error loading updates:', error);
+            console.error('Error:', error);
         }
     }
 
     window.deleteUpdate = function(updateId) {
-        if (confirm('Are you sure you want to delete this update?')) {
+        if (confirm('Delete this update?')) {
             deleteDoc(doc(db, 'updates', updateId))
-                .then(() => {
-                    loadUpdates();
-                })
-                .catch(error => {
-                    alert('Error deleting update: ' + error.message);
-                });
+                .then(() => loadUpdates())
+                .catch(error => alert('Error: ' + error.message));
         }
     };
 
