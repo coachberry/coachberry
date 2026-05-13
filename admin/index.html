@@ -711,40 +711,87 @@
                     <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
                         <div class="checkbox-group">
                             <div class="checkbox-item">
-                                <input type="checkbox" id="rolePlayer" name="roles" value="player">
+                                <input type="checkbox" id="rolePlayer" name="roles" value="player" onchange="updateRoleDisplay()">
                                 <label for="rolePlayer">Player</label>
                             </div>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="roleCoach" name="roles" value="coach">
+                                <input type="checkbox" id="roleCoach" name="roles" value="coach" onchange="updateRoleDisplay()">
                                 <label for="roleCoach">Coach</label>
                             </div>
                             <div class="checkbox-item">
-                                <input type="checkbox" id="roleParent" name="roles" value="parent">
+                                <input type="checkbox" id="roleParent" name="roles" value="parent" onchange="updateRoleDisplay()">
                                 <label for="roleParent">Parent</label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Parent Details -->
-                    <div class="details-section" id="parentDetails">
-                        <h4>Your Child's Information</h4>
-                        <div id="kidsContainer"></div>
-                        <button type="button" class="add-kid-btn" onclick="addKidEntry()">+ Add Another Child</button>
+                    <!-- Player Details -->
+                    <div class="details-section" id="playerDetails" style="display: none;">
+                        <h4>Your Playing Experience</h4>
+                        
+                        <div class="form-group">
+                            <label>Position</label>
+                            <div class="checkbox-group" style="margin-top: 0.5rem;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="posForward" name="positions" value="forward">
+                                    <label for="posForward">Forward</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="posDefense" name="positions" value="defense">
+                                    <label for="posDefense">Defense</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="posGoalie" name="positions" value="goalie">
+                                    <label for="posGoalie">Goalie</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="playerYearsExp">Years of Playing Experience</label>
+                                <input type="number" id="playerYearsExp" name="playerYearsExp" min="0" max="80">
+                            </div>
+                            <div class="form-group">
+                                <label for="playerBirthYear">Birth Year</label>
+                                <input type="number" id="playerBirthYear" name="playerBirthYear" min="1980" max="2030">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-bottom: 1rem; display: block;">Current Teams</label>
+                            <div id="playerTeamsContainer"></div>
+                            <button type="button" class="add-kid-btn" onclick="addPlayerTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
+                        </div>
                     </div>
 
                     <!-- Coach Details -->
-                    <div class="details-section" id="coachDetails">
+                    <div class="details-section" id="coachDetails" style="display: none;">
                         <h4>Your Coaching Experience</h4>
+                        
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="coachLevel">Coaching Level/Certification</label>
-                                <input type="text" id="coachLevel" name="coachLevel" placeholder="e.g., USA Hockey Level 2">
+                                <label for="coachYearsExp">Years of Coaching Experience</label>
+                                <input type="number" id="coachYearsExp" name="coachYearsExp" min="0" max="80">
                             </div>
                             <div class="form-group">
-                                <label for="teamCoach">Current Team</label>
-                                <input type="text" id="teamCoach" name="teamCoach" placeholder="Team name (optional)">
+                                <label for="coachUSALevel">USA Hockey Certification Level</label>
+                                <input type="number" id="coachUSALevel" name="coachUSALevel" min="0" max="5" placeholder="e.g., 1, 2, 3, 4, etc.">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label style="margin-bottom: 1rem; display: block;">Coaching Teams</label>
+                            <div id="coachTeamsContainer"></div>
+                            <button type="button" class="add-kid-btn" onclick="addCoachTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
+                        </div>
+                    </div>
+
+                    <!-- Parent Details -->
+                    <div class="details-section" id="parentDetails" style="display: none;">
+                        <h4>Your Child's Information</h4>
+                        <div id="kidsContainer"></div>
+                        <button type="button" class="add-kid-btn" onclick="addKidEntry()">+ Add Another Child</button>
                     </div>
 
                     <!-- Submit -->
@@ -825,10 +872,50 @@
                 memberData.children = children;
             }
 
+            // Add player data if role is player
+            if (roles.includes('player')) {
+                const positions = Array.from(document.querySelectorAll('input[name="positions"]:checked')).map(cb => cb.value);
+                const yearsExp = document.getElementById('playerYearsExp').value;
+                const birthYear = document.getElementById('playerBirthYear').value;
+                const teams = [];
+
+                document.querySelectorAll('.player-team-entry').forEach(entry => {
+                    const teamName = entry.querySelector('input[name="playerTeam"]').value;
+                    if (teamName) {
+                        teams.push(teamName);
+                    }
+                });
+
+                memberData.playerProfile = {
+                    positions: positions,
+                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                    birthYear: birthYear ? parseInt(birthYear) : null,
+                    teams: teams
+                };
+            }
+
             // Add coach data if role is coach
             if (roles.includes('coach')) {
-                memberData.coachLevel = document.getElementById('coachLevel').value || '';
-                memberData.teamCoach = document.getElementById('teamCoach').value || '';
+                const yearsExp = document.getElementById('coachYearsExp').value;
+                const usaLevel = document.getElementById('coachUSALevel').value;
+                const teams = [];
+
+                document.querySelectorAll('.coach-team-entry').forEach(entry => {
+                    const teamName = entry.querySelector('input[name="coachTeamName"]').value;
+                    const position = entry.querySelector('input[name="coachPosition"]').value;
+                    if (teamName || position) {
+                        teams.push({ 
+                            name: teamName, 
+                            position: position 
+                        });
+                    }
+                });
+
+                memberData.coachProfile = {
+                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                    usaHockeyLevel: usaLevel ? parseInt(usaLevel) : null,
+                    teams: teams
+                };
             }
 
             // Create account and save profile
@@ -924,6 +1011,80 @@
             } else {
                 coachDetails.classList.remove('active');
             }
+        }
+
+        // Update role display for Player, Coach, Parent sections
+        function updateRoleDisplay() {
+            const rolePlayer = document.getElementById('rolePlayer').checked;
+            const roleCoach = document.getElementById('roleCoach').checked;
+            const roleParent = document.getElementById('roleParent').checked;
+
+            // Show/hide Player details
+            if (rolePlayer) {
+                document.getElementById('playerDetails').style.display = 'block';
+            } else {
+                document.getElementById('playerDetails').style.display = 'none';
+            }
+
+            // Show/hide Coach details
+            if (roleCoach) {
+                document.getElementById('coachDetails').style.display = 'block';
+            } else {
+                document.getElementById('coachDetails').style.display = 'none';
+            }
+
+            // Show/hide Parent details
+            if (roleParent) {
+                document.getElementById('parentDetails').style.display = 'block';
+                if (document.getElementById('kidsContainer').children.length === 0) {
+                    addKidEntry();
+                }
+            } else {
+                document.getElementById('parentDetails').style.display = 'none';
+            }
+        }
+
+        // Add player team
+        function addPlayerTeam() {
+            const container = document.getElementById('playerTeamsContainer');
+            const entryCount = container.children.length + 1;
+            
+            const entry = document.createElement('div');
+            entry.className = 'player-team-entry';
+            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
+            entry.innerHTML = `
+                <div class="form-group">
+                    <label>Team ${entryCount}</label>
+                    <input type="text" name="playerTeam" placeholder="Team name (optional)">
+                </div>
+                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
+            `;
+            container.appendChild(entry);
+        }
+
+        // Add coach team
+        function addCoachTeam() {
+            const container = document.getElementById('coachTeamsContainer');
+            const entryCount = container.children.length + 1;
+            
+            const entry = document.createElement('div');
+            entry.className = 'coach-team-entry';
+            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
+            entry.innerHTML = `
+                <h5 style="color: var(--accent); margin-bottom: 1rem; margin-top: 0;">Team ${entryCount}</h5>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Team Name</label>
+                        <input type="text" name="coachTeamName" placeholder="Team name">
+                    </div>
+                    <div class="form-group">
+                        <label>Coaching Position</label>
+                        <input type="text" name="coachPosition" placeholder="e.g., Head Coach, Asst Coach, Goalie Coach">
+                    </div>
+                </div>
+                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
+            `;
+            container.appendChild(entry);
         }
 
         function addKidEntry() {
