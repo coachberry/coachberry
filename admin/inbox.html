@@ -415,11 +415,11 @@
 
         currentMessageId = messageId;
 
-        document.getElementById('modalFrom').textContent = escapeHtml(message.from || 'Unknown');
-        document.getElementById('modalEmail').textContent = escapeHtml(message.email || 'N/A');
+        document.getElementById('modalFrom').textContent = escapeHtml(message.fromName || message.from || 'Unknown');
+        document.getElementById('modalEmail').textContent = escapeHtml(message.email || message.from || 'N/A');
         document.getElementById('modalSubject').textContent = escapeHtml(message.subject || 'No Subject');
         document.getElementById('modalDate').textContent = formatDate(message.dateSent);
-        document.getElementById('modalContent').textContent = message.content;
+        document.getElementById('modalContent').textContent = message.initialMessage || message.content || '';
         document.getElementById('replyContent').value = '';
 
         // Display replies if any
@@ -429,12 +429,15 @@
 
         if (replies.length > 0) {
             repliesSection.style.display = 'block';
-            modalReplies.innerHTML = replies.map(reply => `
-                <div style="background: #f0f8ff; padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; border-left: 3px solid var(--accent);">
-                    <div style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">Coach Berry • ${formatDate(reply.dateSent)}</div>
-                    <p style="margin: 0; white-space: pre-wrap; color: var(--text);">${escapeHtml(reply.content)}</p>
-                </div>
-            `).join('');
+            modalReplies.innerHTML = replies.map(reply => {
+                const isFromCoach = reply.from === 'coach';
+                return `
+                    <div style="background: ${isFromCoach ? '#f0f8ff' : '#f9f9f9'}; padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; border-left: 3px solid ${isFromCoach ? 'var(--accent)' : '#ddd'};">
+                        <div style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">${isFromCoach ? '🏒 Coach' : message.fromName || 'Member'} • ${formatDate(reply.dateSent)}</div>
+                        <p style="margin: 0; white-space: pre-wrap; color: var(--text);">${escapeHtml(reply.content)}</p>
+                    </div>
+                `;
+            }).join('');
         } else {
             repliesSection.style.display = 'none';
         }
@@ -463,6 +466,7 @@
 
             const replies = messageDoc.data().replies || [];
             replies.push({
+                from: 'coach',
                 content: replyContent,
                 dateSent: new Date()
             });
