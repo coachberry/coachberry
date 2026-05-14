@@ -272,11 +272,26 @@
             <div class="message-detail-label">Message</div>
             <div class="message-content" id="modalContent"></div>
         </div>
+
+        <!-- Replies Section -->
+        <div id="repliesSection" style="margin: 2rem 0; padding: 2rem 0; border-top: 1px solid var(--border); display: none;">
+            <div class="message-detail-label">Your Replies</div>
+            <div id="modalReplies" style="margin: 1rem 0;"></div>
+        </div>
+
+        <!-- Reply Form -->
+        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+            <div class="message-detail-label">Send Reply</div>
+            <div style="margin-top: 1rem;">
+                <textarea id="replyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+            <button onclick="sendReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 1rem;">Send Reply</button>
+        </div>
     </div>
 </div>
 
 <script type="module">
-    import { getFirestore, collection, query, orderBy, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, onSnapshot, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
     const app = firebase.initializeApp(config, { name: 'admin-inbox' });
@@ -382,17 +397,78 @@
         displayMessages();
     };
 
+    let currentMessageId = null;
+
     window.openMessage = function(messageId) {
         const message = allMessages.find(m => m.id === messageId);
         if (!message) return;
+
+        currentMessageId = messageId;
 
         document.getElementById('modalFrom').textContent = escapeHtml(message.from || 'Unknown');
         document.getElementById('modalEmail').textContent = escapeHtml(message.email || 'N/A');
         document.getElementById('modalSubject').textContent = escapeHtml(message.subject || 'No Subject');
         document.getElementById('modalDate').textContent = formatDate(message.dateSent);
         document.getElementById('modalContent').textContent = message.content;
+        document.getElementById('replyContent').value = '';
+
+        // Display replies if any
+        const replies = message.replies || [];
+        const repliesSection = document.getElementById('repliesSection');
+        const modalReplies = document.getElementById('modalReplies');
+
+        if (replies.length > 0) {
+            repliesSection.style.display = 'block';
+            modalReplies.innerHTML = replies.map(reply => `
+                <div style="background: #f0f8ff; padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; border-left: 3px solid var(--accent);">
+                    <div style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">Coach Berry • ${formatDate(reply.dateSent)}</div>
+                    <p style="margin: 0; white-space: pre-wrap; color: var(--text);">${escapeHtml(reply.content)}</p>
+                </div>
+            `).join('');
+        } else {
+            repliesSection.style.display = 'none';
+        }
 
         document.getElementById('messageModal').classList.add('active');
+    };
+
+    window.sendReply = async function() {
+        if (!currentMessageId) return;
+
+        const replyContent = document.getElementById('replyContent').value.trim();
+        if (!replyContent) {
+            alert('Please type a reply');
+            return;
+        }
+
+        try {
+            const messageRef = doc(db, 'messages', currentMessageId);
+            const messageDoc = await getDoc(messageRef);
+
+            if (!messageDoc.exists()) {
+                alert('Message not found');
+                return;
+            }
+
+            const replies = messageDoc.data().replies || [];
+            replies.push({
+                content: replyContent,
+                dateSent: new Date()
+            });
+
+            await updateDoc(messageRef, { replies });
+
+            alert('Reply sent!');
+            document.getElementById('replyContent').value = '';
+
+            // Reload the message to show the new reply
+            loadInbox().then(() => {
+                openMessage(currentMessageId);
+            });
+        } catch (error) {
+            console.error('Error sending reply:', error);
+            alert('Error sending reply: ' + error.message);
+        }
     };
 
     window.closeMessageModal = function() {
