@@ -121,6 +121,91 @@
         .signup-link a:hover {
             text-decoration: underline;
         }
+
+        .forgot-password-link {
+            text-align: right;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .forgot-password-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-light);
+        }
+
+        .modal-close:hover {
+            color: var(--text);
+        }
+
+        .modal h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .success-message.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -138,6 +223,9 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
+                <div class="forgot-password-link">
+                    <a href="#" onclick="openForgotPasswordModal(event)">Forgot Password?</a>
+                </div>
                 <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
             </form>
             <div class="signup-link">
@@ -146,9 +234,27 @@
         </div>
     </div>
 
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeForgotPasswordModal()">&times;</button>
+            <h2>Reset Password</h2>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+            <div class="success-message" id="forgotPasswordSuccess"></div>
+            <div class="error-message" id="forgotPasswordError"></div>
+            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label for="forgotEmail">Email Address</label>
+                    <input type="email" id="forgotEmail" placeholder="Enter your email" required>
+                </div>
+                <button type="submit" class="login-btn" id="resetBtn">Send Reset Link</button>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -197,6 +303,67 @@
                 loginBtn.innerHTML = 'Sign In';
             }
         };
+
+        window.handleForgotPassword = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            const resetBtn = document.getElementById('resetBtn');
+            const errorDiv = document.getElementById('forgotPasswordError');
+            const successDiv = document.getElementById('forgotPasswordSuccess');
+
+            resetBtn.disabled = true;
+            resetBtn.innerHTML = 'Sending...';
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                successDiv.textContent = '✓ Password reset link sent! Check your email for instructions.';
+                successDiv.classList.add('show');
+                document.getElementById('forgotPasswordForm').reset();
+                
+                // Close modal after 3 seconds
+                setTimeout(() => {
+                    closeForgotPasswordModal();
+                }, 3000);
+            } catch (error) {
+                let errorMessage = 'Error sending reset link';
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'Email not found. Please check and try again.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address';
+                }
+                
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.add('show');
+            } finally {
+                resetBtn.disabled = false;
+                resetBtn.innerHTML = 'Send Reset Link';
+            }
+        };
+    </script>
+
+    <script>
+        // Non-module functions for modal
+        function openForgotPasswordModal(event) {
+            event.preventDefault();
+            document.getElementById('forgotPasswordModal').classList.add('active');
+        }
+
+        function closeForgotPasswordModal() {
+            document.getElementById('forgotPasswordModal').classList.remove('active');
+            document.getElementById('forgotPasswordError').classList.remove('show');
+            document.getElementById('forgotPasswordSuccess').classList.remove('show');
+            document.getElementById('forgotPasswordForm').reset();
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('forgotPasswordModal');
+            if (event.target === modal) {
+                closeForgotPasswordModal();
+            }
+        });
     </script>
 </body>
 </html>
