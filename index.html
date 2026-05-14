@@ -935,8 +935,11 @@
                     // 2. Save member profile to Firestore
                     return addDoc(collection(db, 'members'), memberData);
                 })
-                .then(() => {
-                    // Success! Now send welcome email
+                .then(async () => {
+                    // Sign out the user immediately after creation so they must log in
+                    await auth.signOut();
+                    
+                    // Send welcome email
                     sendWelcomeEmail(firstName, lastName, email, tempPassword);
                     
                     successMsg.innerHTML = `
