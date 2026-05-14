@@ -405,6 +405,7 @@
         event.target.classList.add('active');
         displayMessages();
     };
+    window._filterMessagesImpl = window.filterMessages;
 
     let currentMessageId = null;
 
@@ -440,6 +441,7 @@
 
         document.getElementById('messageModal').classList.add('active');
     };
+    window._openMessageImpl = window.openMessage;
 
     window.sendReply = async function() {
         if (!currentMessageId) return;
@@ -479,10 +481,12 @@
             alert('Error sending reply: ' + error.message);
         }
     };
+    window._sendReplyImpl = window.sendReply;
 
     window.closeMessageModal = function() {
         document.getElementById('messageModal').classList.remove('active');
     };
+    window._closeMessageModalImpl = window.closeMessageModal;
 
     // Close modal when clicking outside
     document.getElementById('messageModal').addEventListener('click', function(event) {
@@ -493,4 +497,32 @@
 
     // Expose to window so it can be called after tab loads
     window.loadInbox = loadInbox;
+</script>
+
+<!-- Non-module script for onclick handlers -->
+<script>
+    // These need to be in a non-module script to work with onclick attributes
+    function filterMessages(filter) {
+        if (window._filterMessagesImpl) {
+            window._filterMessagesImpl(filter);
+        }
+    }
+    
+    function openMessage(messageId) {
+        if (window._openMessageImpl) {
+            window._openMessageImpl(messageId);
+        }
+    }
+    
+    function closeMessageModal() {
+        if (window._closeMessageModalImpl) {
+            window._closeMessageModalImpl();
+        }
+    }
+    
+    function sendReply() {
+        if (window._sendReplyImpl) {
+            window._sendReplyImpl();
+        }
+    }
 </script>
