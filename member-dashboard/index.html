@@ -1342,7 +1342,7 @@
             }
         };
 
-        window.handleLogout = async function() {
+        window._handleLogout = async function() {
             try {
                 await signOut(auth);
                 window.location.href = '/';
@@ -1355,8 +1355,8 @@
     <!-- Non-module script for onclick handlers -->
     <script>
         function handleLogout() {
-            if (window.handleLogout) {
-                return window.handleLogout();
+            if (window._handleLogout) {
+                return window._handleLogout();
             }
         }
 
