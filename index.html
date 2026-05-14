@@ -986,92 +986,30 @@
 
         // Send welcome email with login credentials
         function sendWelcomeEmail(firstName, lastName, email, tempPassword) {
-            const sendgridApiKey = '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';
-            
             const emailData = {
-                personalizations: [
-                    {
-                        to: [{ email: email }],
-                        subject: `Welcome to Coach Berry's Community - Your Account is Ready!`
-                    }
-                ],
-                from: {
-                    email: 'noreply@coach-berry.com',
-                    name: 'Coach Berry'
-                },
-                content: [
-                    {
-                        type: 'text/html',
-                        value: `
-                            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                                <div style="text-align: center; margin-bottom: 30px;">
-                                    <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry" style="max-width: 200px; height: auto;">
-                                </div>
-                                
-                                <h1 style="color: #000000; text-align: center; margin-bottom: 20px;">Welcome, ${firstName}!</h1>
-                                
-                                <p style="color: #4a4a4a; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                                    Your Coach Berry member account has been created successfully! You now have access to our hockey knowledge hub, exclusive drills, strategies, and coaching content.
-                                </p>
-                                
-                                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0; border-left: 4px solid #FF2400;">
-                                    <h3 style="color: #000000; margin-top: 0; margin-bottom: 15px;">Your Login Information:</h3>
-                                    <p style="margin: 10px 0; color: #1a1a1a;">
-                                        <strong>Email:</strong><br>
-                                        <span style="font-family: monospace; background: #ffffff; padding: 8px; border-radius: 4px; display: block; word-break: break-all;">${email}</span>
-                                    </p>
-                                    <p style="margin: 15px 0 10px 0; color: #1a1a1a;">
-                                        <strong>Temporary Password:</strong><br>
-                                        <span style="font-family: monospace; background: #ffffff; padding: 8px; border-radius: 4px; display: block; font-weight: bold; letter-spacing: 1px;">${tempPassword}</span>
-                                    </p>
-                                    <p style="margin: 15px 0; color: #f44336; font-size: 14px;">
-                                        <strong>⚠️ Important:</strong> We recommend changing your password after your first login.
-                                    </p>
-                                </div>
-                                
-                                <div style="text-align: center; margin: 30px 0;">
-                                    <a href="https://coach-berry.com/member-login/" style="background-color: #FF2400; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Login to Your Dashboard</a>
-                                </div>
-                                
-                                <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;">
-                                
-                                <p style="color: #4a4a4a; font-size: 14px; margin-bottom: 10px;">
-                                    If you have any questions or need assistance, feel free to reach out through your dashboard messaging system.
-                                </p>
-                                
-                                <p style="color: #4a4a4a; font-size: 14px;">
-                                    Looking forward to helping you elevate your hockey game!<br>
-                                    <strong>Coach Matt Berry</strong>
-                                </p>
-                                
-                                <div style="text-align: center; color: #999999; font-size: 12px; margin-top: 30px;">
-                                    <p>Coach Berry's Hockey Community<br>
-                                    <a href="https://coach-berry.com" style="color: #FF2400; text-decoration: none;">coach-berry.com</a></p>
-                                </div>
-                            </div>
-                        `
-                    }
-                ]
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                tempPassword: tempPassword
             };
 
-            // Send email using SendGrid API
-            fetch('https://api.sendgrid.com/v3/mail/send', {
+            // Send email using Firebase Cloud Function
+            fetch('https://sendwelcomeemail-fw3357ljjq-uc.a.run.app', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${sendgridApiKey}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(emailData)
             })
             .then(response => {
                 if (response.ok) {
-                    console.log('Welcome email sent successfully via SendGrid');
+                    console.log('Welcome email sent successfully via Firebase');
                 } else {
-                    console.warn('SendGrid email send response:', response.status);
+                    console.warn('Firebase email send response:', response.status);
                 }
             })
             .catch(error => {
-                console.error('Error sending email via SendGrid:', error);
+                console.error('Error sending email via Firebase:', error);
                 // Don't block account creation if email fails
             });
         }
