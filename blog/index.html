@@ -272,6 +272,35 @@
             color: var(--accent-light);
         }
 
+        .save-blog-btn {
+            background: var(--accent);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-blog-btn:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+        }
+
+        .save-blog-btn.saved {
+            background: #4CAF50;
+        }
+
+        .blog-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
         /* Post Modal */
         .modal {
             display: none;
@@ -506,6 +535,9 @@
                 <div class="modal-date" id="modalDate"></div>
             </div>
             <div id="modalBody"></div>
+            <div class="blog-actions" id="modalActions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <button class="save-blog-btn" onclick="saveBlogModal()" id="save-modal-btn">💾 Save Blog Post</button>
+            </div>
         </div>
     </div>
 
@@ -513,7 +545,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -526,6 +559,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
         let allPosts = [];
         let currentFilter = 'all';
@@ -668,7 +702,10 @@
                         <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
                         <div class="blog-meta">
                             <span>${dateString}</span>
+                        </div>
+                        <div class="blog-actions">
                             <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
+                            <button class="save-blog-btn" onclick="saveBlogCard('${post.id}', '${escapeHtml(post.title)}')" id="save-${post.id}">💾 Save</button>
                         </div>
                     </div>
                 `;
@@ -741,10 +778,14 @@
             displayPosts();
         };
 
+        let currentPostId = null;
+
         // Open post modal
         window.openPost = function(postId) {
             const post = allPosts.find(p => p.id === postId);
             if (!post) return;
+
+            currentPostId = postId;
 
             const date = post.datePublished ? new Date(post.datePublished.seconds * 1000) : new Date();
             const dateString = date.toLocaleDateString('en-US', { 
@@ -770,7 +811,118 @@
             
             document.getElementById('modalBody').innerHTML = contentHTML;
             document.getElementById('postModal').classList.add('active');
+
+            // Check if already saved
+            checkIfBlogSaved(postId);
         };
+
+        // Save blog from card view
+        window.saveBlogCard = async function(postId, title) {
+            const post = allPosts.find(p => p.id === postId);
+            if (!post) return;
+
+            saveBlogToMember(postId, post.title);
+        };
+
+        // Save blog from modal view
+        window.saveBlogModal = function() {
+            if (!currentPostId) return;
+            const post = allPosts.find(p => p.id === currentPostId);
+            if (!post) return;
+
+            saveBlogToMember(currentPostId, post.title);
+        };
+
+        // Add blog to member's saved posts
+        async function saveBlogToMember(postId, postTitle) {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    alert('Please log in to save blogs');
+                    window.location.href = '/member-login/';
+                    return;
+                }
+
+                // Get member document
+                const memberRef = doc(db, 'members', user.uid);
+                const memberDoc = await getDoc(memberRef);
+
+                if (!memberDoc.exists()) {
+                    alert('Member profile not found');
+                    return;
+                }
+
+                // Get current saved posts
+                let savedPosts = memberDoc.data().savedPosts || [];
+
+                // Check if already saved
+                if (savedPosts.find(p => p.id === postId)) {
+                    alert('This blog is already saved');
+                    return;
+                }
+
+                // Add new saved post
+                savedPosts.push({
+                    id: postId,
+                    title: postTitle,
+                    savedDate: new Date()
+                });
+
+                // Update member document
+                await updateDoc(memberRef, { savedPosts });
+
+                alert('Blog saved successfully!');
+                
+                // Update button state
+                const saveBtn = document.getElementById(`save-${postId}`);
+                if (saveBtn) {
+                    saveBtn.classList.add('saved');
+                    saveBtn.textContent = '✓ Saved';
+                    saveBtn.disabled = true;
+                }
+
+                const modalBtn = document.getElementById('save-modal-btn');
+                if (modalBtn) {
+                    modalBtn.classList.add('saved');
+                    modalBtn.textContent = '✓ Saved';
+                    modalBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error saving blog:', error);
+                alert('Error saving blog');
+            }
+        }
+
+        // Check if blog is already saved
+        async function checkIfBlogSaved(postId) {
+            try {
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const memberRef = doc(db, 'members', user.uid);
+                const memberDoc = await getDoc(memberRef);
+
+                if (!memberDoc.exists()) return;
+
+                const savedPosts = memberDoc.data().savedPosts || [];
+                const isSaved = savedPosts.some(p => p.id === postId);
+
+                const modalBtn = document.getElementById('save-modal-btn');
+                if (modalBtn) {
+                    if (isSaved) {
+                        modalBtn.classList.add('saved');
+                        modalBtn.textContent = '✓ Saved';
+                        modalBtn.disabled = true;
+                    } else {
+                        modalBtn.classList.remove('saved');
+                        modalBtn.textContent = '💾 Save Blog Post';
+                        modalBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking if blog is saved:', error);
+            }
+        }
 
         // Close modal
         window.closePost = function() {
