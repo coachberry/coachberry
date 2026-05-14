@@ -350,8 +350,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="playerCurrentTeams">Current Teams (comma-separated)</label>
-                        <input type="text" id="playerCurrentTeams" placeholder="e.g., Local Juniors, Regional All-Stars">
+                        <label>Current Teams</label>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+                            <thead>
+                                <tr style="background: var(--secondary); color: white;">
+                                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border);">Organization</th>
+                                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border);">Age & Level (e.g., 12UAA)</th>
+                                    <th style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); width: 80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playerTeamsTable">
+                            </tbody>
+                        </table>
+                        <button type="button" onclick="addPlayerTeamRow()" style="background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Add Team</button>
                     </div>
 
                     <button type="submit" class="save-btn">Update Player Profile</button>
@@ -869,12 +880,45 @@
             // Set other fields
             document.getElementById('playerYearsExp').value = playerProfile.yearsOfExperience || '';
             document.getElementById('playerBirthYearProfile').value = playerProfile.birthYear || '';
-            document.getElementById('playerCurrentTeams').value = (playerProfile.teams && playerProfile.teams.join(', ')) || '';
+
+            // Load teams into table
+            const teamsTable = document.getElementById('playerTeamsTable');
+            teamsTable.innerHTML = '';
+            const teams = playerProfile.teams || [];
+            
+            // Show at least 2 rows
+            const rowsToShow = Math.max(2, teams.length);
+            for (let i = 0; i < rowsToShow; i++) {
+                const team = teams[i] || { organization: '', ageLevel: '' };
+                addPlayerTeamRow(team.organization || '', team.ageLevel || '', i);
+            }
         }
 
-        window.updatePlayerPositions = function() {
-            // This is called by checkboxes but we don't need to do anything here
-            // The form submission will handle saving
+        window.addPlayerTeamRow = function(organization = '', ageLevel = '', index = null) {
+            const table = document.getElementById('playerTeamsTable');
+            const rowId = index !== null ? index : Date.now();
+            
+            const row = document.createElement('tr');
+            row.id = `playerTeam-${rowId}`;
+            row.innerHTML = `
+                <td style="padding: 0.75rem; border: 1px solid var(--border);">
+                    <input type="text" class="playerTeamOrg" value="${organization}" placeholder="e.g., Local Juniors" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;">
+                </td>
+                <td style="padding: 0.75rem; border: 1px solid var(--border);">
+                    <input type="text" class="playerTeamAgeLevel" value="${ageLevel}" placeholder="e.g., 12UAA" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box;">
+                </td>
+                <td style="padding: 0.75rem; border: 1px solid var(--border); text-align: center;">
+                    <button type="button" onclick="removePlayerTeamRow('${rowId}')" style="background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">Remove</button>
+                </td>
+            `;
+            table.appendChild(row);
+        };
+
+        window.removePlayerTeamRow = function(rowId) {
+            const row = document.getElementById(`playerTeam-${rowId}`);
+            if (row) {
+                row.remove();
+            }
         };
 
         window.handlePlayerProfileUpdate = async function(event) {
@@ -887,8 +931,22 @@
 
             const yearsExp = document.getElementById('playerYearsExp').value;
             const birthYear = document.getElementById('playerBirthYearProfile').value;
-            const teamsText = document.getElementById('playerCurrentTeams').value;
-            const teams = teamsText ? teamsText.split(',').map(t => t.trim()).filter(t => t) : [];
+
+            // Get teams from table rows
+            const teams = [];
+            document.querySelectorAll('#playerTeamsTable tr').forEach(row => {
+                const orgField = row.querySelector('.playerTeamOrg');
+                const ageLevelField = row.querySelector('.playerTeamAgeLevel');
+                
+                if (orgField && ageLevelField) {
+                    const organization = orgField.value.trim();
+                    const ageLevel = ageLevelField.value.trim();
+                    
+                    if (organization || ageLevel) {
+                        teams.push({ organization, ageLevel });
+                    }
+                }
+            });
 
             const msgDiv = document.getElementById('playerProfileMessage');
             const btn = event.target.querySelector('.save-btn');
