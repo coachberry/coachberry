@@ -296,6 +296,7 @@
                 <li><a onclick="switchTab('members')" class="menu-item" data-tab="members">👥 Members</a></li>
                 <li><a onclick="switchTab('blog')" class="menu-item" data-tab="blog">📝 Blog Posts</a></li>
                 <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
+                <li><a onclick="switchTab('inbox')" class="menu-item" data-tab="inbox">📧 Inbox</a></li>
             </ul>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
@@ -309,6 +310,7 @@
             <div id="members" class="tab-content"></div>
             <div id="blog" class="tab-content"></div>
             <div id="updates" class="tab-content"></div>
+            <div id="inbox" class="tab-content"></div>
         </main>
     </div>
 
@@ -391,7 +393,8 @@
                 overview: 'Overview',
                 members: 'Members',
                 blog: 'Blog Posts',
-                updates: 'Updates'
+                updates: 'Updates',
+                inbox: 'Inbox'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 
@@ -434,6 +437,8 @@
                         window.loadBlogPosts();
                     } else if (tabName === 'updates' && window.loadUpdates) {
                         window.loadUpdates();
+                    } else if (tabName === 'inbox' && window.loadInbox) {
+                        window.loadInbox();
                     }
                 }, 100);
             } catch (error) {
