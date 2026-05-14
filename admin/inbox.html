@@ -1,0 +1,411 @@
+<style>
+    .inbox-container {
+        padding: 2rem;
+    }
+
+    .inbox-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--accent);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+
+    .messages-section {
+        background: var(--white);
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    .messages-header {
+        padding: 1.5rem;
+        background: var(--primary);
+        color: var(--white);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .messages-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        background: rgba(255,255,255,0.2);
+        color: var(--white);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn.active {
+        background: var(--accent);
+    }
+
+    .filter-btn:hover {
+        background: var(--accent);
+    }
+
+    .messages-list {
+        max-height: 800px;
+        overflow-y: auto;
+    }
+
+    .message-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .message-item:hover {
+        background: #f9f9f9;
+    }
+
+    .message-item.unread {
+        background: #f0f8ff;
+        font-weight: 600;
+    }
+
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-from {
+        font-weight: 600;
+        color: var(--primary-dark);
+    }
+
+    .message-date {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+
+    .message-subject {
+        color: var(--text);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .message-preview {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .message-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-light);
+    }
+
+    /* Message Detail Modal */
+    .message-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .message-modal.active {
+        display: flex;
+    }
+
+    .message-modal-content {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+    }
+
+    .message-modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1.5rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--text-light);
+    }
+
+    .message-modal-close:hover {
+        color: var(--text);
+    }
+
+    .message-detail {
+        margin-bottom: 1.5rem;
+    }
+
+    .message-detail-label {
+        font-weight: 600;
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .message-detail-value {
+        color: var(--text);
+        font-size: 1rem;
+    }
+
+    .message-content {
+        background: #f9f9f9;
+        padding: 1.5rem;
+        border-radius: 6px;
+        margin: 1.5rem 0;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .empty-state {
+        padding: 3rem 2rem;
+        text-align: center;
+        color: var(--text-light);
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="inbox-container">
+    <div class="inbox-stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalMessages">0</div>
+            <div class="stat-label">Total Messages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="unreadMessages">0</div>
+            <div class="stat-label">Unread Messages</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="uniqueMembers">0</div>
+            <div class="stat-label">Members</div>
+        </div>
+    </div>
+
+    <div class="messages-section">
+        <div class="messages-header">
+            <h3>📧 Messages</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterMessages('all')">All</button>
+                <button class="filter-btn" onclick="filterMessages('unread')">Unread</button>
+            </div>
+        </div>
+        <div class="messages-list" id="messagesList"></div>
+    </div>
+</div>
+
+<!-- Message Detail Modal -->
+<div class="message-modal" id="messageModal">
+    <div class="message-modal-content">
+        <button class="message-modal-close" onclick="closeMessageModal()">&times;</button>
+        <div class="message-detail">
+            <div class="message-detail-label">From</div>
+            <div class="message-detail-value" id="modalFrom"></div>
+        </div>
+        <div class="message-detail">
+            <div class="message-detail-label">Email</div>
+            <div class="message-detail-value" id="modalEmail"></div>
+        </div>
+        <div class="message-detail">
+            <div class="message-detail-label">Date</div>
+            <div class="message-detail-value" id="modalDate"></div>
+        </div>
+        <div class="message-detail">
+            <div class="message-detail-label">Subject</div>
+            <div class="message-detail-value" id="modalSubject"></div>
+        </div>
+        <div class="message-detail">
+            <div class="message-detail-label">Message</div>
+            <div class="message-content" id="modalContent"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { getFirestore, collection, query, orderBy, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const config = window.getFirebaseConfig();
+    const app = firebase.initializeApp(config, { name: 'admin-inbox' });
+    const db = getFirestore(app);
+
+    let allMessages = [];
+    let filteredMessages = [];
+    let currentFilter = 'all';
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function formatDate(timestamp) {
+        if (!timestamp) return 'N/A';
+        const date = new Date(timestamp.seconds * 1000);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+            return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        } else if (diffDays === 1) {
+            return 'Yesterday';
+        } else if (diffDays < 7) {
+            return `${diffDays} days ago`;
+        } else {
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+    }
+
+    async function loadInbox() {
+        try {
+            const messagesQuery = query(collection(db, 'messages'), orderBy('dateSent', 'desc'));
+            const snapshot = await getDocs(messagesQuery);
+            allMessages = [];
+
+            snapshot.forEach(doc => {
+                allMessages.push({ id: doc.id, ...doc.data() });
+            });
+
+            updateStats();
+            displayMessages();
+        } catch (error) {
+            console.error('Error loading messages:', error);
+            document.getElementById('messagesList').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Error loading messages</div></div>';
+        }
+    }
+
+    function updateStats() {
+        const totalMessages = allMessages.length;
+        const unreadMessages = allMessages.filter(m => !m.read).length;
+        const uniqueMembers = new Set(allMessages.map(m => m.from)).size;
+
+        document.getElementById('totalMessages').textContent = totalMessages;
+        document.getElementById('unreadMessages').textContent = unreadMessages;
+        document.getElementById('uniqueMembers').textContent = uniqueMembers;
+    }
+
+    function displayMessages() {
+        const messagesList = document.getElementById('messagesList');
+
+        if (allMessages.length === 0) {
+            messagesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No messages yet</div></div>';
+            return;
+        }
+
+        filteredMessages = currentFilter === 'unread' 
+            ? allMessages.filter(m => !m.read)
+            : allMessages;
+
+        if (filteredMessages.length === 0) {
+            messagesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✓</div><div class="empty-state-text">No unread messages</div></div>';
+            return;
+        }
+
+        messagesList.innerHTML = filteredMessages.map(message => {
+            const preview = message.content.substring(0, 100) + (message.content.length > 100 ? '...' : '');
+            return `
+                <div class="message-item ${!message.read ? 'unread' : ''}" onclick="openMessage('${message.id}')">
+                    <div class="message-header">
+                        <div>
+                            <div class="message-from">${escapeHtml(message.from || 'Unknown')}</div>
+                            <div class="message-subject">${escapeHtml(message.subject || 'No Subject')}</div>
+                            <div class="message-preview">${escapeHtml(preview)}</div>
+                        </div>
+                    </div>
+                    <div class="message-meta">
+                        <span>${formatDate(message.dateSent)}</span>
+                        ${!message.read ? '<span style="color: var(--accent); font-weight: 600;">●</span>' : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.filterMessages = function(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        displayMessages();
+    };
+
+    window.openMessage = function(messageId) {
+        const message = allMessages.find(m => m.id === messageId);
+        if (!message) return;
+
+        document.getElementById('modalFrom').textContent = escapeHtml(message.from || 'Unknown');
+        document.getElementById('modalEmail').textContent = escapeHtml(message.email || 'N/A');
+        document.getElementById('modalSubject').textContent = escapeHtml(message.subject || 'No Subject');
+        document.getElementById('modalDate').textContent = formatDate(message.dateSent);
+        document.getElementById('modalContent').textContent = message.content;
+
+        document.getElementById('messageModal').classList.add('active');
+    };
+
+    window.closeMessageModal = function() {
+        document.getElementById('messageModal').classList.remove('active');
+    };
+
+    // Close modal when clicking outside
+    document.getElementById('messageModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeMessageModal();
+        }
+    });
+
+    // Expose to window so it can be called after tab loads
+    window.loadInbox = loadInbox;
+</script>
