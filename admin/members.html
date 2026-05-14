@@ -545,19 +545,32 @@
         editingMemberId = null;
     };
 
-    window.deleteMember = function(memberId) {
+    window.deleteMember = async function(memberId) {
         const member = allMembersData.find(m => m.id === memberId);
         if (!member) return;
 
-        if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}?`)) {
-            deleteDoc(doc(db, 'members', memberId))
-                .then(() => {
-                    alert(`${member.firstName} ${member.lastName} has been deleted`);
-                    loadMembers();
-                })
-                .catch(error => {
-                    alert('Error deleting member: ' + error.message);
+        if (confirm(`Are you sure you want to delete ${member.firstName} ${member.lastName}? This will delete both their profile and login account.`)) {
+            try {
+                // Call Firebase Cloud Function to delete from Auth
+                const deleteAuthResponse = await fetch('https://us-central1-coach-berry.cloudfunctions.net/deleteUserAuth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: member.email
+                    })
                 });
+
+                // Delete from Firestore
+                await deleteDoc(doc(db, 'members', memberId));
+
+                alert(`${member.firstName} ${member.lastName} has been deleted from both profile and login system`);
+                loadMembers();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error deleting member: ' + error.message);
+            }
         }
     };
 
