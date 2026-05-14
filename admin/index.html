@@ -423,6 +423,19 @@
                     }
                     tabElement.appendChild(newScript);
                 }
+
+                // Call tab-specific init function after scripts load
+                setTimeout(() => {
+                    if (tabName === 'members' && window.loadMembers) {
+                        window.loadMembers();
+                    } else if (tabName === 'overview' && window.loadOverviewStats) {
+                        window.loadOverviewStats();
+                    } else if (tabName === 'blog' && window.loadBlogPosts) {
+                        window.loadBlogPosts();
+                    } else if (tabName === 'updates' && window.loadUpdates) {
+                        window.loadUpdates();
+                    }
+                }, 100);
             } catch (error) {
                 console.error(`Error loading ${tabName}:`, error);
                 tabElement.innerHTML = `<div style="padding: 2rem; text-align: center; color: #f44336;">Error loading content. Please refresh the page.</div>`;
