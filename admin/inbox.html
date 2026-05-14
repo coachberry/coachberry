@@ -280,6 +280,14 @@
         </div>
         <div class="messages-list" id="messagesList"></div>
     </div>
+
+    <!-- Broadcast Messages History Section -->
+    <div class="messages-section" style="margin-top: 2rem;">
+        <div class="messages-header">
+            <h3>📢 Broadcast Message History</h3>
+        </div>
+        <div class="messages-list" id="broadcastMessagesList"></div>
+    </div>
 </div>
 
 <!-- Message Detail Modal -->
@@ -330,7 +338,7 @@
 
 <script type="module">
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, onSnapshot, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, onSnapshot, getDoc, updateDoc, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
     
@@ -439,6 +447,46 @@
                 </div>
             `;
         }).join('');
+    }
+
+    async function loadBroadcastMessages() {
+        try {
+            const broadcastQuery = query(collection(db, 'broadcastMessages'), orderBy('sentAt', 'desc'));
+            const snapshot = await getDocs(broadcastQuery);
+            const broadcastList = document.getElementById('broadcastMessagesList');
+            const messages = [];
+
+            snapshot.forEach(doc => {
+                messages.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (messages.length === 0) {
+                broadcastList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No broadcast messages sent yet</div></div>';
+                return;
+            }
+
+            broadcastList.innerHTML = messages.map(msg => {
+                const preview = msg.content.substring(0, 100) + (msg.content.length > 100 ? '...' : '');
+                return `
+                    <div class="message-item">
+                        <div class="message-header">
+                            <div>
+                                <div class="message-from">Broadcast to: ${escapeHtml(msg.recipientName)}</div>
+                                <div class="message-subject">${escapeHtml(msg.subject || 'No Subject')}</div>
+                                <div class="message-preview">${escapeHtml(preview)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">${escapeHtml(msg.recipientEmail)}</div>
+                            </div>
+                        </div>
+                        <div class="message-meta">
+                            <span>${formatDate(msg.sentAt)}</span>
+                            ${msg.read ? '<span style="color: var(--text-light);">✓ Read</span>' : '<span style="color: var(--accent); font-weight: 600;">● Unread</span>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            console.error('Error loading broadcast messages:', error);
+        }
     }
 
     window.filterMessages = function(filter) {
@@ -686,6 +734,7 @@
     window.originalLoadInbox = window.loadInbox;
     window.loadInbox = async function() {
         await loadAllMembers();
+        await loadBroadcastMessages();
         return window.originalLoadInbox();
     };
 </script>
