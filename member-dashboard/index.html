@@ -318,7 +318,28 @@
                 </form>
             </div>
 
-            <!-- Player Profile Section -->
+            <!-- Change Password Section -->
+            <div class="card">
+                <h2>Change Password</h2>
+                <div class="message" id="passwordMessage"></div>
+                <form id="passwordForm" onsubmit="handleChangePassword(event)">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" placeholder="Enter your current password" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">Change Password</button>
+                </form>
+            </div>
             <div class="card" id="playerProfileSection" style="display: none;">
                 <h2>My Player Profile</h2>
                 <div class="message" id="playerProfileMessage"></div>
@@ -501,7 +522,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
         import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -693,7 +714,65 @@
             }
         };
 
-        window.handleSendMessage = async function(event) {
+        window.handleChangePassword = async function(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('.save-btn');
+            const msgDiv = document.getElementById('passwordMessage');
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                msgDiv.textContent = 'New passwords do not match';
+                msgDiv.classList.add('show', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                msgDiv.textContent = 'Password must be at least 6 characters';
+                msgDiv.classList.add('show', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            msgDiv.classList.remove('show');
+
+            try {
+                const auth = getAuth();
+                const user = auth.currentUser;
+
+                if (!user) {
+                    msgDiv.textContent = 'Error: User not found';
+                    msgDiv.classList.add('show', 'error');
+                    return;
+                }
+
+                // Reauthenticate user with current password
+                const credential = EmailAuthProvider.credential(user.email, currentPassword);
+                await reauthenticateWithCredential(user, credential);
+
+                // Update password
+                await updatePassword(user, newPassword);
+
+                msgDiv.textContent = '✓ Password changed successfully!';
+                msgDiv.classList.add('show', 'success');
+                event.target.reset();
+
+                setTimeout(() => msgDiv.classList.remove('show'), 3000);
+            } catch (error) {
+                if (error.code === 'auth/wrong-password') {
+                    msgDiv.textContent = 'Current password is incorrect';
+                } else if (error.code === 'auth/weak-password') {
+                    msgDiv.textContent = 'New password is too weak. Use a stronger password';
+                } else {
+                    msgDiv.textContent = 'Error changing password: ' + error.message;
+                }
+                msgDiv.classList.add('show', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        };
             event.preventDefault();
 
             // Check permission
