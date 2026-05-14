@@ -645,12 +645,33 @@
 
                 snapshot.forEach(doc => {
                     const msg = doc.data();
+                    const replies = msg.replies || [];
+                    const hasReplies = replies.length > 0;
+                    
                     const card = document.createElement('div');
                     card.className = 'message-item';
+                    card.style.cssText = 'background: var(--white); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid ' + (hasReplies ? 'var(--accent)' : '#ddd');
+                    
+                    let repliesHTML = '';
+                    if (hasReplies) {
+                        repliesHTML = '<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">';
+                        repliesHTML += '<div style="color: var(--accent); font-weight: 600; margin-bottom: 1rem;">📧 Coach\'s Reply:</div>';
+                        replies.forEach(reply => {
+                            repliesHTML += `
+                                <div style="background: #f9f9f9; padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem;">
+                                    <div style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 0.5rem;">${formatDate(reply.dateSent)}</div>
+                                    <p style="margin: 0; white-space: pre-wrap;">${escapeHtml(reply.content)}</p>
+                                </div>
+                            `;
+                        });
+                        repliesHTML += '</div>';
+                    }
+                    
                     card.innerHTML = `
-                        <h4>${escapeHtml(msg.subject)}</h4>
-                        <div class="meta">${formatDate(msg.dateSent)}</div>
-                        <p>${escapeHtml(msg.content)}</p>
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-dark);">${escapeHtml(msg.subject)}</h4>
+                        <div style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">${formatDate(msg.dateSent)}</div>
+                        <p style="margin: 0; color: var(--text); white-space: pre-wrap;">${escapeHtml(msg.content)}</p>
+                        ${repliesHTML}
                     `;
                     container.appendChild(card);
                 });
