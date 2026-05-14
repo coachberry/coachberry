@@ -42,49 +42,47 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Check Firebase auth state and update header
+        // Check auth and update header
         checkAuthAndUpdateHeader();
     }, 100);
 });
 
 // Check Firebase auth and update header button
-function checkAuthAndUpdateHeader() {
-    // Only load Firebase if on a page that needs it (not on login page)
-    if (window.location.pathname === '/member-login/') {
+async function checkAuthAndUpdateHeader() {
+    // Only check on pages where member dashboard exists (not on login page)
+    if (window.location.pathname === '/member-login/' || window.location.pathname === '/admin/') {
         return;
     }
 
     try {
-        // Dynamically import Firebase
-        import('https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js').then(() => {
-            import('https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js').then(({ getAuth, onAuthStateChanged }) => {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
-                    authDomain: "coach-berry.firebaseapp.com",
-                    projectId: "coach-berry",
-                    storageBucket: "coach-berry.firebasestorage.app",
-                    messagingSenderId: "170282824286",
-                    appId: "1:170282824286:web:5387ec9826c38466c07acf"
-                };
+        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js');
+        const { getAuth, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js');
 
-                const app = firebase.initializeApp(firebaseConfig);
-                const auth = getAuth(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+            authDomain: "coach-berry.firebaseapp.com",
+            projectId: "coach-berry",
+            storageBucket: "coach-berry.firebasestorage.app",
+            messagingSenderId: "170282824286",
+            appId: "1:170282824286:web:5387ec9826c38466c07acf"
+        };
 
-                onAuthStateChanged(auth, (user) => {
-                    const authLink = document.getElementById('authLink');
-                    if (authLink) {
-                        if (user) {
-                            // User is logged in - show My Profile
-                            authLink.innerHTML = '<a href="/member-dashboard/" class="cta-nav-secondary">My Profile</a>';
-                        } else {
-                            // User not logged in - show Login
-                            authLink.innerHTML = '<a href="/member-login/" class="cta-nav-secondary">Login</a>';
-                        }
-                    }
-                });
-            });
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const authLink = document.getElementById('authLink');
+            if (authLink) {
+                if (user) {
+                    // User is logged in - show My Profile
+                    authLink.innerHTML = '<a href="/member-dashboard/" class="cta-nav-secondary">My Profile</a>';
+                } else {
+                    // User not logged in - show Login
+                    authLink.innerHTML = '<a href="/member-login/" class="cta-nav-secondary">Login</a>';
+                }
+            }
         });
     } catch (error) {
-        console.log('Auth check skipped');
+        // Firebase check failed - keep default Login button
     }
 }
