@@ -321,13 +321,67 @@
             <!-- Player Profile Section -->
             <div class="card" id="playerProfileSection" style="display: none;">
                 <h2>My Player Profile</h2>
-                <div id="playerProfileContent" style="margin-top: 1rem;"></div>
+                <div class="message" id="playerProfileMessage"></div>
+                <form id="playerProfileForm" onsubmit="handlePlayerProfileUpdate(event)">
+                    <div class="form-group">
+                        <label>Positions</label>
+                        <div style="display: flex; gap: 2rem; margin-bottom: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="posForward" onchange="updatePlayerPositions()"> Forward
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="posDefense" onchange="updatePlayerPositions()"> Defense
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+                                <input type="checkbox" id="posGoalie" onchange="updatePlayerPositions()"> Goalie
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="playerYearsExp">Years of Playing Experience</label>
+                            <input type="number" id="playerYearsExp" min="0" max="100" placeholder="e.g., 5">
+                        </div>
+                        <div class="form-group">
+                            <label for="playerBirthYearProfile">Birth Year</label>
+                            <input type="number" id="playerBirthYearProfile" min="1980" max="2030" placeholder="e.g., 2008">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="playerCurrentTeams">Current Teams (comma-separated)</label>
+                        <input type="text" id="playerCurrentTeams" placeholder="e.g., Local Juniors, Regional All-Stars">
+                    </div>
+
+                    <button type="submit" class="save-btn">Update Player Profile</button>
+                </form>
             </div>
 
             <!-- Coach Profile Section -->
             <div class="card" id="coachProfileSection" style="display: none;">
                 <h2>My Coach Profile</h2>
-                <div id="coachProfileContent" style="margin-top: 1rem;"></div>
+                <div class="message" id="coachProfileMessage"></div>
+                <form id="coachProfileForm" onsubmit="handleCoachProfileUpdate(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="coachYearsExp">Years of Coaching Experience</label>
+                            <input type="number" id="coachYearsExp" min="0" max="100" placeholder="e.g., 10">
+                        </div>
+                        <div class="form-group">
+                            <label for="coachUSAHockeyLevel">USA Hockey Certification Level</label>
+                            <input type="number" id="coachUSAHockeyLevel" min="1" max="5" placeholder="e.g., 3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Coaching Teams</label>
+                        <div id="coachTeamsList" style="margin-bottom: 1rem;"></div>
+                        <button type="button" onclick="addCoachTeamField()" style="background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Add Team</button>
+                    </div>
+
+                    <button type="submit" class="save-btn">Update Coach Profile</button>
+                </form>
             </div>
 
             <!-- Add Players Section (for Parents) -->
@@ -804,96 +858,175 @@
 
         // Display player profile
         function displayPlayerProfile() {
-            const container = document.getElementById('playerProfileContent');
+            // Load player data into form fields
             const playerProfile = memberData.playerProfile || {};
-
-            let html = '<div style="background: var(--light-gray); padding: 1.5rem; border-radius: 8px;">';
-
-            // Positions
-            const positions = playerProfile.positions || [];
-            if (positions.length > 0) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Position(s):</strong><br>
-                    <span style="color: var(--text-light);">${positions.join(', ')}</span>
-                </div>`;
-            }
-
-            // Years of Experience
-            if (playerProfile.yearsOfExperience) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Years of Playing Experience:</strong><br>
-                    <span style="color: var(--text-light);">${playerProfile.yearsOfExperience} years</span>
-                </div>`;
-            }
-
-            // Birth Year
-            if (playerProfile.birthYear) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Birth Year:</strong><br>
-                    <span style="color: var(--text-light);">${playerProfile.birthYear}</span>
-                </div>`;
-            }
-
-            // Current Teams
-            const teams = playerProfile.teams || [];
-            if (teams.length > 0) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Current Team(s):</strong><br>
-                    <span style="color: var(--text-light);">${teams.join(', ')}</span>
-                </div>`;
-            }
-
-            // If no data, show empty state
-            if (positions.length === 0 && !playerProfile.yearsOfExperience && !playerProfile.birthYear && teams.length === 0) {
-                html += '<p style="color: var(--text-light); text-align: center;">No player profile information added yet.</p>';
-            }
-
-            html += '</div>';
-            container.innerHTML = html;
+            
+            // Set positions
+            document.getElementById('posForward').checked = playerProfile.positions && playerProfile.positions.includes('Forward');
+            document.getElementById('posDefense').checked = playerProfile.positions && playerProfile.positions.includes('Defense');
+            document.getElementById('posGoalie').checked = playerProfile.positions && playerProfile.positions.includes('Goalie');
+            
+            // Set other fields
+            document.getElementById('playerYearsExp').value = playerProfile.yearsOfExperience || '';
+            document.getElementById('playerBirthYearProfile').value = playerProfile.birthYear || '';
+            document.getElementById('playerCurrentTeams').value = (playerProfile.teams && playerProfile.teams.join(', ')) || '';
         }
 
-        // Display coach profile
-        function displayCoachProfile() {
-            const container = document.getElementById('coachProfileContent');
-            const coachProfile = memberData.coachProfile || {};
+        window.updatePlayerPositions = function() {
+            // This is called by checkboxes but we don't need to do anything here
+            // The form submission will handle saving
+        };
 
-            let html = '<div style="background: var(--light-gray); padding: 1.5rem; border-radius: 8px;">';
+        window.handlePlayerProfileUpdate = async function(event) {
+            event.preventDefault();
 
-            // Years of Coaching Experience
-            if (coachProfile.yearsOfExperience) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Years of Coaching Experience:</strong><br>
-                    <span style="color: var(--text-light);">${coachProfile.yearsOfExperience} years</span>
-                </div>`;
-            }
+            const positions = [];
+            if (document.getElementById('posForward').checked) positions.push('Forward');
+            if (document.getElementById('posDefense').checked) positions.push('Defense');
+            if (document.getElementById('posGoalie').checked) positions.push('Goalie');
 
-            // USA Hockey Certification Level
-            if (coachProfile.usaHockeyLevel) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>USA Hockey Certification Level:</strong><br>
-                    <span style="color: var(--text-light);">Level ${coachProfile.usaHockeyLevel}</span>
-                </div>`;
-            }
+            const yearsExp = document.getElementById('playerYearsExp').value;
+            const birthYear = document.getElementById('playerBirthYearProfile').value;
+            const teamsText = document.getElementById('playerCurrentTeams').value;
+            const teams = teamsText ? teamsText.split(',').map(t => t.trim()).filter(t => t) : [];
 
-            // Coaching Teams
-            const teams = coachProfile.teams || [];
-            if (teams.length > 0) {
-                html += `<div style="margin-bottom: 1.5rem;">
-                    <strong>Coaching Teams:</strong><br>`;
-                teams.forEach(team => {
-                    html += `<div style="color: var(--text-light); margin-bottom: 0.5rem;">• ${escapeHtml(team.name)} - ${escapeHtml(team.position)}</div>`;
+            const msgDiv = document.getElementById('playerProfileMessage');
+            const btn = event.target.querySelector('.save-btn');
+
+            btn.disabled = true;
+            msgDiv.classList.remove('show');
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    playerProfile: {
+                        positions: positions,
+                        yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                        birthYear: birthYear ? parseInt(birthYear) : null,
+                        teams: teams
+                    }
                 });
-                html += `</div>`;
-            }
 
-            // If no data, show empty state
-            if (!coachProfile.yearsOfExperience && !coachProfile.usaHockeyLevel && teams.length === 0) {
-                html += '<p style="color: var(--text-light); text-align: center;">No coach profile information added yet.</p>';
-            }
+                msgDiv.textContent = '✓ Player profile updated successfully!';
+                msgDiv.classList.add('show', 'success');
+                
+                // Update memberData
+                memberData.playerProfile = {
+                    positions: positions,
+                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                    birthYear: birthYear ? parseInt(birthYear) : null,
+                    teams: teams
+                };
 
-            html += '</div>';
-            container.innerHTML = html;
+                setTimeout(() => msgDiv.classList.remove('show'), 3000);
+            } catch (error) {
+                msgDiv.textContent = 'Error updating profile: ' + error.message;
+                msgDiv.classList.add('show', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
+        function displayCoachProfile() {
+            // Load coach data into form fields
+            const coachProfile = memberData.coachProfile || {};
+            
+            document.getElementById('coachYearsExp').value = coachProfile.yearsOfExperience || '';
+            document.getElementById('coachUSAHockeyLevel').value = coachProfile.usaHockeyLevel || '';
+
+            // Load teams
+            const teamsContainer = document.getElementById('coachTeamsList');
+            teamsContainer.innerHTML = '';
+            const teams = coachProfile.teams || [];
+            
+            teams.forEach((team, index) => {
+                addCoachTeamField(team.name, team.position, index);
+            });
+
+            // If no teams, add one empty field
+            if (teams.length === 0) {
+                addCoachTeamField();
+            }
         }
+
+        window.addCoachTeamField = function(teamName = '', position = '', index = null) {
+            const container = document.getElementById('coachTeamsList');
+            const fieldId = index !== null ? index : Date.now();
+            
+            const div = document.createElement('div');
+            div.id = `coachTeam-${fieldId}`;
+            div.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: flex-end;';
+            div.innerHTML = `
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label style="display: block; font-size: 0.9rem;">Team Name</label>
+                    <input type="text" class="coachTeamName" value="${teamName}" placeholder="e.g., Local Juniors" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px;">
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label style="display: block; font-size: 0.9rem;">Position</label>
+                    <input type="text" class="coachTeamPosition" value="${position}" placeholder="e.g., Head Coach" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 4px;">
+                </div>
+                <button type="button" onclick="removeCoachTeamField('${fieldId}')" style="background: var(--danger); color: white; border: none; padding: 0.6rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600;">Remove</button>
+            `;
+            container.appendChild(div);
+        };
+
+        window.removeCoachTeamField = function(fieldId) {
+            const field = document.getElementById(`coachTeam-${fieldId}`);
+            if (field) {
+                field.remove();
+            }
+        };
+
+        window.handleCoachProfileUpdate = async function(event) {
+            event.preventDefault();
+
+            const yearsExp = document.getElementById('coachYearsExp').value;
+            const usaLevel = document.getElementById('coachUSAHockeyLevel').value;
+
+            // Get teams
+            const teams = [];
+            document.querySelectorAll('#coachTeamsList .coachTeamName').forEach((nameField, index) => {
+                const name = nameField.value.trim();
+                const posField = document.querySelectorAll('#coachTeamsList .coachTeamPosition')[index];
+                const position = posField ? posField.value.trim() : '';
+                
+                if (name) {
+                    teams.push({ name, position });
+                }
+            });
+
+            const msgDiv = document.getElementById('coachProfileMessage');
+            const btn = event.target.querySelector('.save-btn');
+
+            btn.disabled = true;
+            msgDiv.classList.remove('show');
+
+            try {
+                await updateDoc(doc(db, 'members', memberData.id), {
+                    coachProfile: {
+                        yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                        usaHockeyLevel: usaLevel ? parseInt(usaLevel) : null,
+                        teams: teams
+                    }
+                });
+
+                msgDiv.textContent = '✓ Coach profile updated successfully!';
+                msgDiv.classList.add('show', 'success');
+
+                // Update memberData
+                memberData.coachProfile = {
+                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
+                    usaHockeyLevel: usaLevel ? parseInt(usaLevel) : null,
+                    teams: teams
+                };
+
+                setTimeout(() => msgDiv.classList.remove('show'), 3000);
+            } catch (error) {
+                msgDiv.textContent = 'Error updating profile: ' + error.message;
+                msgDiv.classList.add('show', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        };
 
         // Load players list
         async function loadPlayersList() {
