@@ -285,6 +285,7 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('profile')">👤 Profile</button>
             <button class="tab-btn" onclick="switchTab('saved')">💾 Saved Content</button>
+            <button class="tab-btn" onclick="switchTab('inbox')">📧 Inbox</button>
             <button class="tab-btn" onclick="switchTab('messages')">💬 Messages</button>
         </div>
 
@@ -381,7 +382,29 @@
             </div>
         </div>
 
-        <!-- Messages Tab -->
+        <!-- Inbox Tab -->
+        <div id="inbox" class="tab-content">
+            <div class="card">
+                <h2>📧 Your Messages with Coach</h2>
+                <div id="inboxList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+            </div>
+        </div>
+
+        <!-- Message Detail Modal for Inbox -->
+        <div id="threadModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center;">
+            <div style="background: var(--white); padding: 2rem; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+                <button onclick="closeThreadModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-light);">×</button>
+                
+                <h2 id="threadSubject" style="margin-top: 0; color: var(--primary-dark);"></h2>
+                <div id="threadMessages" style="margin: 2rem 0; max-height: 400px; overflow-y: auto;"></div>
+                
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                    <label style="display: block; font-weight: 600; margin-bottom: 1rem;">Reply to Coach</label>
+                    <textarea id="threadReplyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
+                    <button onclick="sendThreadReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 1rem;">Send Reply</button>
+                </div>
+            </div>
+        </div>
         <div id="messages" class="tab-content">
             <div class="card compose-message">
                 <h2>Send Message to Coach</h2>
@@ -409,7 +432,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, updateDoc, addDoc, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -558,6 +581,11 @@
                 el.classList.remove('active');
             });
             event.target.classList.add('active');
+
+            // Load inbox when inbox tab is clicked
+            if (tabName === 'inbox') {
+                loadInbox();
+            }
         };
 
         window.handleProfileUpdate = async function(event) {
@@ -608,14 +636,16 @@
                     from: currentUser.email,
                     fromName: `${memberData.firstName} ${memberData.lastName}`,
                     subject: subject,
-                    content: content,
+                    initialMessage: content,
                     dateSent: new Date(),
-                    read: false
+                    read: false,
+                    replies: []
                 });
 
                 msgDiv.textContent = '✓ Message sent successfully!';
                 msgDiv.classList.add('show', 'success');
                 event.target.reset();
+                loadInbox();
                 loadMessages();
 
                 setTimeout(() => msgDiv.classList.remove('show'), 3000);
@@ -679,6 +709,137 @@
                 console.error('Error loading messages:', error);
             }
         }
+
+        // Load inbox - show message threads
+        async function loadInbox() {
+            try {
+                const q = query(
+                    collection(db, 'messages'),
+                    where('from', '==', currentUser.email),
+                    orderBy('dateSent', 'desc')
+                );
+                const snapshot = await getDocs(q);
+                const container = document.getElementById('inboxList');
+                container.innerHTML = '';
+
+                if (snapshot.empty) {
+                    container.innerHTML = '<div class="empty-state">No message threads yet.</div>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const msg = doc.data();
+                    const replies = msg.replies || [];
+                    const hasNewReplies = replies.length > 0;
+                    
+                    const card = document.createElement('div');
+                    card.style.cssText = 'background: var(--white); padding: 1.5rem; border-radius: 8px; cursor: pointer; border-left: 4px solid ' + (hasNewReplies ? 'var(--accent)' : '#ddd') + '; transition: all 0.3s ease;';
+                    card.onmouseover = () => card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                    card.onmouseout = () => card.style.boxShadow = 'none';
+                    
+                    const lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
+                    const lastDate = lastReply ? formatDate(lastReply.dateSent) : formatDate(msg.dateSent);
+                    
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-dark);">${escapeHtml(msg.subject)}</h4>
+                                <p style="margin: 0 0 0.5rem 0; color: var(--text-light); font-size: 0.9rem;">${lastDate}</p>
+                                ${hasNewReplies ? '<p style="margin: 0; color: var(--accent); font-weight: 600;">💬 ' + replies.length + ' reply(replies)</p>' : ''}
+                            </div>
+                        </div>
+                    `;
+                    card.onclick = () => openThreadModal(doc.id);
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading inbox:', error);
+            }
+        }
+
+        let currentThreadId = null;
+
+        window.openThreadModal = async function(messageId) {
+            try {
+                const msgRef = doc(db, 'messages', messageId);
+                const msgDoc = await getDoc(msgRef);
+                
+                if (!msgDoc.exists()) return;
+
+                const msg = msgDoc.data();
+                currentThreadId = messageId;
+
+                document.getElementById('threadSubject').textContent = escapeHtml(msg.subject);
+                document.getElementById('threadReplyContent').value = '';
+
+                // Build the message thread
+                let threadHTML = `
+                    <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 6px; margin-bottom: 1rem;">
+                        <div style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">You • ${formatDate(msg.dateSent)}</div>
+                        <p style="margin: 0; white-space: pre-wrap; color: var(--text);">${escapeHtml(msg.initialMessage)}</p>
+                    </div>
+                `;
+
+                // Add all replies
+                const replies = msg.replies || [];
+                replies.forEach(reply => {
+                    const isFromCoach = reply.from === 'coach';
+                    threadHTML += `
+                        <div style="background: ${isFromCoach ? '#f0f8ff' : '#f9f9f9'}; padding: 1.5rem; border-radius: 6px; margin-bottom: 1rem; border-left: 3px solid ${isFromCoach ? 'var(--accent)' : '#ddd'};">
+                            <div style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 600;">${isFromCoach ? '🏒 Coach' : 'You'} • ${formatDate(reply.dateSent)}</div>
+                            <p style="margin: 0; white-space: pre-wrap; color: var(--text);">${escapeHtml(reply.content)}</p>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('threadMessages').innerHTML = threadHTML;
+                document.getElementById('threadModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Error opening thread:', error);
+            }
+        };
+
+        window.closeThreadModal = function() {
+            document.getElementById('threadModal').style.display = 'none';
+        };
+
+        window.sendThreadReply = async function() {
+            if (!currentThreadId) return;
+
+            const replyContent = document.getElementById('threadReplyContent').value.trim();
+            if (!replyContent) {
+                alert('Please type a reply');
+                return;
+            }
+
+            try {
+                const msgRef = doc(db, 'messages', currentThreadId);
+                const msgDoc = await getDoc(msgRef);
+
+                if (!msgDoc.exists()) {
+                    alert('Message thread not found');
+                    return;
+                }
+
+                const replies = msgDoc.data().replies || [];
+                replies.push({
+                    from: 'member',
+                    content: replyContent,
+                    dateSent: new Date()
+                });
+
+                await updateDoc(msgRef, { replies });
+
+                alert('Reply sent!');
+                document.getElementById('threadReplyContent').value = '';
+
+                // Reload thread to show new reply
+                openThreadModal(currentThreadId);
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Error sending reply: ' + error.message);
+            }
+        };
 
         // Load players list
         async function loadPlayersList() {
