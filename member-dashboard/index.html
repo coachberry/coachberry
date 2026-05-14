@@ -809,46 +809,6 @@
                 btn.disabled = false;
             }
         };
-            event.preventDefault();
-
-            // Check permission
-            if (memberData.permissions && !memberData.permissions.useMessaging) {
-                alert('You do not have permission to use the messaging system');
-                return;
-            }
-
-            const subject = document.getElementById('messageSubject').value;
-            const content = document.getElementById('messageContent').value;
-            const btn = event.target.querySelector('.save-btn');
-            const msgDiv = document.getElementById('messageMessage');
-
-            btn.disabled = true;
-            msgDiv.classList.remove('show');
-
-            try {
-                await addDoc(collection(db, 'messages'), {
-                    from: currentUser.email,
-                    fromName: `${memberData.firstName} ${memberData.lastName}`,
-                    subject: subject,
-                    initialMessage: content,
-                    dateSent: new Date(),
-                    read: false,
-                    replies: []
-                });
-
-                msgDiv.textContent = '✓ Message sent successfully!';
-                msgDiv.classList.add('show', 'success');
-                event.target.reset();
-                loadInbox();
-
-                setTimeout(() => msgDiv.classList.remove('show'), 3000);
-            } catch (error) {
-                msgDiv.textContent = 'Error sending message: ' + error.message;
-                msgDiv.classList.add('show', 'error');
-            } finally {
-                btn.disabled = false;
-            }
-        };
 
         window.handleForceUpdate = async function(event) {
             event.preventDefault();
