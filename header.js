@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li><a href="/#services">Services</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/#content">Content</a></li>
+                    <li><a href="/member-login/" class="cta-nav-secondary">Login</a></li>
                     <li><a href="/#membership" class="cta-nav">Join Now</a></li>
                 </ul>
                 <div class="hamburger" id="hamburger">
