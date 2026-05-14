@@ -291,10 +291,11 @@
 </div>
 
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs, onSnapshot, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
-    const app = firebase.initializeApp(config, { name: 'admin-inbox' });
+    const app = initializeApp(config, { name: 'admin-inbox' });
     const db = getFirestore(app);
 
     let allMessages = [];
