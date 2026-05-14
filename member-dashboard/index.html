@@ -279,7 +279,10 @@
     <div class="member-container">
         <div class="dashboard-header">
             <h1>Member Dashboard</h1>
-            <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+            <div style="display: flex; gap: 1rem;">
+                <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+                <button class="logout-btn" onclick="goToLogin()" style="background: var(--secondary);">← Back to Login</button>
+            </div>
         </div>
 
         <div class="tabs">
@@ -1317,6 +1320,10 @@
 
     <!-- Non-module script for onclick handlers -->
     <script>
+        function goToLogin() {
+            window.location.href = '/member-login/';
+        }
+
         function handleLogout() {
             if (window.handleLogout) {
                 return window.handleLogout();
