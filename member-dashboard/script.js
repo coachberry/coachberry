@@ -682,8 +682,12 @@ window.sendThreadReply = async function() {
             dateSent: new Date()
         });
 
-        // Mark as unread for admin so they see the member's reply
-        await updateDoc(msgRef, { replies, read: false });
+        // Mark as having unread replies for admin and set read to false
+        await updateDoc(msgRef, { 
+            replies, 
+            read: false,
+            hasUnreadReplies: true
+        });
 
         alert('Reply sent!');
         document.getElementById('threadReplyContent').value = '';
