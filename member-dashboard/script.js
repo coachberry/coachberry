@@ -90,28 +90,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     loadTeamsList();
                 }
 
-                // Load saved posts
-                loadSavedPosts();
-
-                // Migrate old savedPosts format to new format (if needed)
-                if (memberData.savedPosts && memberData.savedPosts.length > 0) {
-                    const firstPost = memberData.savedPosts[0];
-                    // Check if it's old format (string) instead of new format (object)
-                    if (typeof firstPost === 'string') {
-                        console.log('Migrating saved posts format...');
-                        const migratedPosts = memberData.savedPosts.map(postId => ({
-                            id: postId,
-                            title: 'Saved Blog',
-                            savedDate: new Date()
-                        }));
-                        await updateDoc(doc(db, 'members', memberData.id), {
-                            savedPosts: migratedPosts
-                        });
-                        memberData.savedPosts = migratedPosts;
-                        loadSavedPosts();
-                    }
-                }
-
                 // Restore last viewed tab (only for this session/refresh)
                 const lastTab = sessionStorage.getItem('memberDashboardTab') || 'profile';
                 const tabBtn = document.querySelector(`button[onclick="switchTab('${lastTab}')"]`);
