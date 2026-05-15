@@ -546,7 +546,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs, getDoc, updateDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, getDoc, updateDoc, doc, where, runTransaction } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -834,34 +834,13 @@
             saveBlogToMember(currentPostId, post.title);
         };
 
-        // Add blog to member's saved posts
-        let savingPostIds = new Set(); // Track all posts currently being saved
-        
+        // Add blog to member's saved posts using atomic transaction
         async function saveBlogToMember(postId, postTitle) {
             try {
-                // Prevent race condition - if already saving this post, return
-                if (savingPostIds.has(postId)) {
-                    alert('This blog is being saved, please wait...');
-                    return;
-                }
-                
-                savingPostIds.add(postId);
-                
-                // Disable both buttons immediately
-                const saveBtn = document.getElementById(`save-${postId}`);
-                if (saveBtn) {
-                    saveBtn.disabled = true;
-                }
-                const modalBtn = document.getElementById('save-modal-btn');
-                if (modalBtn) {
-                    modalBtn.disabled = true;
-                }
-                
                 const user = auth.currentUser;
                 if (!user) {
                     alert('Please log in to save blogs');
                     window.location.href = '/member-login/';
-                    savingPostIds.delete(postId);
                     return;
                 }
 
@@ -871,27 +850,67 @@
 
                 if (snapshot.empty) {
                     alert('Member profile not found');
-                    savingPostIds.delete(postId);
-                    if (saveBtn) saveBtn.disabled = false;
-                    if (modalBtn) modalBtn.disabled = false;
                     return;
                 }
 
-                const memberDoc = snapshot.docs[0];
-                const memberRef = memberDoc.ref;
+                const memberRef = snapshot.docs[0].ref;
 
-                // Get current saved posts
-                let savedPosts = memberDoc.data().savedPosts || [];
+                // Disable buttons immediately
+                const saveBtn = document.getElementById(`save-${postId}`);
+                if (saveBtn) saveBtn.disabled = true;
+                const modalBtn = document.getElementById('save-modal-btn');
+                if (modalBtn) modalBtn.disabled = true;
 
-                // Check if already saved - search by ID
-                const alreadySaved = savedPosts.some(p => {
-                    const id = typeof p === 'string' ? p : p.id;
-                    return id === postId;
+                // Use transaction to atomically check and save
+                const result = await runTransaction(db, async (transaction) => {
+                    const memberDoc = await transaction.get(memberRef);
+                    
+                    if (!memberDoc.exists()) {
+                        throw new Error('Member document not found');
+                    }
+
+                    const savedPosts = memberDoc.data().savedPosts || [];
+
+                    // Check if already saved
+                    const alreadySaved = savedPosts.some(p => {
+                        const id = typeof p === 'string' ? p : p.id;
+                        return id === postId;
+                    });
+
+                    if (alreadySaved) {
+                        return { success: false, message: 'already_saved' };
+                    }
+
+                    // Add new saved post
+                    const updatedPosts = [...savedPosts, {
+                        id: postId,
+                        title: postTitle,
+                        savedDate: new Date()
+                    }];
+
+                    // Atomic write
+                    transaction.update(memberRef, { savedPosts: updatedPosts });
+                    return { success: true, message: 'saved' };
                 });
-                
-                if (alreadySaved) {
+
+                // Handle result
+                if (result.success) {
+                    alert('Blog saved successfully!');
+                    
+                    // Update button state
+                    if (saveBtn) {
+                        saveBtn.classList.add('saved');
+                        saveBtn.textContent = '✓ Saved';
+                        saveBtn.disabled = true;
+                    }
+                    if (modalBtn) {
+                        modalBtn.classList.add('saved');
+                        modalBtn.textContent = '✓ Saved';
+                        modalBtn.disabled = true;
+                    }
+                } else if (result.message === 'already_saved') {
                     alert('This blog is already saved');
-                    savingPostIds.delete(postId);
+                    
                     // Mark buttons as saved
                     if (saveBtn) {
                         saveBtn.classList.add('saved');
@@ -903,39 +922,11 @@
                         modalBtn.textContent = '✓ Saved';
                         modalBtn.disabled = true;
                     }
-                    return;
                 }
-
-                // Add new saved post
-                savedPosts.push({
-                    id: postId,
-                    title: postTitle,
-                    savedDate: new Date()
-                });
-
-                // Update member document
-                await updateDoc(memberRef, { savedPosts });
-
-                alert('Blog saved successfully!');
-                
-                // Update button state
-                if (saveBtn) {
-                    saveBtn.classList.add('saved');
-                    saveBtn.textContent = '✓ Saved';
-                    saveBtn.disabled = true;
-                }
-
-                if (modalBtn) {
-                    modalBtn.classList.add('saved');
-                    modalBtn.textContent = '✓ Saved';
-                    modalBtn.disabled = true;
-                }
-                
-                savingPostIds.delete(postId);
             } catch (error) {
                 console.error('Error saving blog:', error);
-                alert('Error saving blog');
-                savingPostIds.delete(postId);
+                alert('Error saving blog: ' + error.message);
+                
                 // Re-enable buttons on error
                 const saveBtn = document.getElementById(`save-${postId}`);
                 if (saveBtn) saveBtn.disabled = false;
