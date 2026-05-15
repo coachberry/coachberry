@@ -134,11 +134,20 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 }
 
                 container.innerHTML = '';
+                
+                // Deduplicate - track which post IDs we've already rendered
+                const renderedIds = new Set();
 
                 for (const savedItem of savedPosts) {
                     try {
                         // Handle both old format (string ID) and new format (object with id, title, savedDate)
                         const postId = typeof savedItem === 'string' ? savedItem : savedItem.id;
+                        
+                        // Skip if we've already rendered this post
+                        if (renderedIds.has(postId)) {
+                            continue;
+                        }
+                        renderedIds.add(postId);
                         
                         // Get the blog post by document ID
                         const postRef = doc(db, 'blogPosts', postId);
