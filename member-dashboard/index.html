@@ -201,8 +201,8 @@
 
         .remove-post-btn {
             padding: 0.5rem 1rem;
-            background: var(--danger);
-            color: var(--white);
+            background: #dc3545;
+            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -638,8 +638,8 @@
                     }
                 }
 
-                // Restore last viewed tab
-                const lastTab = localStorage.getItem('memberDashboardTab') || 'profile';
+                // Restore last viewed tab (only for this session/refresh)
+                const lastTab = sessionStorage.getItem('memberDashboardTab') || 'profile';
                 const tabBtn = document.querySelector(`button[onclick="switchTab('${lastTab}')"]`);
                 if (tabBtn) {
                     tabBtn.click();
@@ -674,11 +674,25 @@
                             const post = postSnap.data();
                             const card = document.createElement('div');
                             card.className = 'post-card';
+                            card.style.cursor = 'pointer';
                             card.innerHTML = `
                                 <h3>${escapeHtml(post.title)}</h3>
                                 <p>${escapeHtml(post.content.substring(0, 100))}...</p>
-                                <button class="remove-post-btn" onclick="window.removePost('${postId}')">Remove</button>
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <button class="remove-post-btn" onclick="window.removePost('${postId}', event)" style="flex: 1;">Remove</button>
+                                </div>
                             `;
+                            card.onclick = (e) => {
+                                // Don't open blog if clicking remove button
+                                if (e.target.classList.contains('remove-post-btn')) return;
+                                // This will work if we're on the member dashboard and have access to blog functions
+                                if (window.openBlogFromSaved) {
+                                    window.openBlogFromSaved(postId);
+                                } else {
+                                    // Fallback: open blog page
+                                    window.location.href = '/blog/?post=' + postId;
+                                }
+                            };
                             container.appendChild(card);
                         }
                     } catch (e) {
@@ -690,7 +704,12 @@
             }
         }
 
-        window.removePost = async function(postId) {
+        window.removePost = async function(postId, event) {
+            // Prevent card click if event is passed
+            if (event) {
+                event.stopPropagation();
+            }
+            
             if (!confirm('Remove this post from saved items?')) return;
 
             try {
@@ -720,8 +739,8 @@
             });
             event.target.classList.add('active');
 
-            // Save current tab to localStorage
-            localStorage.setItem('memberDashboardTab', tabName);
+            // Save current tab to sessionStorage (only for current session/refresh)
+            sessionStorage.setItem('memberDashboardTab', tabName);
 
             // Load content when tabs are clicked
             if (tabName === 'inbox') {
