@@ -76,6 +76,24 @@ function sendThreadReply() {
     }
 }
 
+function archiveThreadMessage() {
+    if (window.archiveThreadMessage) {
+        return window.archiveThreadMessage();
+    }
+}
+
+function unarchiveThreadMessage() {
+    if (window.unarchiveThreadMessage) {
+        return window.unarchiveThreadMessage();
+    }
+}
+
+function deleteThreadMessage() {
+    if (window.deleteThreadMessage) {
+        return window.deleteThreadMessage();
+    }
+}
+
 function addPlayerTeamRow(org, age, idx) {
     if (window.addPlayerTeamRow) {
         return window.addPlayerTeamRow(org, age, idx);
