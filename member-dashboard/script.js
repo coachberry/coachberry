@@ -233,21 +233,21 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 
                 modal.innerHTML = `
                     <div class="modal-content">
-                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-light);">×</button>
+                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 3rem; cursor: pointer; background: none; border: none; color: #ffffff; z-index: 1001; line-height: 1; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; padding: 0;">×</button>
                         
                         <div class="blog-card-header" style="margin-bottom: 1rem; margin-left: -3rem; margin-right: -3rem; margin-top: -3rem; padding: 2rem; padding-bottom: 1rem;">
-                            <h2 style="margin: 0; color: white;">${escapeHtml(post.title)}</h2>
+                            <h2 style="margin: 0; color: #ffffff; font-size: 1.8rem; line-height: 1.3;">${escapeHtml(post.title)}</h2>
                         </div>
                         
                         <div class="blog-categories" style="margin-bottom: 1rem;">${categoriesHTML}</div>
                         
-                        <div class="blog-meta" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 2rem;">
+                        <div class="blog-meta" style="color: #666; font-size: 0.9rem; margin-bottom: 2rem;">
                             <span>${dateString}</span>
                         </div>
                         
-                        <div style="color: var(--text); line-height: 1.8; margin-bottom: 2rem; white-space: pre-wrap;">${escapeHtml(post.content)}</div>
+                        <div style="color: #333; line-height: 1.8; margin-bottom: 2rem; white-space: pre-wrap;">${escapeHtml(post.content)}</div>
                         
-                        <div class="blog-actions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                        <div class="blog-actions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #ddd;">
                             <button class="remove-post-btn" onclick="window.removePost('${postId}', event); this.closest('.modal').remove();" style="padding: 0.8rem 2rem; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">🗑️ Remove</button>
                         </div>
                     </div>
