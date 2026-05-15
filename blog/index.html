@@ -903,11 +903,13 @@
                 const user = auth.currentUser;
                 if (!user) return;
 
-                const memberRef = doc(db, 'members', user.uid);
-                const memberDoc = await getDoc(memberRef);
+                // Query by email to find the member document
+                const q = query(collection(db, 'members'), where('email', '==', user.email));
+                const snapshot = await getDocs(q);
 
-                if (!memberDoc.exists()) return;
+                if (snapshot.empty) return;
 
+                const memberDoc = snapshot.docs[0];
                 const savedPosts = memberDoc.data().savedPosts || [];
                 const isSaved = savedPosts.some(p => p.id === postId);
 
