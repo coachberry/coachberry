@@ -536,7 +536,9 @@
                 <div class="modal-date" id="modalDate"></div>
             </div>
             <div id="modalBody"></div>
-            <div class="blog-actions" id="modalActions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);"></div>
+            <div class="blog-actions" id="modalActions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <button class="save-blog-btn" onclick="saveBlogModal()" id="save-modal-btn">💾 Save Blog Post</button>
+            </div>
         </div>
     </div>
 
@@ -833,12 +835,33 @@
         };
 
         // Add blog to member's saved posts
+        let savingPostId = null; // Track if we're currently saving
+        
         async function saveBlogToMember(postId, postTitle) {
             try {
+                // Prevent race condition - if already saving this post, return
+                if (savingPostId === postId) {
+                    alert('This blog is already being saved...');
+                    return;
+                }
+                
+                savingPostId = postId;
+                
+                // Disable both buttons immediately
+                const saveBtn = document.getElementById(`save-${postId}`);
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                }
+                const modalBtn = document.getElementById('save-modal-btn');
+                if (modalBtn) {
+                    modalBtn.disabled = true;
+                }
+                
                 const user = auth.currentUser;
                 if (!user) {
                     alert('Please log in to save blogs');
                     window.location.href = '/member-login/';
+                    savingPostId = null;
                     return;
                 }
 
@@ -848,6 +871,9 @@
 
                 if (snapshot.empty) {
                     alert('Member profile not found');
+                    savingPostId = null;
+                    if (saveBtn) saveBtn.disabled = false;
+                    if (modalBtn) modalBtn.disabled = false;
                     return;
                 }
 
@@ -860,6 +886,18 @@
                 // Check if already saved
                 if (savedPosts.find(p => p.id === postId)) {
                     alert('This blog is already saved');
+                    savingPostId = null;
+                    // Mark buttons as saved
+                    if (saveBtn) {
+                        saveBtn.classList.add('saved');
+                        saveBtn.textContent = '✓ Saved';
+                        saveBtn.disabled = true;
+                    }
+                    if (modalBtn) {
+                        modalBtn.classList.add('saved');
+                        modalBtn.textContent = '✓ Saved';
+                        modalBtn.disabled = true;
+                    }
                     return;
                 }
 
@@ -876,21 +914,30 @@
                 alert('Blog saved successfully!');
                 
                 // Update button state
-                const saveBtn = document.getElementById(`save-${postId}`);
                 if (saveBtn) {
                     saveBtn.classList.add('saved');
                     saveBtn.textContent = '✓ Saved';
                     saveBtn.disabled = true;
                 }
 
-                const modalBtn = document.getElementById('save-modal-btn');
                 if (modalBtn) {
                     modalBtn.classList.add('saved');
                     modalBtn.textContent = '✓ Saved';
                     modalBtn.disabled = true;
                 }
+                
+                savingPostId = null;
             } catch (error) {
                 console.error('Error saving blog:', error);
+                alert('Error saving blog');
+                savingPostId = null;
+                // Re-enable buttons on error
+                const saveBtn = document.getElementById(`save-${postId}`);
+                if (saveBtn) saveBtn.disabled = false;
+                const modalBtn = document.getElementById('save-modal-btn');
+                if (modalBtn) modalBtn.disabled = false;
+            }
+        }
                 alert('Error saving blog');
             }
         }
