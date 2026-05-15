@@ -26,7 +26,20 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
 
         function formatDate(timestamp) {
             if (!timestamp) return 'N/A';
-            const date = new Date(timestamp.seconds * 1000);
+            
+            let date;
+            // Handle both Firestore Timestamp objects and JavaScript Date objects
+            if (timestamp.seconds) {
+                // Firestore Timestamp
+                date = new Date(timestamp.seconds * 1000);
+            } else if (timestamp instanceof Date) {
+                // JavaScript Date
+                date = timestamp;
+            } else {
+                // Try to parse as date
+                date = new Date(timestamp);
+            }
+            
             return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         }
 
@@ -386,11 +399,18 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
         // Load inbox - show message threads
         async function loadInbox() {
             try {
-                console.log('loadInbox called for user:', currentUser?.email);
                 const container = document.getElementById('inboxList');
-                container.innerHTML = '';
+                
+                if (!currentUser) {
+                    console.error('currentUser not set');
+                    container.innerHTML = '<div class="empty-state">Error: User not authenticated</div>';
+                    return;
+                }
+                
+                console.log('loadInbox called for user:', currentUser.email);
+                container.innerHTML = '<div class="empty-state">Loading messages...</div>';
 
-                // Get member's sent messages (exclude deleted)
+                // Get member's sent messages (exclude deleted and archived)
                 const sentQ = query(
                     collection(db, 'messages'),
                     where('from', '==', currentUser.email),
@@ -399,7 +419,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 const sentSnapshot = await getDocs(sentQ);
                 console.log('Found sent messages:', sentSnapshot.size);
                 
-                // Get broadcast messages sent to this member (exclude deleted)
+                // Get broadcast messages sent to this member (exclude deleted and archived)
                 const broadcastQ = query(
                     collection(db, 'messages'),
                     where('isBroadcast', '==', true),
@@ -409,28 +429,36 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 const broadcastSnapshot = await getDocs(broadcastQ);
                 console.log('Found broadcast messages:', broadcastSnapshot.size);
 
-                // Combine and filter out deleted messages
+                // Combine messages
                 const allMessages = [];
+                
                 sentSnapshot.forEach(doc => {
                     const msg = doc.data();
-                    console.log('Sent message:', msg.subject, 'deleted:', msg.deleted, 'archived:', msg.archived);
-                    if (!msg.deleted) {
+                    console.log('Processing sent message:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived, from: msg.from});
+                    if (!msg.deleted && !msg.archived) {
                         allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: false });
                     }
                 });
+                
                 broadcastSnapshot.forEach(doc => {
                     const msg = doc.data();
-                    console.log('Broadcast message:', msg.subject, 'deleted:', msg.deleted, 'archived:', msg.archived);
-                    if (!msg.deleted) {
+                    console.log('Processing broadcast message:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived});
+                    if (!msg.deleted && !msg.archived) {
                         allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: true });
                     }
                 });
 
-                console.log('Total messages to display:', allMessages.length);
+                console.log('Total messages after filtering:', allMessages.length);
 
                 // Sort by date
-                allMessages.sort((a, b) => b.dateSent - a.dateSent);
+                allMessages.sort((a, b) => {
+                    const aTime = a.dateSent?.seconds ? a.dateSent.seconds : (a.dateSent instanceof Date ? a.dateSent.getTime() / 1000 : 0);
+                    const bTime = b.dateSent?.seconds ? b.dateSent.seconds : (b.dateSent instanceof Date ? b.dateSent.getTime() / 1000 : 0);
+                    return bTime - aTime;
+                });
 
+                container.innerHTML = '';
+                
                 if (allMessages.length === 0) {
                     container.innerHTML = '<div class="empty-state">No messages yet.</div>';
                     return;
@@ -463,6 +491,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 });
             } catch (error) {
                 console.error('Error loading inbox:', error);
+                document.getElementById('inboxList').innerHTML = '<div class="empty-state">Error loading messages: ' + error.message + '</div>';
             }
         }
 
