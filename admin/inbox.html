@@ -407,7 +407,7 @@
             });
 
             // Update unread count badge
-            const unreadCount = allMessages.filter(msg => !msg.read).length;
+            const unreadCount = allMessages.filter(msg => !msg.read || msg.hasUnreadReplies).length;
             const unreadBadge = document.getElementById('adminInboxUnreadBadge');
             if (unreadCount > 0) {
                 unreadBadge.textContent = unreadCount;
@@ -489,8 +489,9 @@
 
         messagesList.innerHTML = filteredMessages.map(message => {
             const preview = message.initialMessage.substring(0, 100) + (message.initialMessage.length > 100 ? '...' : '');
+            const isUnread = !message.read || message.hasUnreadReplies;
             return `
-                <div class="message-item ${!message.read ? 'unread' : ''}" onclick="openMessage('${message.id}')">
+                <div class="message-item ${isUnread ? 'unread' : ''}" onclick="openMessage('${message.id}')">
                     <div class="message-header">
                         <div>
                             <div class="message-from">${escapeHtml(message.fromName || message.from || 'Unknown')}</div>
@@ -500,7 +501,7 @@
                     </div>
                     <div class="message-meta">
                         <span>${formatDate(message.dateSent)}</span>
-                        ${!message.read ? '<span style="color: var(--accent); font-weight: 600;">●</span>' : ''}
+                        ${isUnread ? '<span style="color: var(--accent); font-weight: 600;">●</span>' : ''}
                     </div>
                 </div>
             `;
@@ -721,7 +722,7 @@
             });
 
             // If message was archived, unarchive it when replying
-            const updateData = { replies };
+            const updateData = { replies, hasUnreadReplies: false };
             if (currentMessageIsArchived) {
                 updateData.archived = false;
             }
