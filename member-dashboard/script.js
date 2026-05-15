@@ -201,7 +201,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
             }
         };
 
-        // Open saved blog post in a modal (similar to blog page)
+        // Open saved blog post in a modal (match /blog page styling)
         window.openSavedPost = async function(postId) {
             try {
                 const postRef = doc(db, 'blogPosts', postId);
@@ -221,18 +221,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     categoriesHTML = post.categories.map(cat => `<span class="blog-category">${escapeHtml(cat)}</span>`).join('');
                 }
 
-                // Create and show modal
+                // Create and show modal with proper styling
                 const modal = document.createElement('div');
-                modal.className = 'modal';
-                modal.style.display = 'flex';
-                modal.style.alignItems = 'center';
-                modal.style.justifyContent = 'center';
+                modal.className = 'modal active';
+                modal.onclick = (e) => {
+                    // Close if clicking outside the modal-content
+                    if (e.target === modal) {
+                        modal.remove();
+                    }
+                };
+                
                 modal.innerHTML = `
-                    <div style="background: var(--white); padding: 2rem; border-radius: 12px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
+                    <div class="modal-content">
                         <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-light);">×</button>
                         
-                        <div class="blog-card-header" style="margin-bottom: 1rem;">
-                            <h2 style="margin: 0; color: var(--primary-dark);">${escapeHtml(post.title)}</h2>
+                        <div class="blog-card-header" style="margin-bottom: 1rem; margin-left: -3rem; margin-right: -3rem; margin-top: -3rem; padding: 2rem; padding-bottom: 1rem;">
+                            <h2 style="margin: 0; color: white;">${escapeHtml(post.title)}</h2>
                         </div>
                         
                         <div class="blog-categories" style="margin-bottom: 1rem;">${categoriesHTML}</div>
