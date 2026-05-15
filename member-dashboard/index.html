@@ -635,9 +635,12 @@
 
                 container.innerHTML = '';
 
-                for (const postId of savedPosts) {
+                for (const savedItem of savedPosts) {
                     try {
-                        const postSnap = await getDocs(query(collection(db, 'blogPosts'), where('__name__', '==', postId)));
+                        // Handle both old format (string ID) and new format (object with id, title, savedDate)
+                        const postId = typeof savedItem === 'string' ? savedItem : savedItem.id;
+                        const postSnap = await getDocs(query(collection(db, 'blogPosts'), where('id', '==', postId)));
+                        
                         if (!postSnap.empty) {
                             const post = postSnap.docs[0].data();
                             const card = document.createElement('div');
@@ -662,7 +665,10 @@
             if (!confirm('Remove this post from saved items?')) return;
 
             try {
-                const updatedPosts = memberData.savedPosts.filter(id => id !== postId);
+                const updatedPosts = memberData.savedPosts.filter(item => {
+                    const id = typeof item === 'string' ? item : item.id;
+                    return id !== postId;
+                });
                 await updateDoc(doc(db, 'members', memberData.id), {
                     savedPosts: updatedPosts
                 });
@@ -685,9 +691,12 @@
             });
             event.target.classList.add('active');
 
-            // Load inbox when inbox tab is clicked
+            // Load content when tabs are clicked
             if (tabName === 'inbox') {
                 loadInbox();
+            }
+            if (tabName === 'saved') {
+                loadSavedPosts();
             }
         };
 
