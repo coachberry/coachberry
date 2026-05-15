@@ -618,6 +618,13 @@
 
                 // Load saved posts
                 loadSavedPosts();
+
+                // Restore last viewed tab
+                const lastTab = localStorage.getItem('memberDashboardTab') || 'profile';
+                const tabBtn = document.querySelector(`button[onclick="switchTab('${lastTab}')"]`);
+                if (tabBtn) {
+                    tabBtn.click();
+                }
             } catch (error) {
                 console.error('Error loading member data:', error);
             }
@@ -690,6 +697,9 @@
                 el.classList.remove('active');
             });
             event.target.classList.add('active');
+
+            // Save current tab to localStorage
+            localStorage.setItem('memberDashboardTab', tabName);
 
             // Load content when tabs are clicked
             if (tabName === 'inbox') {
