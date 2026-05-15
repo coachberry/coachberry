@@ -557,6 +557,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
             }
         };
 
+        window.updatePlayerPositions = function() {
+            // This is called when position checkboxes change
+            // Currently just a placeholder - positions are saved when form is submitted
+            console.log('Player positions updated');
+        };
+
         window.handlePlayerProfileUpdate = async function(event) {
             event.preventDefault();
 
@@ -870,4 +876,3 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 alert('Error logging out: ' + error.message);
             }
         };
-    </script>
