@@ -410,41 +410,40 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 console.log('loadInbox called for user:', currentUser.email);
                 container.innerHTML = '<div class="empty-state">Loading messages...</div>';
 
-                // Get member's sent messages (exclude deleted and archived)
+                // Get all messages for this member - both sent by them and broadcast to them
+                const allMessages = [];
+                
+                // Query 1: Messages sent BY this member
                 const sentQ = query(
                     collection(db, 'messages'),
                     where('from', '==', currentUser.email),
                     orderBy('dateSent', 'desc')
                 );
                 const sentSnapshot = await getDocs(sentQ);
-                console.log('Found sent messages:', sentSnapshot.size);
+                console.log('Found messages sent by member:', sentSnapshot.size);
                 
-                // Get broadcast messages sent to this member (exclude deleted and archived)
+                sentSnapshot.forEach(doc => {
+                    const msg = doc.data();
+                    console.log('Message from member:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived});
+                    if (!msg.deleted && !msg.archived) {
+                        allMessages.push({ id: doc.id, ...msg, messageType: 'sent' });
+                    }
+                });
+
+                // Query 2: Broadcast messages sent TO this member
                 const broadcastQ = query(
                     collection(db, 'messages'),
-                    where('isBroadcast', '==', true),
                     where('broadcastTo', '==', currentUser.email),
                     orderBy('dateSent', 'desc')
                 );
                 const broadcastSnapshot = await getDocs(broadcastQ);
-                console.log('Found broadcast messages:', broadcastSnapshot.size);
-
-                // Combine messages
-                const allMessages = [];
-                
-                sentSnapshot.forEach(doc => {
-                    const msg = doc.data();
-                    console.log('Processing sent message:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived, from: msg.from});
-                    if (!msg.deleted && !msg.archived) {
-                        allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: false });
-                    }
-                });
+                console.log('Found broadcast messages sent to member:', broadcastSnapshot.size);
                 
                 broadcastSnapshot.forEach(doc => {
                     const msg = doc.data();
-                    console.log('Processing broadcast message:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived});
+                    console.log('Broadcast message to member:', {subject: msg.subject, deleted: msg.deleted, archived: msg.archived});
                     if (!msg.deleted && !msg.archived) {
-                        allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: true });
+                        allMessages.push({ id: doc.id, ...msg, messageType: 'broadcast' });
                     }
                 });
 
@@ -475,7 +474,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     
                     const lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
                     const lastDate = lastReply ? formatDate(lastReply.dateSent) : formatDate(msg.dateSent);
-                    const broadcastBadge = msg.isBroadcastMessage ? '<span style="display: inline-block; background: #FF2400; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📢 BROADCAST</span>' : '';
+                    const broadcastBadge = msg.messageType === 'broadcast' ? '<span style="display: inline-block; background: #FF2400; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📢 BROADCAST</span>' : '';
                     
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: start;">
