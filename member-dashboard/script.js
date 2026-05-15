@@ -134,7 +134,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                         if (postSnap.exists()) {
                             const post = postSnap.data();
                             const excerpt = post.content.substring(0, 150) + (post.content.length > 150 ? '...' : '');
-                            const dateString = post.dateCreated ? new Date(post.dateCreated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'No date';
+                            const dateString = post.datePublished ? new Date(post.datePublished.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'No date';
                             
                             // Build categories HTML
                             let categoriesHTML = '';
@@ -213,7 +213,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 }
 
                 const post = postSnap.data();
-                const dateString = post.dateCreated ? new Date(post.dateCreated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'No date';
+                const dateString = post.datePublished ? new Date(post.datePublished.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'No date';
                 
                 // Build categories HTML
                 let categoriesHTML = '';
