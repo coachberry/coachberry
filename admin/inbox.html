@@ -406,6 +406,16 @@
                 }
             });
 
+            // Update unread count badge
+            const unreadCount = allMessages.filter(msg => !msg.read).length;
+            const unreadBadge = document.getElementById('adminInboxUnreadBadge');
+            if (unreadCount > 0) {
+                unreadBadge.textContent = unreadCount;
+                unreadBadge.style.display = 'inline-flex';
+            } else {
+                unreadBadge.style.display = 'none';
+            }
+
             updateStats();
             displayMessages();
             displayArchivedMessages(archivedMessages);
