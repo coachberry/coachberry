@@ -371,22 +371,50 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
         // Load inbox - show message threads
         async function loadInbox() {
             try {
-                const q = query(
+                const container = document.getElementById('inboxList');
+                container.innerHTML = '';
+
+                // Get member's sent messages (exclude deleted)
+                const sentQ = query(
                     collection(db, 'messages'),
                     where('from', '==', currentUser.email),
                     orderBy('dateSent', 'desc')
                 );
-                const snapshot = await getDocs(q);
-                const container = document.getElementById('inboxList');
-                container.innerHTML = '';
+                const sentSnapshot = await getDocs(sentQ);
+                
+                // Get broadcast messages sent to this member (exclude deleted)
+                const broadcastQ = query(
+                    collection(db, 'messages'),
+                    where('isBroadcast', '==', true),
+                    where('broadcastTo', '==', currentUser.email),
+                    orderBy('dateSent', 'desc')
+                );
+                const broadcastSnapshot = await getDocs(broadcastQ);
 
-                if (snapshot.empty) {
-                    container.innerHTML = '<div class="empty-state">No message threads yet.</div>';
+                // Combine and filter out deleted messages
+                const allMessages = [];
+                sentSnapshot.forEach(doc => {
+                    const msg = doc.data();
+                    if (!msg.deleted) {
+                        allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: false });
+                    }
+                });
+                broadcastSnapshot.forEach(doc => {
+                    const msg = doc.data();
+                    if (!msg.deleted) {
+                        allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: true });
+                    }
+                });
+
+                // Sort by date
+                allMessages.sort((a, b) => b.dateSent - a.dateSent);
+
+                if (allMessages.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No messages yet.</div>';
                     return;
                 }
 
-                snapshot.forEach(doc => {
-                    const msg = doc.data();
+                allMessages.forEach(msg => {
                     const replies = msg.replies || [];
                     const hasNewReplies = replies.length > 0;
                     
@@ -397,17 +425,18 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     
                     const lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
                     const lastDate = lastReply ? formatDate(lastReply.dateSent) : formatDate(msg.dateSent);
+                    const broadcastBadge = msg.isBroadcastMessage ? '<span style="display: inline-block; background: #FF2400; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📢 BROADCAST</span>' : '';
                     
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <div style="flex: 1;">
-                                <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-dark);">${escapeHtml(msg.subject)}</h4>
+                                <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-dark);">${escapeHtml(msg.subject)}${broadcastBadge}</h4>
                                 <p style="margin: 0 0 0.5rem 0; color: var(--text-light); font-size: 0.9rem;">${lastDate}</p>
                                 ${hasNewReplies ? '<p style="margin: 0; color: var(--accent); font-weight: 600;">💬 ' + replies.length + ' reply(replies)</p>' : ''}
                             </div>
                         </div>
                     `;
-                    card.onclick = () => openThreadModal(doc.id);
+                    card.onclick = () => openThreadModal(msg.id);
                     container.appendChild(card);
                 });
             } catch (error) {
@@ -496,6 +525,26 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
             } catch (error) {
                 console.error('Error sending reply:', error);
                 alert('Error sending reply: ' + error.message);
+            }
+        };
+
+        window.deleteThreadMessage = async function() {
+            if (!currentThreadId) return;
+
+            if (!confirm('Delete this message thread? It will be hidden from your inbox, but will reappear if the coach replies.')) {
+                return;
+            }
+
+            try {
+                const msgRef = doc(db, 'messages', currentThreadId);
+                await updateDoc(msgRef, { deleted: true });
+
+                alert('Message deleted');
+                closeThreadModal();
+                loadInbox();
+            } catch (error) {
+                console.error('Error deleting message:', error);
+                alert('Error deleting message: ' + error.message);
             }
         };
 
