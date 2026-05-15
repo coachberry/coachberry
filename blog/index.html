@@ -869,7 +869,10 @@
                         throw new Error('Member document not found');
                     }
 
-                    const savedPosts = memberDoc.data().savedPosts || [];
+                    let savedPosts = memberDoc.data().savedPosts || [];
+                    
+                    // Filter out any empty objects
+                    savedPosts = savedPosts.filter(p => p && (typeof p === 'string' ? p.trim() : p.id));
 
                     // Check if already saved
                     const alreadySaved = savedPosts.some(p => {
