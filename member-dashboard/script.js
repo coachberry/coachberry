@@ -413,11 +413,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 // Get all messages for this member - both sent by them and broadcast to them
                 const allMessages = [];
                 
-                // Query 1: Messages sent BY this member
+                // Query 1: Messages sent BY this member (NO orderBy - will sort in JS)
                 const sentQ = query(
                     collection(db, 'messages'),
-                    where('from', '==', currentUser.email),
-                    orderBy('dateSent', 'desc')
+                    where('from', '==', currentUser.email)
                 );
                 const sentSnapshot = await getDocs(sentQ);
                 console.log('Found messages sent by member:', sentSnapshot.size);
@@ -430,11 +429,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     }
                 });
 
-                // Query 2: Broadcast messages sent TO this member
+                // Query 2: Broadcast messages sent TO this member (NO orderBy - will sort in JS)
                 const broadcastQ = query(
                     collection(db, 'messages'),
-                    where('broadcastTo', '==', currentUser.email),
-                    orderBy('dateSent', 'desc')
+                    where('broadcastTo', '==', currentUser.email)
                 );
                 const broadcastSnapshot = await getDocs(broadcastQ);
                 console.log('Found broadcast messages sent to member:', broadcastSnapshot.size);
@@ -449,7 +447,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
 
                 console.log('Total messages after filtering:', allMessages.length);
 
-                // Sort by date
+                // Sort by date (descending) - doing this in JavaScript instead of Firestore
                 allMessages.sort((a, b) => {
                     const aTime = a.dateSent?.seconds ? a.dateSent.seconds : (a.dateSent instanceof Date ? a.dateSent.getTime() / 1000 : 0);
                     const bTime = b.dateSent?.seconds ? b.dateSent.seconds : (b.dateSent instanceof Date ? b.dateSent.getTime() / 1000 : 0);
