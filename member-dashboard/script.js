@@ -348,6 +348,19 @@ window.switchTab = function(tabName) {
     }
 };
 
+window.toggleArchivedMessages = function() {
+    const container = document.getElementById('archivedMessagesContainer');
+    const icon = document.getElementById('archivedToggleIcon');
+    
+    if (container.style.display === 'none') {
+        container.style.display = 'block';
+        icon.style.transform = 'rotate(180deg)';
+    } else {
+        container.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+    }
+};
+
 window.handleProfileUpdate = async function(event) {
     event.preventDefault();
     const btn = event.target.querySelector('.save-btn');
@@ -538,6 +551,84 @@ async function loadInbox() {
     } catch (error) {
         console.error('Error loading inbox:', error);
         document.getElementById('inboxList').innerHTML = '<div class="empty-state">Error loading messages: ' + error.message + '</div>';
+    }
+
+    // Also load archived messages
+    try {
+        const archivedContainer = document.getElementById('archivedMessagesList');
+        
+        // Query for archived messages
+        const archivedSentQ = query(
+            collection(db, 'messages'),
+            where('from', '==', currentUser.email),
+            where('archived', '==', true)
+        );
+        const archivedSentSnapshot = await getDocs(archivedSentQ);
+        
+        const archivedBroadcastQ = query(
+            collection(db, 'messages'),
+            where('broadcastTo', '==', currentUser.email),
+            where('archived', '==', true)
+        );
+        const archivedBroadcastSnapshot = await getDocs(archivedBroadcastQ);
+
+        const archivedMessages = [];
+        
+        archivedSentSnapshot.forEach(doc => {
+            const msg = doc.data();
+            if (!msg.deleted) {
+                archivedMessages.push({ id: doc.id, ...msg, messageType: 'sent' });
+            }
+        });
+
+        archivedBroadcastSnapshot.forEach(doc => {
+            const msg = doc.data();
+            if (!msg.deleted) {
+                archivedMessages.push({ id: doc.id, ...msg, messageType: 'broadcast' });
+            }
+        });
+
+        // Sort by date
+        archivedMessages.sort((a, b) => {
+            const aTime = a.dateSent?.seconds ? a.dateSent.seconds : (a.dateSent instanceof Date ? a.dateSent.getTime() / 1000 : 0);
+            const bTime = b.dateSent?.seconds ? b.dateSent.seconds : (b.dateSent instanceof Date ? b.dateSent.getTime() / 1000 : 0);
+            return bTime - aTime;
+        });
+
+        archivedContainer.innerHTML = '';
+
+        if (archivedMessages.length === 0) {
+            archivedContainer.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No archived messages.</div>';
+            return;
+        }
+
+        archivedMessages.forEach(msg => {
+            const replies = msg.replies || [];
+            const hasNewReplies = replies.length > 0;
+            
+            const card = document.createElement('div');
+            card.style.cssText = 'background: var(--white); padding: 1.5rem; border-radius: 8px; cursor: pointer; border-left: 4px solid ' + (hasNewReplies ? 'var(--accent)' : '#ddd') + '; transition: all 0.3s ease; user-select: none; opacity: 0.7;';
+            card.onmouseover = () => card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+            card.onmouseout = () => card.style.boxShadow = 'none';
+            
+            const lastReply = replies.length > 0 ? replies[replies.length - 1] : null;
+            const lastDate = lastReply ? formatDate(lastReply.dateSent) : formatDate(msg.dateSent);
+            const broadcastBadge = msg.messageType === 'broadcast' ? '<span style="display: inline-block; background: #FF2400; color: white; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem;">📢 BROADCAST</span>' : '';
+            
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-dark);">${escapeHtml(msg.subject)}${broadcastBadge}</h4>
+                        <p style="margin: 0 0 0.5rem 0; color: var(--text-light); font-size: 0.9rem;">${lastDate}</p>
+                        ${hasNewReplies ? '<p style="margin: 0; color: var(--accent); font-weight: 600;">💬 ' + replies.length + ' reply(replies)</p>' : ''}
+                    </div>
+                </div>
+            `;
+            card.onclick = () => openThreadModal(msg.id);
+            archivedContainer.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error loading archived messages:', error);
     }
 }
 
