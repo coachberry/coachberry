@@ -296,6 +296,7 @@
         .blog-actions {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 1rem;
             margin-top: 1rem;
             flex-wrap: wrap;
@@ -545,7 +546,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, getDocs, getDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, getDocs, getDoc, updateDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -704,8 +705,8 @@
                             <span>${dateString}</span>
                         </div>
                         <div class="blog-actions">
-                            <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
                             <button class="save-blog-btn" onclick="saveBlogCard('${post.id}', '${escapeHtml(post.title)}')" id="save-${post.id}">💾 Save</button>
+                            <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
                         </div>
                     </div>
                 `;
@@ -843,14 +844,17 @@
                     return;
                 }
 
-                // Get member document
-                const memberRef = doc(db, 'members', user.uid);
-                const memberDoc = await getDoc(memberRef);
+                // Get member document by email
+                const q = query(collection(db, 'members'), where('email', '==', user.email));
+                const snapshot = await getDocs(q);
 
-                if (!memberDoc.exists()) {
+                if (snapshot.empty) {
                     alert('Member profile not found');
                     return;
                 }
+
+                const memberDoc = snapshot.docs[0];
+                const memberRef = memberDoc.ref;
 
                 // Get current saved posts
                 let savedPosts = memberDoc.data().savedPosts || [];
