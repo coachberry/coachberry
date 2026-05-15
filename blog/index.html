@@ -694,6 +694,12 @@
 
                 const card = document.createElement('div');
                 card.className = 'blog-card';
+                card.style.cursor = 'pointer';
+                card.onclick = (e) => {
+                    // Don't open if clicking Save button
+                    if (e.target.classList.contains('save-blog-btn')) return;
+                    openPost(post.id);
+                };
                 card.innerHTML = `
                     <div class="blog-card-header">
                         <h3>${escapeHtml(post.title)}</h3>
