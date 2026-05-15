@@ -394,7 +394,7 @@
             const messagesQuery = query(collection(db, 'messages'), orderBy('dateSent', 'desc'));
             const snapshot = await getDocs(messagesQuery);
             allMessages = [];
-            let archivedMessages = [];
+            archivedMessages = [];
 
             snapshot.forEach(doc => {
                 const msg = doc.data();
@@ -423,23 +423,28 @@
             return;
         }
 
-        archivedList.innerHTML = archivedMessages.map(message => {
+        archivedList.innerHTML = '';
+        archivedMessages.forEach(message => {
             const preview = message.initialMessage.substring(0, 100) + (message.initialMessage.length > 100 ? '...' : '');
-            return `
-                <div class="message-item" onclick="openMessage('${message.id}', true)" style="opacity: 0.7;">
-                    <div class="message-header">
-                        <div>
-                            <div class="message-from">${escapeHtml(message.fromName || message.from || 'Unknown')}</div>
-                            <div class="message-subject">${escapeHtml(message.subject || 'No Subject')}</div>
-                            <div class="message-preview">${escapeHtml(preview)}</div>
-                        </div>
-                    </div>
-                    <div class="message-meta">
-                        <span>${formatDate(message.dateSent)}</span>
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            messageItem.style.opacity = '0.7';
+            messageItem.style.cursor = 'pointer';
+            messageItem.onclick = () => openMessage(message.id, true);
+            messageItem.innerHTML = `
+                <div class="message-header">
+                    <div>
+                        <div class="message-from">${escapeHtml(message.fromName || message.from || 'Unknown')}</div>
+                        <div class="message-subject">${escapeHtml(message.subject || 'No Subject')}</div>
+                        <div class="message-preview">${escapeHtml(preview)}</div>
                     </div>
                 </div>
+                <div class="message-meta">
+                    <span>${formatDate(message.dateSent)}</span>
+                </div>
             `;
-        }).join('');
+            archivedList.appendChild(messageItem);
+        });
     }
 
     // Export loadInbox to window immediately
@@ -542,6 +547,7 @@
 
     let currentMessageId = null;
     let currentMessageIsArchived = false;
+    let currentMessageIsBroadcast = false;
     let archivedMessages = [];
 
     window.openMessage = async function(messageId, isArchived = false) {
@@ -556,6 +562,7 @@
 
         currentMessageId = messageId;
         currentMessageIsArchived = isArchived;
+        currentMessageIsBroadcast = message.isBroadcast || false;
 
         document.getElementById('modalFrom').textContent = escapeHtml(message.fromName || message.from || 'Unknown');
         document.getElementById('modalEmail').textContent = escapeHtml(message.email || message.from || 'N/A');
@@ -584,20 +591,36 @@
             repliesSection.style.display = 'none';
         }
 
-        // Show/hide archive and unarchive buttons based on message state
+        // Show/hide buttons based on message location and type
+        const replyBtn = document.querySelector('button[onclick="sendReply()"]');
         const archiveBtn = document.getElementById('archiveBtn');
         const unarchiveBtn = document.getElementById('unarchiveBtn');
+        const deleteBtn = document.querySelector('button[onclick="deleteMessage()"]');
         
+        // All messages in archive can be unarchived and deleted
         if (isArchived) {
+            if (replyBtn) replyBtn.style.display = 'block';
             archiveBtn.style.display = 'none';
             unarchiveBtn.style.display = 'block';
-        } else {
+            if (deleteBtn) deleteBtn.style.display = 'block';
+        } 
+        // Broadcast messages can be archived and deleted, but not replied to
+        else if (currentMessageIsBroadcast) {
+            if (replyBtn) replyBtn.style.display = 'none';
             archiveBtn.style.display = 'block';
             unarchiveBtn.style.display = 'none';
+            if (deleteBtn) deleteBtn.style.display = 'block';
+        }
+        // Regular messages can be replied to, archived, and deleted
+        else {
+            if (replyBtn) replyBtn.style.display = 'block';
+            archiveBtn.style.display = 'block';
+            unarchiveBtn.style.display = 'none';
+            if (deleteBtn) deleteBtn.style.display = 'block';
         }
 
-        // Mark message as read if not archived
-        if (!isArchived) {
+        // Mark message as read if not archived and not broadcast
+        if (!isArchived && !currentMessageIsBroadcast) {
             try {
                 await updateDoc(doc(db, 'messages', messageId), { read: true });
             } catch (error) {
@@ -659,6 +682,11 @@
 
     window.sendReply = async function() {
         if (!currentMessageId) return;
+        
+        if (currentMessageIsBroadcast) {
+            alert('Cannot reply to broadcast messages');
+            return;
+        }
 
         const replyContent = document.getElementById('replyContent').value.trim();
         if (!replyContent) {
