@@ -555,9 +555,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
 
                 const msg = msgDoc.data();
                 currentThreadId = messageId;
+                currentThreadIsArchived = msg.archived || false;
 
                 document.getElementById('threadSubject').textContent = escapeHtml(msg.subject);
                 document.getElementById('threadReplyContent').value = '';
+
+                // Show/hide archive and unarchive buttons
+                const archiveBtn = document.getElementById('archiveThreadBtn');
+                const unarchiveBtn = document.getElementById('unarchiveThreadBtn');
+                
+                if (currentThreadIsArchived) {
+                    archiveBtn.style.display = 'none';
+                    unarchiveBtn.style.display = 'block';
+                } else {
+                    archiveBtn.style.display = 'block';
+                    unarchiveBtn.style.display = 'none';
+                }
 
                 // Build the message thread
                 let threadHTML = `
@@ -645,6 +658,38 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
             } catch (error) {
                 console.error('Error deleting message:', error);
                 alert('Error deleting message: ' + error.message);
+            }
+        };
+
+        window.archiveThreadMessage = async function() {
+            if (!currentThreadId) return;
+
+            try {
+                const msgRef = doc(db, 'messages', currentThreadId);
+                await updateDoc(msgRef, { archived: true });
+
+                alert('Message archived');
+                closeThreadModal();
+                loadInbox();
+            } catch (error) {
+                console.error('Error archiving message:', error);
+                alert('Error archiving message: ' + error.message);
+            }
+        };
+
+        window.unarchiveThreadMessage = async function() {
+            if (!currentThreadId) return;
+
+            try {
+                const msgRef = doc(db, 'messages', currentThreadId);
+                await updateDoc(msgRef, { archived: false });
+
+                alert('Message moved back to inbox');
+                closeThreadModal();
+                loadInbox();
+            } catch (error) {
+                console.error('Error unarchiving message:', error);
+                alert('Error unarchiving message: ' + error.message);
             }
         };
 
