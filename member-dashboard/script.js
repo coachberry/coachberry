@@ -144,6 +144,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
 
                             const card = document.createElement('div');
                             card.className = 'blog-card';
+                            card.style.cursor = 'pointer';
+                            card.onclick = (e) => {
+                                // Don't open if clicking Remove button
+                                if (e.target.classList.contains('remove-post-btn')) return;
+                                window.openSavedPost(postId);
+                            };
                             card.innerHTML = `
                                 <div class="blog-card-header">
                                     <h3>${escapeHtml(post.title)}</h3>
