@@ -233,10 +233,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                 
                 modal.innerHTML = `
                     <div class="modal-content">
-                        <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 3rem; cursor: pointer; background: none; border: none; color: #ffffff; z-index: 1001; line-height: 1; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; padding: 0;">×</button>
-                        
-                        <div class="blog-card-header" style="margin-bottom: 1rem; margin-left: -3rem; margin-right: -3rem; margin-top: -3rem; padding: 2rem; padding-bottom: 1rem;">
-                            <h2 style="margin: 0; color: #ffffff; font-size: 1.8rem; line-height: 1.3;">${escapeHtml(post.title)}</h2>
+                        <div class="blog-card-header" style="margin-bottom: 1rem; margin-left: -3rem; margin-right: -3rem; margin-top: -3rem; padding: 2rem; padding-bottom: 1rem; position: relative;">
+                            <button onclick="this.closest('.modal').remove()" style="position: absolute; top: 0.5rem; right: 0.5rem; font-size: 2.5rem; cursor: pointer; background: none; border: none; color: white; z-index: 1001; line-height: 1; width: auto; height: auto; padding: 0; font-weight: 300;">×</button>
+                            <h2 style="margin: 0; color: #ffffff; font-size: 1.8rem; line-height: 1.3; margin-right: 3rem;">${escapeHtml(post.title)}</h2>
                         </div>
                         
                         <div class="blog-categories" style="margin-bottom: 1rem;">${categoriesHTML}</div>
