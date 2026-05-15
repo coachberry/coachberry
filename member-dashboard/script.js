@@ -486,6 +486,16 @@ async function loadInbox() {
 
         console.log('Total messages after filtering:', allMessages.length);
 
+        // Count unread messages (messages where coach hasn't replied yet)
+        const unreadCount = allMessages.filter(msg => !msg.replies || msg.replies.length === 0).length;
+        const unreadBadge = document.getElementById('inboxUnreadBadge');
+        if (unreadCount > 0) {
+            unreadBadge.textContent = unreadCount;
+            unreadBadge.style.display = 'inline-flex';
+        } else {
+            unreadBadge.style.display = 'none';
+        }
+
         // Sort by date (descending) - doing this in JavaScript instead of Firestore
         allMessages.sort((a, b) => {
             const aTime = a.dateSent?.seconds ? a.dateSent.seconds : (a.dateSent instanceof Date ? a.dateSent.getTime() / 1000 : 0);
@@ -672,7 +682,8 @@ window.sendThreadReply = async function() {
             dateSent: new Date()
         });
 
-        await updateDoc(msgRef, { replies });
+        // Mark as unread for admin so they see the member's reply
+        await updateDoc(msgRef, { replies, read: false });
 
         alert('Reply sent!');
         document.getElementById('threadReplyContent').value = '';
