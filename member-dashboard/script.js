@@ -386,6 +386,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
         // Load inbox - show message threads
         async function loadInbox() {
             try {
+                console.log('loadInbox called for user:', currentUser?.email);
                 const container = document.getElementById('inboxList');
                 container.innerHTML = '';
 
@@ -396,6 +397,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     orderBy('dateSent', 'desc')
                 );
                 const sentSnapshot = await getDocs(sentQ);
+                console.log('Found sent messages:', sentSnapshot.size);
                 
                 // Get broadcast messages sent to this member (exclude deleted)
                 const broadcastQ = query(
@@ -405,21 +407,26 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
                     orderBy('dateSent', 'desc')
                 );
                 const broadcastSnapshot = await getDocs(broadcastQ);
+                console.log('Found broadcast messages:', broadcastSnapshot.size);
 
                 // Combine and filter out deleted messages
                 const allMessages = [];
                 sentSnapshot.forEach(doc => {
                     const msg = doc.data();
+                    console.log('Sent message:', msg.subject, 'deleted:', msg.deleted, 'archived:', msg.archived);
                     if (!msg.deleted) {
                         allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: false });
                     }
                 });
                 broadcastSnapshot.forEach(doc => {
                     const msg = doc.data();
+                    console.log('Broadcast message:', msg.subject, 'deleted:', msg.deleted, 'archived:', msg.archived);
                     if (!msg.deleted) {
                         allMessages.push({ id: doc.id, ...msg, isBroadcastMessage: true });
                     }
                 });
+
+                console.log('Total messages to display:', allMessages.length);
 
                 // Sort by date
                 allMessages.sort((a, b) => b.dateSent - a.dateSent);
