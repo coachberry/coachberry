@@ -74,8 +74,8 @@ async function checkAuthAndUpdateHeader() {
             const authLink = document.getElementById('authLink');
             if (authLink) {
                 if (user) {
-                    // User is logged in - show My Profile
-                    authLink.innerHTML = '<a href="/member-dashboard/" class="cta-nav-secondary">My Profile</a>';
+                    // User is logged in - show My Profile (with tab=profile parameter)
+                    authLink.innerHTML = '<a href="/member-dashboard/?tab=profile" class="cta-nav-secondary">My Profile</a>';
                 } else {
                     // User not logged in - show Login
                     authLink.innerHTML = '<a href="/member-login/" class="cta-nav-secondary">Login</a>';
