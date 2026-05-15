@@ -693,7 +693,7 @@
             </div>
 
             <div class="card">
-                <h2>📧 Your Messages with Coach</h2>
+                <h2>📧 My Messages</h2>
                 <div id="inboxList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
             </div>
         </div>
@@ -709,7 +709,10 @@
                 <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
                     <label style="display: block; font-weight: 600; margin-bottom: 1rem;">Reply to Coach</label>
                     <textarea id="threadReplyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
-                    <button onclick="sendThreadReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 1rem;">Send Reply</button>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button onclick="sendThreadReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; flex: 1;">Send Reply</button>
+                        <button onclick="deleteThreadMessage()" style="background: #dc3545; color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">🗑️ Delete</button>
+                    </div>
                 </div>
             </div>
         </div>
