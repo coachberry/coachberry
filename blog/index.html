@@ -834,11 +834,11 @@
 
             const categories = getAllCategories(post);
             const categoriesHTML = categories.map(cat => 
-                `<span class="blog-category">${escapeHtml(cat)}</span>`
+                `<span class="blog-category-tag">${escapeHtml(cat)}</span>`
             ).join('');
 
             document.getElementById('modalTitle').textContent = post.title;
-            document.getElementById('modalCategories').innerHTML = `<div class="blog-categories" style="margin-bottom: 1rem;">${categoriesHTML}</div>`;
+            document.getElementById('modalCategories').innerHTML = categoriesHTML;
             document.getElementById('modalDate').textContent = dateString;
             
             // Convert newlines to paragraphs
