@@ -402,6 +402,9 @@
         }
     }
 
+    // Export loadInbox to window immediately
+    window._loadInboxOriginal = loadInbox;
+
     function updateStats() {
         const totalMessages = allMessages.length;
         const unreadMessages = allMessages.filter(m => !m.read).length;
@@ -731,11 +734,10 @@
     };
 
     // Load members when inbox tab loads
-    window.originalLoadInbox = window.loadInbox;
     window.loadInbox = async function() {
         await loadAllMembers();
         await loadBroadcastMessages();
-        return window.originalLoadInbox();
+        return await window._loadInboxOriginal();
     };
 </script>
 
