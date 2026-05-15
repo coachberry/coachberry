@@ -444,7 +444,59 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/fireba
             }
         }
 
-        let currentThreadId = null;
+        window.handleSendMessage = async function(event) {
+            event.preventDefault();
+            console.log('handleSendMessage called');
+
+            const subject = document.getElementById('messageSubject').value.trim();
+            const content = document.getElementById('messageContent').value.trim();
+            const msgDiv = document.getElementById('messageMessage');
+
+            console.log('Subject:', subject, 'Content:', content);
+
+            if (!subject || !content) {
+                msgDiv.textContent = 'Please fill in subject and message';
+                msgDiv.classList.add('show', 'error');
+                console.log('Missing fields');
+                return;
+            }
+
+            try {
+                console.log('Creating message with user:', currentUser?.email);
+                
+                // Create new message document
+                const messageData = {
+                    from: currentUser.email,
+                    fromName: currentUser.displayName || 'Member',
+                    email: currentUser.email,
+                    subject: subject,
+                    initialMessage: content,
+                    dateSent: new Date(),
+                    read: false,
+                    deleted: false,
+                    archived: false,
+                    isBroadcast: false,
+                    replies: []
+                };
+
+                console.log('Message data:', messageData);
+                const docRef = await addDoc(collection(db, 'messages'), messageData);
+                console.log('Message created with ID:', docRef.id);
+
+                msgDiv.textContent = '✓ Message sent to Coach!';
+                msgDiv.classList.add('show', 'success');
+                document.getElementById('messageForm').reset();
+
+                setTimeout(() => msgDiv.classList.remove('show'), 3000);
+
+                // Reload inbox to show the new message
+                setTimeout(() => loadInbox(), 1000);
+            } catch (error) {
+                console.error('Error sending message:', error);
+                msgDiv.textContent = 'Error sending message: ' + error.message;
+                msgDiv.classList.add('show', 'error');
+            }
+        };
 
         window.openThreadModal = async function(messageId) {
             try {
