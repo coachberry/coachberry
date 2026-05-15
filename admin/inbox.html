@@ -281,6 +281,14 @@
         <div class="messages-list" id="messagesList"></div>
     </div>
 
+    <!-- Archived Messages Section -->
+    <div class="messages-section" style="margin-top: 2rem;">
+        <div class="messages-header">
+            <h3>📁 Archived Messages</h3>
+        </div>
+        <div class="messages-list" id="archivedMessagesList"></div>
+    </div>
+
     <!-- Broadcast Messages History Section -->
     <div class="messages-section" style="margin-top: 2rem;">
         <div class="messages-header">
@@ -385,21 +393,52 @@
             const messagesQuery = query(collection(db, 'messages'), orderBy('dateSent', 'desc'));
             const snapshot = await getDocs(messagesQuery);
             allMessages = [];
+            let archivedMessages = [];
 
             snapshot.forEach(doc => {
                 const msg = doc.data();
-                // Filter out deleted and archived messages
-                if (!msg.deleted && !msg.archived) {
+                if (msg.archived) {
+                    archivedMessages.push({ id: doc.id, ...msg });
+                } else if (!msg.deleted) {
+                    // Filter out deleted messages, but keep active ones
                     allMessages.push({ id: doc.id, ...msg });
                 }
             });
 
             updateStats();
             displayMessages();
+            displayArchivedMessages(archivedMessages);
         } catch (error) {
             console.error('Error loading messages:', error);
             document.getElementById('messagesList').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">Error loading messages</div></div>';
         }
+    }
+
+    function displayArchivedMessages(archivedMessages) {
+        const archivedList = document.getElementById('archivedMessagesList');
+
+        if (archivedMessages.length === 0) {
+            archivedList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">No archived messages</div></div>';
+            return;
+        }
+
+        archivedList.innerHTML = archivedMessages.map(message => {
+            const preview = message.initialMessage.substring(0, 100) + (message.initialMessage.length > 100 ? '...' : '');
+            return `
+                <div class="message-item" onclick="openMessage('${message.id}', true)" style="opacity: 0.7;">
+                    <div class="message-header">
+                        <div>
+                            <div class="message-from">${escapeHtml(message.fromName || message.from || 'Unknown')}</div>
+                            <div class="message-subject">${escapeHtml(message.subject || 'No Subject')}</div>
+                            <div class="message-preview">${escapeHtml(preview)}</div>
+                        </div>
+                    </div>
+                    <div class="message-meta">
+                        <span>${formatDate(message.dateSent)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     // Export loadInbox to window immediately
@@ -433,12 +472,12 @@
         }
 
         messagesList.innerHTML = filteredMessages.map(message => {
-            const preview = message.content.substring(0, 100) + (message.content.length > 100 ? '...' : '');
+            const preview = message.initialMessage.substring(0, 100) + (message.initialMessage.length > 100 ? '...' : '');
             return `
                 <div class="message-item ${!message.read ? 'unread' : ''}" onclick="openMessage('${message.id}')">
                     <div class="message-header">
                         <div>
-                            <div class="message-from">${escapeHtml(message.from || 'Unknown')}</div>
+                            <div class="message-from">${escapeHtml(message.fromName || message.from || 'Unknown')}</div>
                             <div class="message-subject">${escapeHtml(message.subject || 'No Subject')}</div>
                             <div class="message-preview">${escapeHtml(preview)}</div>
                         </div>
@@ -501,12 +540,21 @@
     window._filterMessagesImpl = window.filterMessages;
 
     let currentMessageId = null;
+    let currentMessageIsArchived = false;
+    let archivedMessages = [];
 
-    window.openMessage = async function(messageId) {
-        const message = allMessages.find(m => m.id === messageId);
+    window.openMessage = async function(messageId, isArchived = false) {
+        let message;
+        if (isArchived) {
+            message = archivedMessages.find(m => m.id === messageId);
+        } else {
+            message = allMessages.find(m => m.id === messageId);
+        }
+        
         if (!message) return;
 
         currentMessageId = messageId;
+        currentMessageIsArchived = isArchived;
 
         document.getElementById('modalFrom').textContent = escapeHtml(message.fromName || message.from || 'Unknown');
         document.getElementById('modalEmail').textContent = escapeHtml(message.email || message.from || 'N/A');
@@ -535,11 +583,13 @@
             repliesSection.style.display = 'none';
         }
 
-        // Mark message as read
-        try {
-            await updateDoc(doc(db, 'messages', messageId), { read: true });
-        } catch (error) {
-            console.error('Error marking message as read:', error);
+        // Mark message as read if not archived
+        if (!isArchived) {
+            try {
+                await updateDoc(doc(db, 'messages', messageId), { read: true });
+            } catch (error) {
+                console.error('Error marking message as read:', error);
+            }
         }
 
         document.getElementById('messageModal').classList.add('active');
@@ -604,14 +654,20 @@
                 dateSent: new Date()
             });
 
-            await updateDoc(messageRef, { replies });
+            // If message was archived, unarchive it when replying
+            const updateData = { replies };
+            if (currentMessageIsArchived) {
+                updateData.archived = false;
+            }
+
+            await updateDoc(messageRef, updateData);
 
             alert('Reply sent!');
             document.getElementById('replyContent').value = '';
 
             // Reload the message to show the new reply
             loadInbox().then(() => {
-                openMessage(currentMessageId);
+                openMessage(currentMessageId, false);
             });
         } catch (error) {
             console.error('Error sending reply:', error);
