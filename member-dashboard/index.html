@@ -619,6 +619,25 @@
                 // Load saved posts
                 loadSavedPosts();
 
+                // Migrate old savedPosts format to new format (if needed)
+                if (memberData.savedPosts && memberData.savedPosts.length > 0) {
+                    const firstPost = memberData.savedPosts[0];
+                    // Check if it's old format (string) instead of new format (object)
+                    if (typeof firstPost === 'string') {
+                        console.log('Migrating saved posts format...');
+                        const migratedPosts = memberData.savedPosts.map(postId => ({
+                            id: postId,
+                            title: 'Saved Blog',
+                            savedDate: new Date()
+                        }));
+                        await updateDoc(doc(db, 'members', memberData.id), {
+                            savedPosts: migratedPosts
+                        });
+                        memberData.savedPosts = migratedPosts;
+                        loadSavedPosts();
+                    }
+                }
+
                 // Restore last viewed tab
                 const lastTab = localStorage.getItem('memberDashboardTab') || 'profile';
                 const tabBtn = document.querySelector(`button[onclick="switchTab('${lastTab}')"]`);
@@ -646,10 +665,13 @@
                     try {
                         // Handle both old format (string ID) and new format (object with id, title, savedDate)
                         const postId = typeof savedItem === 'string' ? savedItem : savedItem.id;
-                        const postSnap = await getDocs(query(collection(db, 'blogPosts'), where('id', '==', postId)));
                         
-                        if (!postSnap.empty) {
-                            const post = postSnap.docs[0].data();
+                        // Get the blog post by document ID
+                        const postRef = doc(db, 'blogPosts', postId);
+                        const postSnap = await getDoc(postRef);
+                        
+                        if (postSnap.exists()) {
+                            const post = postSnap.data();
                             const card = document.createElement('div');
                             card.className = 'post-card';
                             card.innerHTML = `
