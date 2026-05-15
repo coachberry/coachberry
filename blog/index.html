@@ -678,46 +678,77 @@
             grid.style.display = 'grid';
             grid.innerHTML = '';
 
-            filteredPosts.forEach(post => {
-                const date = post.datePublished ? new Date(post.datePublished.seconds * 1000) : new Date();
-                const dateString = date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+            // Get current user's saved posts
+            let savedPostIds = new Set();
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const q = query(collection(db, 'members'), where('email', '==', user.email));
+                    const snapshot = getDocs(q).then(snap => {
+                        if (!snap.empty) {
+                            const savedPosts = snap.docs[0].data().savedPosts || [];
+                            savedPostIds = new Set(savedPosts.map(p => {
+                                const id = typeof p === 'string' ? p : p.id;
+                                return id;
+                            }));
+                        }
+                        renderPosts();
+                    });
+                } catch (error) {
+                    console.error('Error fetching saved posts:', error);
+                    renderPosts();
+                }
+            } else {
+                renderPosts();
+            }
+
+            function renderPosts() {
+                filteredPosts.forEach(post => {
+                    const date = post.datePublished ? new Date(post.datePublished.seconds * 1000) : new Date();
+                    const dateString = date.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+
+                    const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
+                    const categories = getAllCategories(post);
+                    const categoriesHTML = categories.map(cat => 
+                        `<span class="blog-category-tag">${escapeHtml(cat)}</span>`
+                    ).join('');
+
+                    const isSaved = savedPostIds.has(post.id);
+                    const saveButtonHTML = isSaved 
+                        ? `<button class="save-blog-btn saved" id="save-${post.id}" disabled style="background: #4CAF50;">✓ Saved</button>`
+                        : `<button class="save-blog-btn" onclick="saveBlogCard('${post.id}', '${escapeHtml(post.title)}')" id="save-${post.id}">💾 Save</button>`;
+
+                    const card = document.createElement('div');
+                    card.className = 'blog-card';
+                    card.style.cursor = 'pointer';
+                    card.onclick = (e) => {
+                        // Don't open if clicking Save button
+                        if (e.target.classList.contains('save-blog-btn')) return;
+                        openPost(post.id);
+                    };
+                    card.innerHTML = `
+                        <div class="blog-card-header">
+                            <h3>${escapeHtml(post.title)}</h3>
+                        </div>
+                        <div class="blog-card-body">
+                            <div class="blog-categories">${categoriesHTML}</div>
+                            <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
+                            <div class="blog-meta">
+                                <span>${dateString}</span>
+                            </div>
+                            <div class="blog-actions">
+                                ${saveButtonHTML}
+                                <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
                 });
-
-                const excerpt = post.content.length > 150 ? post.content.substring(0, 150) + '...' : post.content;
-                const categories = getAllCategories(post);
-                const categoriesHTML = categories.map(cat => 
-                    `<span class="blog-category-tag">${escapeHtml(cat)}</span>`
-                ).join('');
-
-                const card = document.createElement('div');
-                card.className = 'blog-card';
-                card.style.cursor = 'pointer';
-                card.onclick = (e) => {
-                    // Don't open if clicking Save button
-                    if (e.target.classList.contains('save-blog-btn')) return;
-                    openPost(post.id);
-                };
-                card.innerHTML = `
-                    <div class="blog-card-header">
-                        <h3>${escapeHtml(post.title)}</h3>
-                    </div>
-                    <div class="blog-card-body">
-                        <div class="blog-categories">${categoriesHTML}</div>
-                        <p class="blog-excerpt">${escapeHtml(excerpt)}</p>
-                        <div class="blog-meta">
-                            <span>${dateString}</span>
-                        </div>
-                        <div class="blog-actions">
-                            <button class="save-blog-btn" onclick="saveBlogCard('${post.id}', '${escapeHtml(post.title)}')" id="save-${post.id}">💾 Save</button>
-                            <a class="read-more" onclick="openPost('${post.id}')">Read More →</a>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+            }
         }
 
         // Filter by category
