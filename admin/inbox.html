@@ -281,20 +281,20 @@
         <div class="messages-list" id="messagesList"></div>
     </div>
 
-    <!-- Archived Messages Section -->
-    <div class="messages-section" style="margin-top: 2rem;">
-        <div class="messages-header">
-            <h3>📁 Archived Messages</h3>
-        </div>
-        <div class="messages-list" id="archivedMessagesList"></div>
-    </div>
-
     <!-- Broadcast Messages History Section -->
     <div class="messages-section" style="margin-top: 2rem;">
         <div class="messages-header">
             <h3>📢 Broadcast Message History</h3>
         </div>
         <div class="messages-list" id="broadcastMessagesList"></div>
+    </div>
+
+    <!-- Archived Messages Section -->
+    <div class="messages-section" style="margin-top: 2rem;">
+        <div class="messages-header">
+            <h3>📁 Archived Messages</h3>
+        </div>
+        <div class="messages-list" id="archivedMessagesList"></div>
     </div>
 </div>
 
@@ -336,9 +336,10 @@
                 <textarea id="replyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
             </div>
             <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                <button onclick="sendReply()" class="save-btn">Send Reply</button>
-                <button onclick="archiveMessage()" class="save-btn" style="background: var(--secondary);">📁 Archive</button>
-                <button onclick="deleteMessage()" class="save-btn" style="background: #dc3545;">🗑️ Delete</button>
+                <button onclick="sendReply()" class="save-btn" style="background: var(--accent); color: white; font-weight: 600;">Send Reply</button>
+                <button id="archiveBtn" onclick="archiveMessage()" class="save-btn" style="background: #FFC107; color: #000; font-weight: 600;">📁 Archive</button>
+                <button id="unarchiveBtn" onclick="unarchiveMessage()" class="save-btn" style="background: #FFC107; color: #000; font-weight: 600; display: none;">↩️ Unarchive</button>
+                <button onclick="deleteMessage()" class="save-btn" style="background: #dc3545; color: white; font-weight: 600;">🗑️ Delete</button>
             </div>
         </div>
     </div>
@@ -583,6 +584,18 @@
             repliesSection.style.display = 'none';
         }
 
+        // Show/hide archive and unarchive buttons based on message state
+        const archiveBtn = document.getElementById('archiveBtn');
+        const unarchiveBtn = document.getElementById('unarchiveBtn');
+        
+        if (isArchived) {
+            archiveBtn.style.display = 'none';
+            unarchiveBtn.style.display = 'block';
+        } else {
+            archiveBtn.style.display = 'block';
+            unarchiveBtn.style.display = 'none';
+        }
+
         // Mark message as read if not archived
         if (!isArchived) {
             try {
@@ -628,6 +641,21 @@
         }
     };
     window._archiveMessageImpl = window.archiveMessage;
+
+    window.unarchiveMessage = async function() {
+        if (!currentMessageId) return;
+
+        try {
+            await updateDoc(doc(db, 'messages', currentMessageId), { archived: false });
+            document.getElementById('messageModal').classList.remove('active');
+            await loadInbox();
+            alert('Message moved back to Messages');
+        } catch (error) {
+            console.error('Error unarchiving message:', error);
+            alert('Error unarchiving message: ' + error.message);
+        }
+    };
+    window._unarchiveMessageImpl = window.unarchiveMessage;
 
     window.sendReply = async function() {
         if (!currentMessageId) return;
