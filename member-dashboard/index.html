@@ -319,40 +319,7 @@
                     </div>
                     <button type="submit" class="save-btn">Update Profile</button>
                 </form>
-
-                <!-- Force Update Basic Info -->
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                    <h3 style="color: var(--accent); margin-top: 0;">Having trouble loading your info?</h3>
-                    <p style="color: var(--text-light);">Click below to re-enter your basic information:</p>
-                    <form id="forceUpdateForm" onsubmit="handleForceUpdate(event)" style="background: var(--light-gray); padding: 1.5rem; border-radius: 6px;">
-                        <div class="message" id="forceUpdateMessage"></div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="forceFirstName">First Name</label>
-                                <input type="text" id="forceFirstName" placeholder="Your first name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="forceLastName">Last Name</label>
-                                <input type="text" id="forceLastName" placeholder="Your last name" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="forceRoles">Your Role (select all that apply)</label>
-                            <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                    <input type="checkbox" id="forcePlayer"> Player
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                    <input type="checkbox" id="forceCoach"> Coach
-                                </label>
-                                <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                    <input type="checkbox" id="forceParent"> Parent
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="save-btn">Save My Info</button>
-                    </form>
-                </div>
+            </div>
 
             <!-- Change Password Section -->
             <div class="card">
@@ -810,47 +777,6 @@
             }
         };
 
-        window.handleForceUpdate = async function(event) {
-            event.preventDefault();
-
-            const firstName = document.getElementById('forceFirstName').value;
-            const lastName = document.getElementById('forceLastName').value;
-            
-            const roles = [];
-            if (document.getElementById('forcePlayer').checked) roles.push('player');
-            if (document.getElementById('forceCoach').checked) roles.push('coach');
-            if (document.getElementById('forceParent').checked) roles.push('parent');
-
-            if (roles.length === 0) {
-                alert('Please select at least one role');
-                return;
-            }
-
-            const msgDiv = document.getElementById('forceUpdateMessage');
-            const btn = event.target.querySelector('.save-btn');
-
-            btn.disabled = true;
-            msgDiv.classList.remove('show');
-
-            try {
-                await updateDoc(doc(db, 'members', memberData.id), {
-                    firstName: firstName,
-                    lastName: lastName,
-                    roles: roles
-                });
-
-                msgDiv.textContent = '✓ Info saved! Refreshing page...';
-                msgDiv.classList.add('show', 'success');
-
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } catch (error) {
-                msgDiv.textContent = 'Error saving: ' + error.message;
-                msgDiv.classList.add('show', 'error');
-                btn.disabled = false;
-            }
-        };
 
         // Load inbox - show message threads
         async function loadInbox() {
@@ -1378,12 +1304,6 @@
             }
         }
 
-        function handleForceUpdate(event) {
-            if (window.handleForceUpdate) {
-                return window.handleForceUpdate(event);
-            }
-        }
-
         function handlePlayerProfileUpdate(event) {
             if (window.handlePlayerProfileUpdate) {
                 return window.handlePlayerProfileUpdate(event);
@@ -1464,4 +1384,3 @@
     </script>
 </body>
 </html>
-
