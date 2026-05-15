@@ -145,6 +145,7 @@
         background-color: rgba(0, 0, 0, 0.6);
         align-items: center;
         justify-content: center;
+        padding: 1rem;
     }
 
     .message-modal.active {
@@ -153,12 +154,12 @@
 
     .message-modal-content {
         background: var(--white);
-        padding: 2rem;
         border-radius: 12px;
         max-width: 600px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
         box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         position: relative;
     }
@@ -302,44 +303,46 @@
 <div class="message-modal" id="messageModal">
     <div class="message-modal-content">
         <button class="message-modal-close" onclick="closeMessageModal()">&times;</button>
-        <div class="message-detail">
-            <div class="message-detail-label">From</div>
-            <div class="message-detail-value" id="modalFrom"></div>
-        </div>
-        <div class="message-detail">
-            <div class="message-detail-label">Email</div>
-            <div class="message-detail-value" id="modalEmail"></div>
-        </div>
-        <div class="message-detail">
-            <div class="message-detail-label">Date</div>
-            <div class="message-detail-value" id="modalDate"></div>
-        </div>
-        <div class="message-detail">
-            <div class="message-detail-label">Subject</div>
-            <div class="message-detail-value" id="modalSubject"></div>
-        </div>
-        <div class="message-detail">
-            <div class="message-detail-label">Message</div>
-            <div class="message-content" id="modalContent"></div>
-        </div>
-
-        <!-- Replies Section -->
-        <div id="repliesSection" style="margin: 2rem 0; padding: 2rem 0; border-top: 1px solid var(--border); display: none;">
-            <div class="message-detail-label">Your Replies</div>
-            <div id="modalReplies" style="margin: 1rem 0;"></div>
-        </div>
-
-        <!-- Reply Form -->
-        <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-            <div class="message-detail-label">Send Reply</div>
-            <div style="margin-top: 1rem;">
-                <textarea id="replyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
+        <div style="overflow-y: auto; flex: 1; padding: 2rem;">
+            <div class="message-detail">
+                <div class="message-detail-label">From</div>
+                <div class="message-detail-value" id="modalFrom"></div>
             </div>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                <button onclick="sendReply()" class="save-btn" style="background: var(--accent); color: white; font-weight: 600;">Send Reply</button>
-                <button id="archiveBtn" onclick="archiveMessage()" class="save-btn" style="background: #FFC107; color: #000; font-weight: 600;">📁 Archive</button>
-                <button id="unarchiveBtn" onclick="unarchiveMessage()" class="save-btn" style="background: #FFC107; color: #000; font-weight: 600; display: none;">↩️ Unarchive</button>
-                <button onclick="deleteMessage()" class="save-btn" style="background: #dc3545; color: white; font-weight: 600;">🗑️ Delete</button>
+            <div class="message-detail">
+                <div class="message-detail-label">Email</div>
+                <div class="message-detail-value" id="modalEmail"></div>
+            </div>
+            <div class="message-detail">
+                <div class="message-detail-label">Date</div>
+                <div class="message-detail-value" id="modalDate"></div>
+            </div>
+            <div class="message-detail">
+                <div class="message-detail-label">Subject</div>
+                <div class="message-detail-value" id="modalSubject"></div>
+            </div>
+            <div class="message-detail">
+                <div class="message-detail-label">Message</div>
+                <div class="message-content" id="modalContent"></div>
+            </div>
+
+            <!-- Replies Section -->
+            <div id="repliesSection" style="margin: 2rem 0; padding: 2rem 0; border-top: 1px solid var(--border); display: none;">
+                <div class="message-detail-label">Your Replies</div>
+                <div id="modalReplies" style="margin: 1rem 0;"></div>
+            </div>
+
+            <!-- Reply Form -->
+            <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
+                <div class="message-detail-label">Send Reply</div>
+                <div style="margin-top: 1rem;">
+                    <textarea id="replyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <button onclick="sendReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">Send Reply</button>
+                    <button id="archiveBtn" onclick="archiveMessage()" style="background: #FFC107; color: #000; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">📁 Archive</button>
+                    <button id="unarchiveBtn" onclick="unarchiveMessage()" style="background: #FFC107; color: #000; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: none;">↩️ Unarchive</button>
+                    <button onclick="deleteMessage()" style="background: #dc3545; color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">🗑️ Delete</button>
+                </div>
             </div>
         </div>
     </div>
