@@ -835,17 +835,17 @@
         };
 
         // Add blog to member's saved posts
-        let savingPostId = null; // Track if we're currently saving
+        let savingPostIds = new Set(); // Track all posts currently being saved
         
         async function saveBlogToMember(postId, postTitle) {
             try {
                 // Prevent race condition - if already saving this post, return
-                if (savingPostId === postId) {
-                    alert('This blog is already being saved...');
+                if (savingPostIds.has(postId)) {
+                    alert('This blog is being saved, please wait...');
                     return;
                 }
                 
-                savingPostId = postId;
+                savingPostIds.add(postId);
                 
                 // Disable both buttons immediately
                 const saveBtn = document.getElementById(`save-${postId}`);
@@ -861,7 +861,7 @@
                 if (!user) {
                     alert('Please log in to save blogs');
                     window.location.href = '/member-login/';
-                    savingPostId = null;
+                    savingPostIds.delete(postId);
                     return;
                 }
 
@@ -871,7 +871,7 @@
 
                 if (snapshot.empty) {
                     alert('Member profile not found');
-                    savingPostId = null;
+                    savingPostIds.delete(postId);
                     if (saveBtn) saveBtn.disabled = false;
                     if (modalBtn) modalBtn.disabled = false;
                     return;
@@ -883,10 +883,15 @@
                 // Get current saved posts
                 let savedPosts = memberDoc.data().savedPosts || [];
 
-                // Check if already saved
-                if (savedPosts.find(p => p.id === postId)) {
+                // Check if already saved - search by ID
+                const alreadySaved = savedPosts.some(p => {
+                    const id = typeof p === 'string' ? p : p.id;
+                    return id === postId;
+                });
+                
+                if (alreadySaved) {
                     alert('This blog is already saved');
-                    savingPostId = null;
+                    savingPostIds.delete(postId);
                     // Mark buttons as saved
                     if (saveBtn) {
                         saveBtn.classList.add('saved');
@@ -926,11 +931,11 @@
                     modalBtn.disabled = true;
                 }
                 
-                savingPostId = null;
+                savingPostIds.delete(postId);
             } catch (error) {
                 console.error('Error saving blog:', error);
                 alert('Error saving blog');
-                savingPostId = null;
+                savingPostIds.delete(postId);
                 // Re-enable buttons on error
                 const saveBtn = document.getElementById(`save-${postId}`);
                 if (saveBtn) saveBtn.disabled = false;
