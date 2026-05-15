@@ -611,6 +611,14 @@ window.openThreadModal = async function(messageId) {
         currentThreadIsArchived = msg.archived || false;
         console.log('Message opened:', {subject: msg.subject, archived: currentThreadIsArchived});
 
+        // Mark message as read (even though member is viewing their own message, we mark it as read)
+        try {
+            await updateDoc(msgRef, { read: true });
+            console.log('Message marked as read');
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+        }
+
         document.getElementById('threadSubject').textContent = escapeHtml(msg.subject);
         document.getElementById('threadReplyContent').value = '';
 
