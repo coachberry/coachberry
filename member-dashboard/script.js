@@ -557,39 +557,38 @@ async function loadInbox() {
     try {
         const archivedContainer = document.getElementById('archivedMessagesList');
         
-        // Query for archived messages
-        const archivedSentQ = query(
-            collection(db, 'messages'),
-            where('from', '==', currentUser.email),
-            where('archived', '==', true)
-        );
-        const archivedSentSnapshot = await getDocs(archivedSentQ);
+        // Query for archived messages - get all messages first, then filter in JS
+        const allArchivedMessages = [];
         
-        const archivedBroadcastQ = query(
+        const sentQ = query(
             collection(db, 'messages'),
-            where('broadcastTo', '==', currentUser.email),
-            where('archived', '==', true)
+            where('from', '==', currentUser.email)
         );
-        const archivedBroadcastSnapshot = await getDocs(archivedBroadcastQ);
-
-        const archivedMessages = [];
+        const sentSnapshot = await getDocs(sentQ);
         
-        archivedSentSnapshot.forEach(doc => {
+        sentSnapshot.forEach(doc => {
             const msg = doc.data();
-            if (!msg.deleted) {
-                archivedMessages.push({ id: doc.id, ...msg, messageType: 'sent' });
+            // Include if archived is true OR if it exists and is truthy
+            if (!msg.deleted && msg.archived === true) {
+                allArchivedMessages.push({ id: doc.id, ...msg, messageType: 'sent' });
             }
         });
 
-        archivedBroadcastSnapshot.forEach(doc => {
+        const broadcastQ = query(
+            collection(db, 'messages'),
+            where('broadcastTo', '==', currentUser.email)
+        );
+        const broadcastSnapshot = await getDocs(broadcastQ);
+
+        broadcastSnapshot.forEach(doc => {
             const msg = doc.data();
-            if (!msg.deleted) {
-                archivedMessages.push({ id: doc.id, ...msg, messageType: 'broadcast' });
+            if (!msg.deleted && msg.archived === true) {
+                allArchivedMessages.push({ id: doc.id, ...msg, messageType: 'broadcast' });
             }
         });
 
         // Sort by date
-        archivedMessages.sort((a, b) => {
+        allArchivedMessages.sort((a, b) => {
             const aTime = a.dateSent?.seconds ? a.dateSent.seconds : (a.dateSent instanceof Date ? a.dateSent.getTime() / 1000 : 0);
             const bTime = b.dateSent?.seconds ? b.dateSent.seconds : (b.dateSent instanceof Date ? b.dateSent.getTime() / 1000 : 0);
             return bTime - aTime;
@@ -597,12 +596,12 @@ async function loadInbox() {
 
         archivedContainer.innerHTML = '';
 
-        if (archivedMessages.length === 0) {
+        if (allArchivedMessages.length === 0) {
             archivedContainer.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No archived messages.</div>';
             return;
         }
 
-        archivedMessages.forEach(msg => {
+        allArchivedMessages.forEach(msg => {
             const replies = msg.replies || [];
             const hasNewReplies = replies.length > 0;
             
