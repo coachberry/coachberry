@@ -633,10 +633,14 @@
             if (deleteBtn) deleteBtn.style.display = 'block';
         }
 
-        // Mark message as read if not archived and not broadcast
-        if (!isArchived && !currentMessageIsBroadcast) {
+        // Mark message as read when opened (clear hasUnreadReplies flag too if this is a fresh read)
+        if (!isArchived) {
             try {
-                await updateDoc(doc(db, 'messages', messageId), { read: true });
+                await updateDoc(doc(db, 'messages', messageId), { 
+                    read: true,
+                    hasUnreadReplies: false
+                });
+                console.log('Message marked as read');
             } catch (error) {
                 console.error('Error marking message as read:', error);
             }
