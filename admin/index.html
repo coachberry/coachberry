@@ -317,6 +317,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -329,6 +330,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUser = null;
 
@@ -361,16 +363,33 @@
             }
         };
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                currentUser = user;
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                switchTab('overview');
+                // Check if user is an admin
+                try {
+                    const adminDoc = await getDoc(doc(db, 'admins', user.email));
+                    if (adminDoc.exists()) {
+                        currentUser = user;
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('dashboard').classList.remove('hidden');
+                        switchTab('overview');
+                    } else {
+                        // Not an admin, sign them out
+                        await signOut(auth);
+                        document.getElementById('loginError').textContent = 'Access denied. You do not have admin privileges.';
+                        document.getElementById('loginError').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error checking admin status:', error);
+                    await signOut(auth);
+                    document.getElementById('loginError').textContent = 'Error verifying admin status. Please try again.';
+                    document.getElementById('loginError').style.display = 'block';
+                }
             } else {
                 currentUser = null;
                 document.getElementById('loginPage').classList.remove('hidden');
                 document.getElementById('dashboard').classList.add('hidden');
+                document.getElementById('loginError').style.display = 'none';
             }
         });
 
