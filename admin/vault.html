@@ -333,6 +333,7 @@
 
     <div class="vault-tabs">
         <button class="vault-tab-btn active" onclick="vaultSwitchTab('structure')">🗂 Structure</button>
+        <button class="vault-tab-btn" onclick="vaultSwitchTab('books')">📚 Books</button>
         <button class="vault-tab-btn" onclick="vaultSwitchTab('submissions')">📥 Submissions</button>
     </div>
 
@@ -349,6 +350,12 @@
         </div>
     </div>
 
+    <div id="vaultBooksPanel" class="vault-panel">
+        <div class="vault-section-card">
+            <div class="vault-section-header"><h3>📚 Book Club</h3></div>
+            <div class="vault-section-body"><div id="vaultBooksList"><div class="empty-vault"><span>📚</span>No books added yet.</div></div></div>
+        </div>
+    </div>
     <div id="vaultSubmissionsPanel" class="vault-panel">
         <div class="vault-section-card">
             <div class="vault-section-header">
@@ -694,6 +701,7 @@ window.vaultSwitchTab = function(tab) {
     document.querySelectorAll('.vault-tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.vault-panel').forEach(p => p.classList.remove('active'));
     document.getElementById(`vault${tab.charAt(0).toUpperCase()+tab.slice(1)}Panel`).classList.add('active');
+        if (tab === 'books') loadBooks();
     event.target.classList.add('active');
 };
 
