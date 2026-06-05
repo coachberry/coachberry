@@ -1,0 +1,1062 @@
+<!-- Coach Berry - Coaching Resume/Portfolio Tab -->
+<style>
+    .resume-container {
+        max-width: 960px;
+    }
+
+    /* Section Cards */
+    .resume-section {
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .resume-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.4rem 1.8rem;
+        background: var(--primary-dark);
+        color: var(--white);
+    }
+
+    .resume-section-header h2 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin: 0;
+    }
+
+    .add-entry-btn {
+        padding: 0.5rem 1.1rem;
+        background: var(--accent);
+        color: var(--white);
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .add-entry-btn:hover {
+        background: var(--accent-light);
+        transform: translateY(-1px);
+    }
+
+    .resume-section-body {
+        padding: 1.5rem 1.8rem;
+    }
+
+    /* Entry Cards */
+    .entry-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .entry-card {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 1.2rem 1.4rem;
+        position: relative;
+        transition: box-shadow 0.2s;
+        background: #fafafa;
+    }
+
+    .entry-card:hover {
+        box-shadow: 0 3px 12px rgba(0,0,0,0.09);
+    }
+
+    .entry-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .entry-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin: 0 0 0.2rem 0;
+    }
+
+    .entry-subtitle {
+        font-size: 0.88rem;
+        color: var(--text-light);
+        margin: 0;
+    }
+
+    .entry-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.7rem;
+    }
+
+    .entry-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+    }
+
+    .tag-date { background: #f0f4ff; color: #3b5bdb; }
+    .tag-location { background: #f0fdf4; color: #2d6a4f; }
+    .tag-record { background: #fff8f0; color: #c05621; }
+    .tag-role { background: #faf0ff; color: #6b21a8; }
+    .tag-level { background: #f0f9ff; color: #0369a1; }
+
+    .entry-notes {
+        margin-top: 0.7rem;
+        font-size: 0.88rem;
+        color: var(--text-light);
+        border-top: 1px solid var(--border);
+        padding-top: 0.6rem;
+        line-height: 1.5;
+    }
+
+    .entry-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    .btn-edit, .btn-delete {
+        padding: 0.35rem 0.75rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-edit { background: #e8f4fd; color: #0369a1; }
+    .btn-edit:hover { background: #bfdbfe; }
+    .btn-delete { background: #fff0f0; color: #c62828; }
+    .btn-delete:hover { background: #fecaca; }
+
+    .empty-state-resume {
+        text-align: center;
+        padding: 2.5rem 1rem;
+        color: var(--text-light);
+        font-size: 0.95rem;
+    }
+
+    .empty-state-resume span {
+        display: block;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Modal */
+    .resume-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 1000;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        overflow-y: auto;
+    }
+
+    .resume-modal-overlay.open {
+        display: flex;
+    }
+
+    .resume-modal {
+        background: var(--white);
+        border-radius: 12px;
+        width: 100%;
+        max-width: 580px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        animation: modalSlideIn 0.25s ease;
+    }
+
+    @keyframes modalSlideIn {
+        from { opacity: 0; transform: translateY(24px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .resume-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.4rem 1.8rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .resume-modal-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        color: var(--primary-dark);
+    }
+
+    .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-light);
+        line-height: 1;
+        padding: 0.2rem;
+    }
+
+    .modal-close-btn:hover { color: var(--accent); }
+
+    .resume-modal-body {
+        padding: 1.8rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 0.4rem;
+        color: var(--text);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.92rem;
+        font-family: inherit;
+        transition: border-color 0.2s;
+        background: var(--white);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255,36,0,0.08);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .form-hint {
+        font-size: 0.78rem;
+        color: var(--text-light);
+        margin-top: 0.3rem;
+    }
+
+    .resume-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.8rem;
+        padding: 1.2rem 1.8rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .btn-cancel {
+        padding: 0.65rem 1.4rem;
+        background: var(--light-gray);
+        border: 1.5px solid var(--border);
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel:hover { background: var(--border); }
+
+    .btn-save {
+        padding: 0.65rem 1.6rem;
+        background: var(--accent);
+        color: var(--white);
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-save:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Bio section */
+    .bio-edit-area {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        resize: vertical;
+        transition: border-color 0.2s;
+    }
+
+    .bio-edit-area:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255,36,0,0.08);
+    }
+
+    .bio-display {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: var(--text);
+        white-space: pre-wrap;
+    }
+
+    .bio-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 0.8rem;
+    }
+
+    .save-status {
+        font-size: 0.85rem;
+        color: #2d6a4f;
+        font-weight: 600;
+        align-self: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .save-status.show { opacity: 1; }
+
+    /* Record display */
+    .record-badge {
+        display: inline-flex;
+        gap: 0.15rem;
+        align-items: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+    }
+
+    .record-w { color: #16a34a; }
+    .record-l { color: #dc2626; }
+    .record-t { color: #6b7280; }
+
+    @media (max-width: 600px) {
+        .form-row { grid-template-columns: 1fr; }
+        .resume-section-header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    }
+</style>
+
+<div class="resume-container">
+
+    <!-- Bio / Coaching Philosophy -->
+    <div class="resume-section">
+        <div class="resume-section-header">
+            <h2>📝 Bio & Coaching Philosophy</h2>
+        </div>
+        <div class="resume-section-body">
+            <div id="bioDisplay">
+                <p class="bio-display" id="bioText" style="color: var(--text-light); font-style: italic;">No bio added yet. Click Edit to add your coaching philosophy.</p>
+            </div>
+            <div id="bioEditor" style="display:none;">
+                <textarea class="bio-edit-area" id="bioTextarea" placeholder="Describe your coaching philosophy, background, and what you bring to the ice..."></textarea>
+            </div>
+            <div class="bio-actions">
+                <button class="btn-save" id="bioEditBtn" onclick="toggleBioEdit()">✏️ Edit</button>
+                <button class="btn-save" id="bioSaveBtn" style="display:none;" onclick="saveBio()">💾 Save</button>
+                <button class="btn-cancel" id="bioCancelBtn" style="display:none;" onclick="cancelBioEdit()">Cancel</button>
+                <span class="save-status" id="bioSaveStatus">✓ Saved!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teams Coached -->
+    <div class="resume-section">
+        <div class="resume-section-header">
+            <h2>🏒 Teams Coached</h2>
+            <button class="add-entry-btn" onclick="openModal('team')">+ Add Team</button>
+        </div>
+        <div class="resume-section-body">
+            <div class="entry-list" id="teamsList">
+                <div class="empty-state-resume"><span>🏒</span>No teams added yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goalie Coaching -->
+    <div class="resume-section">
+        <div class="resume-section-header">
+            <h2>🥅 Goalie Coaching</h2>
+            <button class="add-entry-btn" onclick="openModal('goalie')">+ Add Entry</button>
+        </div>
+        <div class="resume-section-body">
+            <div class="entry-list" id="goalieList">
+                <div class="empty-state-resume"><span>🥅</span>No goalie coaching entries yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camps & Clinics -->
+    <div class="resume-section">
+        <div class="resume-section-header">
+            <h2>⛸️ Camps & Clinics</h2>
+            <button class="add-entry-btn" onclick="openModal('camp')">+ Add Entry</button>
+        </div>
+        <div class="resume-section-body">
+            <div class="entry-list" id="campsList">
+                <div class="empty-state-resume"><span>⛸️</span>No camps or clinics added yet.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Certifications & Licenses -->
+    <div class="resume-section">
+        <div class="resume-section-header">
+            <h2>🏅 Certifications & Licenses</h2>
+            <button class="add-entry-btn" onclick="openModal('cert')">+ Add Certification</button>
+        </div>
+        <div class="resume-section-body">
+            <div class="entry-list" id="certsList">
+                <div class="empty-state-resume"><span>🏅</span>No certifications added yet.</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- Team Modal -->
+<div class="resume-modal-overlay" id="teamModal">
+    <div class="resume-modal">
+        <div class="resume-modal-header">
+            <h3 id="teamModalTitle">Add Team</h3>
+            <button class="modal-close-btn" onclick="closeModal('team')">✕</button>
+        </div>
+        <div class="resume-modal-body">
+            <div class="form-group">
+                <label>Organization / Team Name *</label>
+                <input type="text" id="team_org" placeholder="e.g. Minnesota Blades 16U AAA">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Your Role *</label>
+                    <select id="team_role">
+                        <option value="">Select role...</option>
+                        <option>Head Coach</option>
+                        <option>Assistant Coach</option>
+                        <option>Goalie Coach</option>
+                        <option>Skills Coach</option>
+                        <option>Associate Coach</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Level / Division</label>
+                    <input type="text" id="team_level" placeholder="e.g. 16U AAA, Bantam AA">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Season / Start Date</label>
+                    <input type="text" id="team_startDate" placeholder="e.g. 2022-23 or Sept 2022">
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="text" id="team_endDate" placeholder="e.g. March 2023 or Present">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="team_location" placeholder="e.g. Minneapolis, MN">
+            </div>
+            <div class="form-group">
+                <label>Record <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.7rem;">
+                    <div>
+                        <input type="number" id="team_wins" placeholder="W" min="0">
+                        <div class="form-hint">Wins</div>
+                    </div>
+                    <div>
+                        <input type="number" id="team_losses" placeholder="L" min="0">
+                        <div class="form-hint">Losses</div>
+                    </div>
+                    <div>
+                        <input type="number" id="team_ties" placeholder="T" min="0">
+                        <div class="form-hint">Ties/OT</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes / Highlights <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                <textarea id="team_notes" placeholder="e.g. State tournament appearance, player milestones, accomplishments..."></textarea>
+            </div>
+        </div>
+        <div class="resume-modal-footer">
+            <button class="btn-cancel" onclick="closeModal('team')">Cancel</button>
+            <button class="btn-save" onclick="saveEntry('team')">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Goalie Coaching Modal -->
+<div class="resume-modal-overlay" id="goalieModal">
+    <div class="resume-modal">
+        <div class="resume-modal-header">
+            <h3 id="goalieModalTitle">Add Goalie Coaching Entry</h3>
+            <button class="modal-close-btn" onclick="closeModal('goalie')">✕</button>
+        </div>
+        <div class="resume-modal-body">
+            <div class="form-group">
+                <label>Company / Program Name *</label>
+                <input type="text" id="goalie_company" placeholder="e.g. Elite Goalie Academy">
+            </div>
+            <div class="form-group">
+                <label>Your Role / Title</label>
+                <input type="text" id="goalie_role" placeholder="e.g. Goalie Coach, Lead Instructor">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="text" id="goalie_startDate" placeholder="e.g. Sept 2021">
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="text" id="goalie_endDate" placeholder="e.g. Present">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Location(s)</label>
+                <input type="text" id="goalie_location" placeholder="e.g. Nashville, TN">
+            </div>
+            <div class="form-group">
+                <label>Organizations / Teams Worked With</label>
+                <textarea id="goalie_teams" placeholder="List the organizations, clubs, or teams you worked with through this company..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Notes / Highlights <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                <textarea id="goalie_notes" placeholder="Describe your work, notable players developed, programs run..."></textarea>
+            </div>
+        </div>
+        <div class="resume-modal-footer">
+            <button class="btn-cancel" onclick="closeModal('goalie')">Cancel</button>
+            <button class="btn-save" onclick="saveEntry('goalie')">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Camps & Clinics Modal -->
+<div class="resume-modal-overlay" id="campModal">
+    <div class="resume-modal">
+        <div class="resume-modal-header">
+            <h3 id="campModalTitle">Add Camp / Clinic</h3>
+            <button class="modal-close-btn" onclick="closeModal('camp')">✕</button>
+        </div>
+        <div class="resume-modal-body">
+            <div class="form-group">
+                <label>Camp / Clinic / Event Name *</label>
+                <input type="text" id="camp_name" placeholder="e.g. Summer Power Skating Camp">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="camp_type">
+                        <option value="">Select type...</option>
+                        <option>Skills Camp</option>
+                        <option>Goalie Camp</option>
+                        <option>Power Skating Clinic</option>
+                        <option>Shooting Clinic</option>
+                        <option>Tournament</option>
+                        <option>Development Camp</option>
+                        <option>Showcase</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Your Role</label>
+                    <input type="text" id="camp_role" placeholder="e.g. Instructor, Head Coach">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date(s)</label>
+                    <input type="text" id="camp_date" placeholder="e.g. July 2023 or Summer 2022-24">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="camp_location" placeholder="e.g. Nashville, TN">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Organization / Host</label>
+                <input type="text" id="camp_org" placeholder="e.g. Nashville Predators Development">
+            </div>
+            <div class="form-group">
+                <label>Notes / Description <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                <textarea id="camp_notes" placeholder="Describe the camp, age groups, number of participants, highlights..."></textarea>
+            </div>
+        </div>
+        <div class="resume-modal-footer">
+            <button class="btn-cancel" onclick="closeModal('camp')">Cancel</button>
+            <button class="btn-save" onclick="saveEntry('camp')">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Certifications Modal -->
+<div class="resume-modal-overlay" id="certModal">
+    <div class="resume-modal">
+        <div class="resume-modal-header">
+            <h3 id="certModalTitle">Add Certification</h3>
+            <button class="modal-close-btn" onclick="closeModal('cert')">✕</button>
+        </div>
+        <div class="resume-modal-body">
+            <div class="form-group">
+                <label>Certification / License Name *</label>
+                <input type="text" id="cert_name" placeholder="e.g. USA Hockey Level 4, SafeSport Certified">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Issuing Organization</label>
+                    <input type="text" id="cert_org" placeholder="e.g. USA Hockey, Hockey Canada">
+                </div>
+                <div class="form-group">
+                    <label>Year Earned</label>
+                    <input type="text" id="cert_year" placeholder="e.g. 2021">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Expiry Date <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                    <input type="text" id="cert_expiry" placeholder="e.g. 2026 or N/A">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="cert_status">
+                        <option value="Active">Active</option>
+                        <option value="Expired">Expired</option>
+                        <option value="In Progress">In Progress</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes <span style="font-weight:400; color: var(--text-light);">(optional)</span></label>
+                <textarea id="cert_notes" placeholder="Any additional details..."></textarea>
+            </div>
+        </div>
+        <div class="resume-modal-footer">
+            <button class="btn-cancel" onclick="closeModal('cert')">Cancel</button>
+            <button class="btn-save" onclick="saveEntry('cert')">💾 Save</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const RESUME_DOC = 'coachResume';
+const COLLECTION = 'resume';
+
+let editingId = null;
+let editingType = null;
+
+// ---- Load everything on init ----
+async function loadResume() {
+    await loadBio();
+    await loadSection('teams', 'teamsList', renderTeamCard);
+    await loadSection('goalie', 'goalieList', renderGoalieCard);
+    await loadSection('camps', 'campsList', renderCampCard);
+    await loadSection('certs', 'certsList', renderCertCard);
+}
+
+async function loadBio() {
+    try {
+        const snap = await getDoc(doc(db, COLLECTION, RESUME_DOC));
+        if (snap.exists() && snap.data().bio) {
+            document.getElementById('bioText').textContent = snap.data().bio;
+            document.getElementById('bioText').style.fontStyle = 'normal';
+            document.getElementById('bioText').style.color = 'var(--text)';
+            document.getElementById('bioTextarea').value = snap.data().bio;
+        }
+    } catch(e) { console.error('Error loading bio:', e); }
+}
+
+async function loadSection(subcollection, listId, renderFn) {
+    try {
+        const snap = await getDocs(collection(db, COLLECTION, RESUME_DOC, subcollection));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        items.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+        renderList(listId, items, renderFn);
+    } catch(e) {
+        console.error(`Error loading ${subcollection}:`, e);
+    }
+}
+
+function renderList(listId, items, renderFn) {
+    const container = document.getElementById(listId);
+    if (!items.length) {
+        const empties = { teamsList:'🏒', goalieList:'🥅', campsList:'⛸️', certsList:'🏅' };
+        const labels = { teamsList:'No teams added yet.', goalieList:'No goalie coaching entries yet.', campsList:'No camps or clinics added yet.', certsList:'No certifications added yet.' };
+        container.innerHTML = `<div class="empty-state-resume"><span>${empties[listId]}</span>${labels[listId]}</div>`;
+        return;
+    }
+    container.innerHTML = items.map(item => renderFn(item)).join('');
+}
+
+// ---- Render functions ----
+function renderTeamCard(t) {
+    const record = (t.wins !== '' && t.wins !== undefined) ?
+        `<span class="entry-tag tag-record"><span class="record-badge"><span class="record-w">${t.wins}W</span>-<span class="record-l">${t.losses || 0}L</span>${t.ties ? `-<span class="record-t">${t.ties}T</span>` : ''}</span></span>` : '';
+    return `
+    <div class="entry-card" id="entry-${t.id}">
+        <div class="entry-card-header">
+            <div>
+                <p class="entry-title">${esc(t.org)}</p>
+                <p class="entry-subtitle">${esc(t.role || '')} ${t.level ? `· ${esc(t.level)}` : ''}</p>
+            </div>
+            <div class="entry-actions">
+                <button class="btn-edit" onclick="window.openEditModal('team','${t.id}')">Edit</button>
+                <button class="btn-delete" onclick="window.deleteEntry('teams','${t.id}','teamsList',renderTeamCardGlobal)">Delete</button>
+            </div>
+        </div>
+        <div class="entry-meta">
+            ${t.startDate ? `<span class="entry-tag tag-date">📅 ${esc(t.startDate)}${t.endDate ? ` – ${esc(t.endDate)}` : ''}</span>` : ''}
+            ${t.location ? `<span class="entry-tag tag-location">📍 ${esc(t.location)}</span>` : ''}
+            ${record}
+        </div>
+        ${t.notes ? `<div class="entry-notes">${esc(t.notes)}</div>` : ''}
+    </div>`;
+}
+
+function renderGoalieCard(g) {
+    return `
+    <div class="entry-card" id="entry-${g.id}">
+        <div class="entry-card-header">
+            <div>
+                <p class="entry-title">${esc(g.company)}</p>
+                <p class="entry-subtitle">${esc(g.role || '')}</p>
+            </div>
+            <div class="entry-actions">
+                <button class="btn-edit" onclick="window.openEditModal('goalie','${g.id}')">Edit</button>
+                <button class="btn-delete" onclick="window.deleteEntry('goalie','${g.id}','goalieList',renderGoalieCardGlobal)">Delete</button>
+            </div>
+        </div>
+        <div class="entry-meta">
+            ${g.startDate ? `<span class="entry-tag tag-date">📅 ${esc(g.startDate)}${g.endDate ? ` – ${esc(g.endDate)}` : ''}</span>` : ''}
+            ${g.location ? `<span class="entry-tag tag-location">📍 ${esc(g.location)}</span>` : ''}
+        </div>
+        ${g.teams ? `<div class="entry-notes"><strong>Organizations/Teams:</strong> ${esc(g.teams)}</div>` : ''}
+        ${g.notes ? `<div class="entry-notes">${esc(g.notes)}</div>` : ''}
+    </div>`;
+}
+
+function renderCampCard(c) {
+    return `
+    <div class="entry-card" id="entry-${c.id}">
+        <div class="entry-card-header">
+            <div>
+                <p class="entry-title">${esc(c.name)}</p>
+                <p class="entry-subtitle">${esc(c.org || '')} ${c.type ? `· ${esc(c.type)}` : ''}</p>
+            </div>
+            <div class="entry-actions">
+                <button class="btn-edit" onclick="window.openEditModal('camp','${c.id}')">Edit</button>
+                <button class="btn-delete" onclick="window.deleteEntry('camps','${c.id}','campsList',renderCampCardGlobal)">Delete</button>
+            </div>
+        </div>
+        <div class="entry-meta">
+            ${c.date ? `<span class="entry-tag tag-date">📅 ${esc(c.date)}</span>` : ''}
+            ${c.location ? `<span class="entry-tag tag-location">📍 ${esc(c.location)}</span>` : ''}
+            ${c.role ? `<span class="entry-tag tag-role">👤 ${esc(c.role)}</span>` : ''}
+        </div>
+        ${c.notes ? `<div class="entry-notes">${esc(c.notes)}</div>` : ''}
+    </div>`;
+}
+
+function renderCertCard(c) {
+    const statusColor = c.status === 'Active' ? '#16a34a' : c.status === 'Expired' ? '#dc2626' : '#d97706';
+    return `
+    <div class="entry-card" id="entry-${c.id}">
+        <div class="entry-card-header">
+            <div>
+                <p class="entry-title">${esc(c.name)}</p>
+                <p class="entry-subtitle">${esc(c.org || '')}</p>
+            </div>
+            <div class="entry-actions">
+                <button class="btn-edit" onclick="window.openEditModal('cert','${c.id}')">Edit</button>
+                <button class="btn-delete" onclick="window.deleteEntry('certs','${c.id}','certsList',renderCertCardGlobal)">Delete</button>
+            </div>
+        </div>
+        <div class="entry-meta">
+            ${c.year ? `<span class="entry-tag tag-date">📅 Earned: ${esc(c.year)}</span>` : ''}
+            ${c.expiry ? `<span class="entry-tag tag-date">Expires: ${esc(c.expiry)}</span>` : ''}
+            ${c.status ? `<span class="entry-tag" style="background:#f0fdf4; color:${statusColor};">● ${esc(c.status)}</span>` : ''}
+        </div>
+        ${c.notes ? `<div class="entry-notes">${esc(c.notes)}</div>` : ''}
+    </div>`;
+}
+
+// ---- Save / Delete ----
+window.saveEntry = async function(type) {
+    const db2 = getFirestore(initializeApp(firebaseConfig));
+    let data = {};
+    let subcollection = '';
+
+    if (type === 'team') {
+        const org = document.getElementById('team_org').value.trim();
+        if (!org) { alert('Organization/Team Name is required.'); return; }
+        data = {
+            org,
+            role: document.getElementById('team_role').value,
+            level: document.getElementById('team_level').value,
+            startDate: document.getElementById('team_startDate').value,
+            endDate: document.getElementById('team_endDate').value,
+            location: document.getElementById('team_location').value,
+            wins: document.getElementById('team_wins').value,
+            losses: document.getElementById('team_losses').value,
+            ties: document.getElementById('team_ties').value,
+            notes: document.getElementById('team_notes').value,
+        };
+        subcollection = 'teams';
+    } else if (type === 'goalie') {
+        const company = document.getElementById('goalie_company').value.trim();
+        if (!company) { alert('Company/Program Name is required.'); return; }
+        data = {
+            company,
+            role: document.getElementById('goalie_role').value,
+            startDate: document.getElementById('goalie_startDate').value,
+            endDate: document.getElementById('goalie_endDate').value,
+            location: document.getElementById('goalie_location').value,
+            teams: document.getElementById('goalie_teams').value,
+            notes: document.getElementById('goalie_notes').value,
+        };
+        subcollection = 'goalie';
+    } else if (type === 'camp') {
+        const name = document.getElementById('camp_name').value.trim();
+        if (!name) { alert('Camp/Clinic Name is required.'); return; }
+        data = {
+            name,
+            type: document.getElementById('camp_type').value,
+            role: document.getElementById('camp_role').value,
+            date: document.getElementById('camp_date').value,
+            location: document.getElementById('camp_location').value,
+            org: document.getElementById('camp_org').value,
+            notes: document.getElementById('camp_notes').value,
+        };
+        subcollection = 'camps';
+    } else if (type === 'cert') {
+        const name = document.getElementById('cert_name').value.trim();
+        if (!name) { alert('Certification Name is required.'); return; }
+        data = {
+            name,
+            org: document.getElementById('cert_org').value,
+            year: document.getElementById('cert_year').value,
+            expiry: document.getElementById('cert_expiry').value,
+            status: document.getElementById('cert_status').value,
+            notes: document.getElementById('cert_notes').value,
+        };
+        subcollection = 'certs';
+    }
+
+    data.updatedAt = Date.now();
+    if (!editingId) data.createdAt = Date.now();
+
+    try {
+        // Ensure parent doc exists
+        await setDoc(doc(db, COLLECTION, RESUME_DOC), { exists: true }, { merge: true });
+
+        if (editingId) {
+            await updateDoc(doc(db, COLLECTION, RESUME_DOC, subcollection, editingId), data);
+        } else {
+            await addDoc(collection(db, COLLECTION, RESUME_DOC, subcollection), data);
+        }
+        closeModal(type);
+        await loadResume();
+    } catch(e) {
+        console.error('Save error:', e);
+        alert('Error saving: ' + e.message);
+    }
+};
+
+window.deleteEntry = async function(subcollection, id, listId, renderFn) {
+    if (!confirm('Delete this entry?')) return;
+    try {
+        await deleteDoc(doc(db, COLLECTION, RESUME_DOC, subcollection, id));
+        const snap = await getDocs(collection(db, COLLECTION, RESUME_DOC, subcollection));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        items.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+        renderList(listId, items, renderFn);
+    } catch(e) {
+        alert('Error deleting: ' + e.message);
+    }
+};
+
+// Global render fn references for delete callbacks
+window.renderTeamCardGlobal = renderTeamCard;
+window.renderGoalieCardGlobal = renderGoalieCard;
+window.renderCampCardGlobal = renderCampCard;
+window.renderCertCardGlobal = renderCertCard;
+
+// ---- Bio ----
+window.toggleBioEdit = function() {
+    document.getElementById('bioDisplay').style.display = 'none';
+    document.getElementById('bioEditor').style.display = 'block';
+    document.getElementById('bioEditBtn').style.display = 'none';
+    document.getElementById('bioSaveBtn').style.display = 'inline-flex';
+    document.getElementById('bioCancelBtn').style.display = 'inline-flex';
+};
+
+window.cancelBioEdit = function() {
+    document.getElementById('bioDisplay').style.display = 'block';
+    document.getElementById('bioEditor').style.display = 'none';
+    document.getElementById('bioEditBtn').style.display = 'inline-flex';
+    document.getElementById('bioSaveBtn').style.display = 'none';
+    document.getElementById('bioCancelBtn').style.display = 'none';
+};
+
+window.saveBio = async function() {
+    const text = document.getElementById('bioTextarea').value.trim();
+    try {
+        await setDoc(doc(db, COLLECTION, RESUME_DOC), { bio: text, exists: true }, { merge: true });
+        const bioEl = document.getElementById('bioText');
+        bioEl.textContent = text || 'No bio added yet.';
+        bioEl.style.fontStyle = text ? 'normal' : 'italic';
+        bioEl.style.color = text ? 'var(--text)' : 'var(--text-light)';
+        cancelBioEdit();
+        const status = document.getElementById('bioSaveStatus');
+        status.classList.add('show');
+        setTimeout(() => status.classList.remove('show'), 2500);
+    } catch(e) {
+        alert('Error saving bio: ' + e.message);
+    }
+};
+
+// ---- Modals ----
+window.openModal = function(type) {
+    editingId = null;
+    editingType = type;
+    clearForm(type);
+    const titles = { team: 'Add Team', goalie: 'Add Goalie Coaching Entry', camp: 'Add Camp / Clinic', cert: 'Add Certification' };
+    document.getElementById(`${type}ModalTitle`).textContent = titles[type];
+    document.getElementById(`${type}Modal`).classList.add('open');
+};
+
+window.openEditModal = async function(type, id) {
+    editingId = id;
+    editingType = type;
+    const subcollectionMap = { team: 'teams', goalie: 'goalie', camp: 'camps', cert: 'certs' };
+    const subcollection = subcollectionMap[type];
+    try {
+        const snap = await getDoc(doc(db, COLLECTION, RESUME_DOC, subcollection, id));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (type === 'team') {
+            document.getElementById('team_org').value = d.org || '';
+            document.getElementById('team_role').value = d.role || '';
+            document.getElementById('team_level').value = d.level || '';
+            document.getElementById('team_startDate').value = d.startDate || '';
+            document.getElementById('team_endDate').value = d.endDate || '';
+            document.getElementById('team_location').value = d.location || '';
+            document.getElementById('team_wins').value = d.wins || '';
+            document.getElementById('team_losses').value = d.losses || '';
+            document.getElementById('team_ties').value = d.ties || '';
+            document.getElementById('team_notes').value = d.notes || '';
+        } else if (type === 'goalie') {
+            document.getElementById('goalie_company').value = d.company || '';
+            document.getElementById('goalie_role').value = d.role || '';
+            document.getElementById('goalie_startDate').value = d.startDate || '';
+            document.getElementById('goalie_endDate').value = d.endDate || '';
+            document.getElementById('goalie_location').value = d.location || '';
+            document.getElementById('goalie_teams').value = d.teams || '';
+            document.getElementById('goalie_notes').value = d.notes || '';
+        } else if (type === 'camp') {
+            document.getElementById('camp_name').value = d.name || '';
+            document.getElementById('camp_type').value = d.type || '';
+            document.getElementById('camp_role').value = d.role || '';
+            document.getElementById('camp_date').value = d.date || '';
+            document.getElementById('camp_location').value = d.location || '';
+            document.getElementById('camp_org').value = d.org || '';
+            document.getElementById('camp_notes').value = d.notes || '';
+        } else if (type === 'cert') {
+            document.getElementById('cert_name').value = d.name || '';
+            document.getElementById('cert_org').value = d.org || '';
+            document.getElementById('cert_year').value = d.year || '';
+            document.getElementById('cert_expiry').value = d.expiry || '';
+            document.getElementById('cert_status').value = d.status || 'Active';
+            document.getElementById('cert_notes').value = d.notes || '';
+        }
+        const titles = { team: 'Edit Team', goalie: 'Edit Goalie Coaching Entry', camp: 'Edit Camp / Clinic', cert: 'Edit Certification' };
+        document.getElementById(`${type}ModalTitle`).textContent = titles[type];
+        document.getElementById(`${type}Modal`).classList.add('open');
+    } catch(e) { alert('Error loading entry: ' + e.message); }
+};
+
+window.closeModal = function(type) {
+    document.getElementById(`${type}Modal`).classList.remove('open');
+    editingId = null;
+};
+
+function clearForm(type) {
+    const ids = {
+        team: ['team_org','team_role','team_level','team_startDate','team_endDate','team_location','team_wins','team_losses','team_ties','team_notes'],
+        goalie: ['goalie_company','goalie_role','goalie_startDate','goalie_endDate','goalie_location','goalie_teams','goalie_notes'],
+        camp: ['camp_name','camp_type','camp_role','camp_date','camp_location','camp_org','camp_notes'],
+        cert: ['cert_name','cert_org','cert_year','cert_expiry','cert_status','cert_notes'],
+    };
+    ids[type]?.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.resume-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            const type = overlay.id.replace('Modal','');
+            closeModal(type);
+        }
+    });
+});
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+// Init
+loadResume();
+</script>

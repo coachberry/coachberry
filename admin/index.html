@@ -189,6 +189,21 @@
             border-left-color: var(--white);
         }
 
+        .sidebar-divider {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin: 0.8rem 0.5rem;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.35);
+            padding: 0.4rem 1rem 0.2rem;
+        }
+
         .logout-btn {
             position: absolute;
             bottom: 1rem;
@@ -292,11 +307,15 @@
                 <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry Logo">
             </div>
             <ul class="sidebar-menu">
+                <div class="sidebar-section-label">Site Management</div>
                 <li><a onclick="switchTab('overview')" class="menu-item active" data-tab="overview">📊 Overview</a></li>
                 <li><a onclick="switchTab('members')" class="menu-item" data-tab="members">👥 Members</a></li>
                 <li><a onclick="switchTab('blog')" class="menu-item" data-tab="blog">📝 Blog Posts</a></li>
                 <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
                 <li><a onclick="switchTab('inbox')" class="menu-item" data-tab="inbox">📧 Inbox <span id="adminInboxUnreadBadge" style="display: none; background: #FF2400; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">0</span></a></li>
+                <hr class="sidebar-divider">
+                <div class="sidebar-section-label">My Portfolio</div>
+                <li><a onclick="switchTab('resume')" class="menu-item" data-tab="resume">🏒 Coaching Resume</a></li>
             </ul>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
@@ -311,6 +330,7 @@
             <div id="blog" class="tab-content"></div>
             <div id="updates" class="tab-content"></div>
             <div id="inbox" class="tab-content"></div>
+            <div id="resume" class="tab-content"></div>
         </main>
     </div>
 
@@ -365,7 +385,6 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Check if user is an admin
                 try {
                     const adminDoc = await getDoc(doc(db, 'admins', user.email));
                     if (adminDoc.exists()) {
@@ -374,7 +393,6 @@
                         document.getElementById('dashboard').classList.remove('hidden');
                         switchTab('overview');
                     } else {
-                        // Not an admin, sign them out
                         await signOut(auth);
                         document.getElementById('loginError').textContent = 'Access denied. You do not have admin privileges.';
                         document.getElementById('loginError').style.display = 'block';
@@ -413,7 +431,8 @@
                 members: 'Members',
                 blog: 'Blog Posts',
                 updates: 'Updates',
-                inbox: 'Inbox'
+                inbox: 'Inbox',
+                resume: 'Coaching Resume'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 
