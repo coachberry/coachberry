@@ -1,29 +1,8 @@
 <!-- Coach Berry - Vault Admin Tab -->
 <style>
-    .vault-admin {
-        max-width: 1100px;
-    }
-
-    .vault-toolbar {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .vault-btn {
-        padding: 0.65rem 1.4rem;
-        border: none;
-        border-radius: 6px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
+    .vault-admin { max-width: 1100px; }
+    .vault-toolbar { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .vault-btn { padding: 0.65rem 1.4rem; border: none; border-radius: 6px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
     .vault-btn-primary { background: var(--accent); color: white; }
     .vault-btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
     .vault-btn-secondary { background: var(--primary-dark); color: white; }
@@ -37,310 +16,76 @@
     .vault-btn-edit:hover { background: #bfdbfe; }
     .vault-btn-approve { background: #f0fdf4; color: #16a34a; border: none; }
     .vault-btn-approve:hover { background: #bbf7d0; }
-
-    .vault-tabs {
-        display: flex;
-        gap: 0;
-        margin-bottom: 2rem;
-        border-bottom: 2px solid var(--border);
-    }
-
-    .vault-tab-btn {
-        padding: 0.85rem 1.5rem;
-        background: none;
-        border: none;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.95rem;
-        color: var(--text-light);
-        transition: all 0.2s;
-    }
-
+    .vault-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 2px solid var(--border); }
+    .vault-tab-btn { padding: 0.85rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: var(--text-light); transition: all 0.2s; }
     .vault-tab-btn:hover { color: var(--text); }
     .vault-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
     .vault-panel { display: none; }
     .vault-panel.active { display: block; }
-
-    .vault-section-card {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-
-    .vault-section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.2rem 1.5rem;
-        background: var(--primary-dark);
-        color: white;
-    }
-
-    .vault-section-header h3 {
-        margin: 0;
-        font-size: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
+    .vault-section-card { background: white; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); margin-bottom: 1.5rem; overflow: hidden; }
+    .vault-section-header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 1.5rem; background: var(--primary-dark); color: white; }
+    .vault-section-header h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 0.5rem; }
     .vault-section-body { padding: 1.2rem 1.5rem; }
-
-    .category-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.9rem 1rem;
-        border: 1.5px solid var(--border);
-        border-radius: 8px;
-        margin-bottom: 0.6rem;
-        background: #fafafa;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
+    .category-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1rem; border: 1.5px solid var(--border); border-radius: 8px; margin-bottom: 0.6rem; background: #fafafa; cursor: pointer; transition: all 0.2s; }
     .category-row:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-
-    .category-row-left {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-
+    .category-row-left { display: flex; align-items: center; gap: 0.8rem; }
     .category-toggle { font-size: 0.75rem; color: var(--text-light); transition: transform 0.2s; }
     .category-toggle.open { transform: rotate(90deg); }
-
     .category-name { font-weight: 700; font-size: 0.95rem; }
     .category-meta { font-size: 0.8rem; color: var(--text-light); margin-left: 0.3rem; }
-
-    .visibility-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.2rem 0.6rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
+    .visibility-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
     .badge-public { background: #f0fdf4; color: #16a34a; }
     .badge-members { background: #faf0ff; color: #6b21a8; }
-
-    .subcategory-list {
-        margin: 0.3rem 0 0.6rem 2rem;
-        display: none;
-    }
-
+    .subcategory-list { margin: 0.3rem 0 0.6rem 2rem; display: none; }
     .subcategory-list.open { display: block; }
-
-    .subcategory-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.7rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        margin-bottom: 0.4rem;
-        background: white;
-    }
-
-    .page-list {
-        margin: 0.3rem 0 0.5rem 1.5rem;
-    }
-
-    .page-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0.6rem 0.9rem;
-        border-left: 3px solid var(--accent);
-        border-radius: 0 6px 6px 0;
-        margin-bottom: 0.35rem;
-        background: #fff8f8;
-    }
-
+    .subcategory-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 1rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.4rem; background: white; }
+    .page-list { margin: 0.3rem 0 0.5rem 1.5rem; }
+    .page-row { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.9rem; border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; margin-bottom: 0.35rem; background: #fff8f8; }
     .page-title { font-size: 0.88rem; font-weight: 600; }
-    .page-parent { font-size: 0.75rem; color: var(--text-light); }
-
     .row-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
-
-    .empty-vault {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: var(--text-light);
-    }
-
+    .empty-vault { text-align: center; padding: 3rem 1rem; color: var(--text-light); }
     .empty-vault span { display: block; font-size: 2.5rem; margin-bottom: 0.5rem; }
-
-    .submission-card {
-        border: 1.5px solid var(--border);
-        border-radius: 8px;
-        padding: 1.2rem;
-        margin-bottom: 1rem;
-        background: #fafafa;
-    }
-
+    .submission-card { border: 1.5px solid var(--border); border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem; background: #fafafa; }
     .submission-card h4 { margin: 0 0 0.3rem; font-size: 0.95rem; }
     .submission-meta { font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.8rem; }
     .submission-preview { font-size: 0.88rem; color: var(--text); line-height: 1.5; margin-bottom: 1rem; border-left: 3px solid var(--border); padding-left: 0.8rem; }
-
-    /* Modal */
-    .vault-modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.55);
-        z-index: 1000;
-        justify-content: center;
-        align-items: flex-start;
-        padding: 2rem 1rem;
-        overflow-y: auto;
-    }
-
+    .vault-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; justify-content: center; align-items: flex-start; padding: 2rem 1rem; overflow-y: auto; }
     .vault-modal-overlay.open { display: flex; }
-
-    .vault-modal {
-        background: white;
-        border-radius: 12px;
-        width: 100%;
-        max-width: 700px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-        animation: vaultModalIn 0.25s ease;
-    }
-
-    @keyframes vaultModalIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .vault-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.3rem 1.8rem;
-        border-bottom: 1px solid var(--border);
-    }
-
+    .vault-modal { background: white; border-radius: 12px; width: 100%; max-width: 700px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: vaultModalIn 0.25s ease; }
+    @keyframes vaultModalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .vault-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.3rem 1.8rem; border-bottom: 1px solid var(--border); }
     .vault-modal-header h3 { margin: 0; font-size: 1.1rem; }
-
-    .vault-modal-close {
-        background: none;
-        border: none;
-        font-size: 1.4rem;
-        cursor: pointer;
-        color: var(--text-light);
-        line-height: 1;
-    }
-
+    .vault-modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-light); line-height: 1; }
     .vault-modal-close:hover { color: var(--accent); }
     .vault-modal-body { padding: 1.8rem; }
-    .vault-modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.8rem;
-        padding: 1.2rem 1.8rem;
-        border-top: 1px solid var(--border);
-    }
-
+    .vault-modal-footer { display: flex; justify-content: flex-end; gap: 0.8rem; padding: 1.2rem 1.8rem; border-top: 1px solid var(--border); }
     .vf-group { margin-bottom: 1.2rem; }
     .vf-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; }
-    .vf-group input, .vf-group select, .vf-group textarea {
-        width: 100%;
-        padding: 0.7rem 0.9rem;
-        border: 1.5px solid var(--border);
-        border-radius: 6px;
-        font-size: 0.92rem;
-        font-family: inherit;
-        transition: border-color 0.2s;
-        background: white;
-    }
-    .vf-group input:focus, .vf-group select:focus, .vf-group textarea:focus {
-        outline: none;
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px rgba(255,36,0,0.08);
-    }
+    .vf-group input, .vf-group select, .vf-group textarea { width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.92rem; font-family: inherit; transition: border-color 0.2s; background: white; }
+    .vf-group input:focus, .vf-group select:focus, .vf-group textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,36,0,0.08); }
     .vf-group textarea { resize: vertical; min-height: 120px; }
     .vf-hint { font-size: 0.78rem; color: var(--text-light); margin-top: 0.3rem; }
     .vf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-
-    .rich-toolbar {
-        display: flex;
-        gap: 0.3rem;
-        padding: 0.5rem;
-        background: var(--light-gray);
-        border: 1.5px solid var(--border);
-        border-bottom: none;
-        border-radius: 6px 6px 0 0;
-        flex-wrap: wrap;
-    }
-
-    .rich-btn {
-        padding: 0.3rem 0.6rem;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.15s;
-    }
-
+    .rich-toolbar { display: flex; gap: 0.3rem; padding: 0.5rem; background: var(--light-gray); border: 1.5px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; flex-wrap: wrap; }
+    .rich-btn { padding: 0.3rem 0.6rem; background: white; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
     .rich-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
-
-    .rich-editor {
-        width: 100%;
-        min-height: 200px;
-        padding: 1rem;
-        border: 1.5px solid var(--border);
-        border-top: none;
-        border-radius: 0 0 6px 6px;
-        font-size: 0.92rem;
-        font-family: inherit;
-        resize: vertical;
-        line-height: 1.6;
-    }
-
+    .rich-editor { width: 100%; min-height: 200px; padding: 1rem; border: 1.5px solid var(--border); border-top: none; border-radius: 0 0 6px 6px; font-size: 0.92rem; font-family: inherit; resize: vertical; line-height: 1.6; }
     .rich-editor:focus { outline: none; border-color: var(--accent); }
-
-    .book-cover-preview {
-        width: 80px;
-        height: 110px;
-        object-fit: cover;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        display: none;
-        margin-top: 0.5rem;
-    }
-
-    @media (max-width: 600px) {
-        .vf-row { grid-template-columns: 1fr; }
-        .vault-tabs { overflow-x: auto; }
-    }
+    @media (max-width: 600px) { .vf-row { grid-template-columns: 1fr; } .vault-tabs { overflow-x: auto; } }
 </style>
 
 <div class="vault-admin">
-
     <div class="vault-toolbar">
         <button class="vault-btn vault-btn-primary" onclick="vaultOpenModal('category')">＋ New Category</button>
         <button class="vault-btn vault-btn-secondary" onclick="vaultOpenModal('page')">＋ New Page</button>
     </div>
-
     <div class="vault-tabs">
         <button class="vault-tab-btn active" onclick="vaultSwitchTab('structure')">🗂 Structure</button>
-        <button class="vault-tab-btn" onclick="vaultSwitchTab('books')">📚 Books</button>
         <button class="vault-tab-btn" onclick="vaultSwitchTab('submissions')">📥 Submissions</button>
     </div>
-
     <div id="vaultStructurePanel" class="vault-panel active">
         <div class="vault-section-card">
-            <div class="vault-section-header">
-                <h3>📂 Categories & Pages</h3>
-            </div>
+            <div class="vault-section-header"><h3>📂 Categories & Pages</h3></div>
             <div class="vault-section-body">
                 <div id="vaultCategoryTree">
                     <div class="empty-vault"><span>📂</span>No categories yet. Click "New Category" to get started.</div>
@@ -348,21 +93,9 @@
             </div>
         </div>
     </div>
-
-        <div id="vaultBooksPanel" class="vault-panel">
-        <div class="vault-section-card">
-            <div class="vault-section-header"><h3>📚 Book Club</h3></div>
-            <div class="vault-section-body">
-                <div id="vaultBooksList"><div class="empty-vault"><span>📚</span>No books added yet.</div></div>
-            </div>
-        </div>
-    </div>
-
     <div id="vaultSubmissionsPanel" class="vault-panel">
         <div class="vault-section-card">
-            <div class="vault-section-header">
-                <h3>📥 Pending Submissions</h3>
-            </div>
+            <div class="vault-section-header"><h3>📥 Pending Submissions</h3></div>
             <div class="vault-section-body">
                 <div id="vaultSubmissionsList">
                     <div class="empty-vault"><span>📥</span>No pending submissions.</div>
@@ -370,7 +103,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- Category Modal -->
@@ -387,9 +119,7 @@
             </div>
             <div class="vf-group">
                 <label>Parent Category <span style="font-weight:400;color:var(--text-light)">(leave blank for top-level)</span></label>
-                <select id="vc_parent">
-                    <option value="">— Top Level Category —</option>
-                </select>
+                <select id="vc_parent"><option value="">— Top Level Category —</option></select>
             </div>
             <div class="vf-row">
                 <div class="vf-group">
@@ -426,7 +156,7 @@
         <div class="vault-modal-body">
             <div class="vf-group">
                 <label>Page Title *</label>
-                <input type="text" id="vp_title" placeholder="e.g. Coach Berry's Book Club">
+                <input type="text" id="vp_title" placeholder="e.g. Edge Work Fundamentals">
             </div>
             <div class="vf-row">
                 <div class="vf-group">
@@ -443,9 +173,8 @@
             </div>
             <div class="vf-group">
                 <label>Page Type</label>
-                <select id="vp_type" onchange="vaultTogglePageType()">
+                <select id="vp_type">
                     <option value="article">📄 Article / Guide</option>
-                    <option value="booklist">📚 Book List</option>
                     <option value="links">🔗 Resource Links</option>
                     <option value="video">🎥 Video Page</option>
                 </select>
@@ -461,7 +190,7 @@
                     <button class="rich-btn" onclick="vaultFormat('ol')">1. List</button>
                     <button class="rich-btn" onclick="vaultFormat('hr')">── Line</button>
                 </div>
-                <textarea class="rich-editor" id="vp_content" placeholder="Write your page content here... You can use HTML tags for formatting."></textarea>
+                <textarea class="rich-editor" id="vp_content" placeholder="Write your page content here..."></textarea>
             </div>
             <div class="vf-group">
                 <label>Excerpt <span style="font-weight:400;color:var(--text-light)">(short preview shown on category page)</span></label>
@@ -475,11 +204,9 @@
     </div>
 </div>
 
-<!-- Book Modal removed - see book-club.html -->
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, setDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, setDoc, where, query } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
     apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -497,13 +224,11 @@ let allCategories = [];
 let allPages = [];
 let editingCatId = null;
 let editingPageId = null;
-let editingBookId = null;
 
 async function loadVaultAdmin() {
     await loadCategories();
     await loadPages();
     await loadSubmissions();
-    await loadBooks();
     renderCategoryTree();
 }
 
@@ -550,14 +275,12 @@ function renderCategoryTree() {
         container.innerHTML = '<div class="empty-vault"><span>📂</span>No categories yet. Click "New Category" to get started.</div>';
         return;
     }
-
     container.innerHTML = topLevel.map(cat => {
         const subCats = allCategories.filter(c => c.parentId === cat.id);
         const directPages = allPages.filter(p => p.categoryId === cat.id);
         const badge = cat.visibility === 'members'
             ? '<span class="visibility-badge badge-members">🔒 Members</span>'
             : '<span class="visibility-badge badge-public">🌐 Public</span>';
-
         const subHTML = subCats.map(sub => {
             const subPages = allPages.filter(p => p.categoryId === sub.id);
             const subBadge = sub.visibility === 'members'
@@ -578,7 +301,6 @@ function renderCategoryTree() {
             </div>
             ${subPages.length ? `<div class="page-list">${subPages.map(p => pageRowHTML(p)).join('')}</div>` : ''}`;
         }).join('');
-
         return `
         <div class="category-row" onclick="toggleCategory('${cat.id}')">
             <div class="category-row-left">
@@ -604,7 +326,7 @@ function pageRowHTML(p) {
     const badge = p.visibility === 'members'
         ? '<span class="visibility-badge badge-members">🔒</span>'
         : '<span class="visibility-badge badge-public">🌐</span>';
-    const typeIcon = { article:'📄', booklist:'📚', links:'🔗', video:'🎥' }[p.type] || '📄';
+    const typeIcon = { article:'📄', links:'🔗', video:'🎥' }[p.type] || '📄';
     return `
     <div class="page-row">
         <div>
@@ -619,21 +341,15 @@ function pageRowHTML(p) {
 }
 
 window.toggleCategory = function(id) {
-    const sublist = document.getElementById(`sublist_${id}`);
-    const toggle = document.getElementById(`toggle_${id}`);
-    sublist.classList.toggle('open');
-    toggle.classList.toggle('open');
+    document.getElementById(`sublist_${id}`).classList.toggle('open');
+    document.getElementById(`toggle_${id}`).classList.toggle('open');
 };
 
 function populateCategorySelects() {
-    const parentSelect = document.getElementById('vc_parent');
-    const pageSelect = document.getElementById('vp_category');
     const topLevel = allCategories.filter(c => !c.parentId);
-
-    parentSelect.innerHTML = '<option value="">— Top Level Category —</option>' +
+    document.getElementById('vc_parent').innerHTML = '<option value="">— Top Level Category —</option>' +
         topLevel.map(c => `<option value="${c.id}">${c.icon||''} ${esc(c.name)}</option>`).join('');
-
-    pageSelect.innerHTML = allCategories.map(c => {
+    document.getElementById('vp_category').innerHTML = allCategories.map(c => {
         const parent = c.parentId ? allCategories.find(p => p.id === c.parentId) : null;
         const label = parent ? `${parent.icon||''}${esc(parent.name)} › ${c.icon||''}${esc(c.name)}` : `${c.icon||''}${esc(c.name)}`;
         return `<option value="${c.id}">${label}</option>`;
@@ -662,13 +378,6 @@ window.vaultOpenModal = function(type) {
         document.getElementById('vp_visibility').value = 'public';
         document.getElementById('vp_type').value = 'article';
         populateCategorySelects();
-    } else if (type === 'book') {
-        editingBookId = null;
-        document.getElementById('vaultBookModalTitle').textContent = 'Add Book';
-        ['vb_title','vb_author','vb_cover','vb_why','vb_link'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('vb_cover_preview').style.display = 'none';
-        document.getElementById('vb_visibility').value = 'public';
-        document.getElementById('vb_tag').value = 'On Ice Development';
     }
     document.getElementById(`vault${type.charAt(0).toUpperCase()+type.slice(1)}Modal`).classList.add('open');
 };
@@ -690,11 +399,8 @@ window.vaultSaveCategory = async function() {
     };
     if (!editingCatId) data.createdAt = Date.now();
     try {
-        if (editingCatId) {
-            await updateDoc(doc(db, 'vault_categories', editingCatId), data);
-        } else {
-            await addDoc(collection(db, 'vault_categories'), data);
-        }
+        if (editingCatId) { await updateDoc(doc(db, 'vault_categories', editingCatId), data); }
+        else { await addDoc(collection(db, 'vault_categories'), data); }
         vaultCloseModal('category');
         await loadVaultAdmin();
     } catch(e) { alert('Error saving category: ' + e.message); }
@@ -706,8 +412,7 @@ window.vaultSavePage = async function() {
     if (!title) { alert('Page title is required.'); return; }
     if (!categoryId) { alert('Please select a category.'); return; }
     const data = {
-        title,
-        categoryId,
+        title, categoryId,
         visibility: document.getElementById('vp_visibility').value,
         type: document.getElementById('vp_type').value,
         content: document.getElementById('vp_content').value,
@@ -716,100 +421,11 @@ window.vaultSavePage = async function() {
     };
     if (!editingPageId) data.createdAt = Date.now();
     try {
-        if (editingPageId) {
-            await updateDoc(doc(db, 'vault_pages', editingPageId), data);
-        } else {
-            await addDoc(collection(db, 'vault_pages'), data);
-        }
+        if (editingPageId) { await updateDoc(doc(db, 'vault_pages', editingPageId), data); }
+        else { await addDoc(collection(db, 'vault_pages'), data); }
         vaultCloseModal('page');
         await loadVaultAdmin();
     } catch(e) { alert('Error saving page: ' + e.message); }
-};
-
-
-    async function loadBooks() {
-        const snap = await getDocs(collection(db, 'vault_books'));
-        const books = [];
-        snap.forEach(d => books.push({ id: d.id, ...d.data() }));
-        books.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-        const container = document.getElementById('vaultBooksList');
-        if (!container) return;
-        if (!books.length) {
-            container.innerHTML = '<div class="empty-vault"><span>📚</span>No books added yet. Click "Add Book" above.</div>';
-            return;
-        }
-        container.innerHTML = books.map(b => {
-            const cover = b.cover
-                ? `<img src="${b.cover}" style="width:45px;height:60px;object-fit:cover;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">`
-                : `<div style="width:45px;height:60px;background:var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📖</div>`;
-            const vis = b.visibility === 'members'
-                ? '<span style="color:#9333ea;font-weight:600;">🔒 Members</span>'
-                : '<span style="color:#16a34a;font-weight:600;">🌐 Public</span>';
-            return `<div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;border:1.5px solid var(--border);border-radius:8px;margin-bottom:0.6rem;background:#fafafa;">
-                <div style="display:flex;gap:1rem;align-items:center;">
-                    ${cover}
-                    <div>
-                        <div style="font-weight:700;font-size:0.95rem;">${esc(b.title)}</div>
-                        <div style="font-size:0.82rem;color:var(--text-light);">by ${esc(b.author)}</div>
-                        <div style="font-size:0.78rem;margin-top:0.2rem;">${vis} · ${esc(b.tag||'')}</div>
-                    </div>
-                </div>
-                <div style="display:flex;gap:0.4rem;flex-shrink:0;">
-                    <button class="vault-btn vault-btn-sm vault-btn-edit" onclick="vaultEditBook('${b.id}')">Edit</button>
-                    <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="vaultDeleteBook('${b.id}')">Delete</button>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    window.vaultEditBook = async function(id) {
-        editingBookId = id;
-        const snap = await getDoc(doc(db, 'vault_books', id));
-        if (!snap.exists()) return;
-        const d = snap.data();
-        document.getElementById('vb_title').value = d.title || '';
-        document.getElementById('vb_author').value = d.author || '';
-        document.getElementById('vb_cover').value = d.cover || '';
-        document.getElementById('vb_why').value = d.why || '';
-        document.getElementById('vb_link').value = d.link || '';
-        document.getElementById('vb_tag').value = d.tag || 'On Ice Development';
-        document.getElementById('vb_visibility').value = d.visibility || 'public';
-        const preview = document.getElementById('vb_cover_preview');
-        if (d.cover) { preview.src = d.cover; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
-        document.getElementById('vaultBookModalTitle').textContent = 'Edit Book';
-        document.getElementById('vaultBookModal').classList.add('open');
-    };
-
-    window.vaultDeleteBook = async function(id) {
-        if (!confirm('Delete this book?')) return;
-        await deleteDoc(doc(db, 'vault_books', id));
-        await loadBooks();
-    };
-
-window.vaultSaveBook = async function() {
-    const title = document.getElementById('vb_title').value.trim();
-    const author = document.getElementById('vb_author').value.trim();
-    const why = document.getElementById('vb_why').value.trim();
-    if (!title || !author || !why) { alert('Title, author, and recommendation are required.'); return; }
-    const data = {
-        title, author, why,
-        cover: document.getElementById('vb_cover').value.trim(),
-        link: document.getElementById('vb_link').value.trim(),
-        tag: document.getElementById('vb_tag').value,
-        visibility: document.getElementById('vb_visibility').value,
-        type: 'book',
-        updatedAt: Date.now()
-    };
-    if (!editingBookId) data.createdAt = Date.now();
-    try {
-        if (editingBookId) {
-            await updateDoc(doc(db, 'vault_books', editingBookId), data);
-        } else {
-            await addDoc(collection(db, 'vault_books'), data);
-        }
-        vaultCloseModal('book');
-        await loadBooks();
-    } catch(e) { alert('Error saving book: ' + e.message); }
 };
 
 window.vaultEditCategory = async function(id, e) {
@@ -877,17 +493,6 @@ window.rejectSubmission = async function(id) {
     await loadSubmissions();
 };
 
-window.vaultPreviewCover = function() {
-    const url = document.getElementById('vb_cover').value.trim();
-    const preview = document.getElementById('vb_cover_preview');
-    if (url) {
-        preview.src = url;
-        preview.style.display = 'block';
-    } else {
-        preview.style.display = 'none';
-    }
-};
-
 window.vaultFormat = function(cmd) {
     const ta = document.getElementById('vp_content');
     const start = ta.selectionStart;
@@ -902,8 +507,7 @@ window.vaultFormat = function(cmd) {
         ol: `<ol>\n  <li>${selected}</li>\n</ol>`,
         hr: `\n<hr>\n`
     };
-    const replacement = map[cmd] || selected;
-    ta.value = ta.value.substring(0, start) + replacement + ta.value.substring(end);
+    ta.value = ta.value.substring(0, start) + (map[cmd] || selected) + ta.value.substring(end);
     ta.focus();
 };
 
