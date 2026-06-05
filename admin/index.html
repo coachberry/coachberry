@@ -316,6 +316,7 @@
                 <hr class="sidebar-divider">
                 <div class="sidebar-section-label">My Portfolio</div>
                 <li><a onclick="switchTab('resume')" class="menu-item" data-tab="resume">🏒 Coaching Resume</a></li>
+                <li><a onclick="switchTab('vault')" class="menu-item" data-tab="vault">🔐 The Vault</a></li>
             </ul>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
@@ -331,6 +332,7 @@
             <div id="updates" class="tab-content"></div>
             <div id="inbox" class="tab-content"></div>
             <div id="resume" class="tab-content"></div>
+            <div id="vault" class="tab-content"></div>
         </main>
     </div>
 
@@ -432,7 +434,9 @@
                 blog: 'Blog Posts',
                 updates: 'Updates',
                 inbox: 'Inbox',
-                resume: 'Coaching Resume'
+                resume: 'Coaching Resume',
+                resume: 'Coaching Resume',
+                vault: 'The Vault'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 

@@ -1,0 +1,918 @@
+<!-- Coach Berry - Vault Admin Tab -->
+<style>
+    .vault-admin {
+        max-width: 1100px;
+    }
+
+    .vault-toolbar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .vault-btn {
+        padding: 0.65rem 1.4rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .vault-btn-primary { background: var(--accent); color: white; }
+    .vault-btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .vault-btn-secondary { background: var(--primary-dark); color: white; }
+    .vault-btn-secondary:hover { background: #333; transform: translateY(-1px); }
+    .vault-btn-outline { background: white; color: var(--primary-dark); border: 1.5px solid var(--border); }
+    .vault-btn-outline:hover { background: var(--light-gray); }
+    .vault-btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; font-weight: 600; }
+    .vault-btn-danger { background: #fff0f0; color: #c62828; border: none; }
+    .vault-btn-danger:hover { background: #fecaca; }
+    .vault-btn-edit { background: #e8f4fd; color: #0369a1; border: none; }
+    .vault-btn-edit:hover { background: #bfdbfe; }
+    .vault-btn-approve { background: #f0fdf4; color: #16a34a; border: none; }
+    .vault-btn-approve:hover { background: #bbf7d0; }
+
+    .vault-tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .vault-tab-btn {
+        padding: 0.85rem 1.5rem;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-light);
+        transition: all 0.2s;
+    }
+
+    .vault-tab-btn:hover { color: var(--text); }
+    .vault-tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .vault-panel { display: none; }
+    .vault-panel.active { display: block; }
+
+    .vault-section-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .vault-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 1.5rem;
+        background: var(--primary-dark);
+        color: white;
+    }
+
+    .vault-section-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .vault-section-body { padding: 1.2rem 1.5rem; }
+
+    .category-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 0.6rem;
+        background: #fafafa;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .category-row:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+    .category-row-left {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .category-toggle { font-size: 0.75rem; color: var(--text-light); transition: transform 0.2s; }
+    .category-toggle.open { transform: rotate(90deg); }
+
+    .category-name { font-weight: 700; font-size: 0.95rem; }
+    .category-meta { font-size: 0.8rem; color: var(--text-light); margin-left: 0.3rem; }
+
+    .visibility-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-public { background: #f0fdf4; color: #16a34a; }
+    .badge-members { background: #faf0ff; color: #6b21a8; }
+
+    .subcategory-list {
+        margin: 0.3rem 0 0.6rem 2rem;
+        display: none;
+    }
+
+    .subcategory-list.open { display: block; }
+
+    .subcategory-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.7rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        margin-bottom: 0.4rem;
+        background: white;
+    }
+
+    .page-list {
+        margin: 0.3rem 0 0.5rem 1.5rem;
+    }
+
+    .page-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 0.9rem;
+        border-left: 3px solid var(--accent);
+        border-radius: 0 6px 6px 0;
+        margin-bottom: 0.35rem;
+        background: #fff8f8;
+    }
+
+    .page-title { font-size: 0.88rem; font-weight: 600; }
+    .page-parent { font-size: 0.75rem; color: var(--text-light); }
+
+    .row-actions { display: flex; gap: 0.4rem; align-items: center; flex-shrink: 0; }
+
+    .empty-vault {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-light);
+    }
+
+    .empty-vault span { display: block; font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+    .submission-card {
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        background: #fafafa;
+    }
+
+    .submission-card h4 { margin: 0 0 0.3rem; font-size: 0.95rem; }
+    .submission-meta { font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.8rem; }
+    .submission-preview { font-size: 0.88rem; color: var(--text); line-height: 1.5; margin-bottom: 1rem; border-left: 3px solid var(--border); padding-left: 0.8rem; }
+
+    /* Modal */
+    .vault-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 1000;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        overflow-y: auto;
+    }
+
+    .vault-modal-overlay.open { display: flex; }
+
+    .vault-modal {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 700px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        animation: vaultModalIn 0.25s ease;
+    }
+
+    @keyframes vaultModalIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .vault-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.3rem 1.8rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .vault-modal-header h3 { margin: 0; font-size: 1.1rem; }
+
+    .vault-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: var(--text-light);
+        line-height: 1;
+    }
+
+    .vault-modal-close:hover { color: var(--accent); }
+    .vault-modal-body { padding: 1.8rem; }
+    .vault-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.8rem;
+        padding: 1.2rem 1.8rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .vf-group { margin-bottom: 1.2rem; }
+    .vf-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; }
+    .vf-group input, .vf-group select, .vf-group textarea {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.92rem;
+        font-family: inherit;
+        transition: border-color 0.2s;
+        background: white;
+    }
+    .vf-group input:focus, .vf-group select:focus, .vf-group textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(255,36,0,0.08);
+    }
+    .vf-group textarea { resize: vertical; min-height: 120px; }
+    .vf-hint { font-size: 0.78rem; color: var(--text-light); margin-top: 0.3rem; }
+    .vf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .rich-toolbar {
+        display: flex;
+        gap: 0.3rem;
+        padding: 0.5rem;
+        background: var(--light-gray);
+        border: 1.5px solid var(--border);
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        flex-wrap: wrap;
+    }
+
+    .rich-btn {
+        padding: 0.3rem 0.6rem;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .rich-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+    .rich-editor {
+        width: 100%;
+        min-height: 200px;
+        padding: 1rem;
+        border: 1.5px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 6px 6px;
+        font-size: 0.92rem;
+        font-family: inherit;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .rich-editor:focus { outline: none; border-color: var(--accent); }
+
+    .book-cover-preview {
+        width: 80px;
+        height: 110px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        display: none;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+        .vf-row { grid-template-columns: 1fr; }
+        .vault-tabs { overflow-x: auto; }
+    }
+</style>
+
+<div class="vault-admin">
+
+    <div class="vault-toolbar">
+        <button class="vault-btn vault-btn-primary" onclick="vaultOpenModal('category')">＋ New Category</button>
+        <button class="vault-btn vault-btn-secondary" onclick="vaultOpenModal('page')">＋ New Page</button>
+        <button class="vault-btn vault-btn-outline" onclick="vaultOpenModal('book')">📚 Add Book</button>
+    </div>
+
+    <div class="vault-tabs">
+        <button class="vault-tab-btn active" onclick="vaultSwitchTab('structure')">🗂 Structure</button>
+        <button class="vault-tab-btn" onclick="vaultSwitchTab('submissions')">📥 Submissions</button>
+    </div>
+
+    <div id="vaultStructurePanel" class="vault-panel active">
+        <div class="vault-section-card">
+            <div class="vault-section-header">
+                <h3>📂 Categories & Pages</h3>
+            </div>
+            <div class="vault-section-body">
+                <div id="vaultCategoryTree">
+                    <div class="empty-vault"><span>📂</span>No categories yet. Click "New Category" to get started.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="vaultSubmissionsPanel" class="vault-panel">
+        <div class="vault-section-card">
+            <div class="vault-section-header">
+                <h3>📥 Pending Submissions</h3>
+            </div>
+            <div class="vault-section-body">
+                <div id="vaultSubmissionsList">
+                    <div class="empty-vault"><span>📥</span>No pending submissions.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Category Modal -->
+<div class="vault-modal-overlay" id="vaultCategoryModal">
+    <div class="vault-modal">
+        <div class="vault-modal-header">
+            <h3 id="vaultCategoryModalTitle">New Category</h3>
+            <button class="vault-modal-close" onclick="vaultCloseModal('category')">✕</button>
+        </div>
+        <div class="vault-modal-body">
+            <div class="vf-group">
+                <label>Category Name *</label>
+                <input type="text" id="vc_name" placeholder="e.g. Resources, Drills, Mental Game">
+            </div>
+            <div class="vf-group">
+                <label>Parent Category <span style="font-weight:400;color:var(--text-light)">(leave blank for top-level)</span></label>
+                <select id="vc_parent">
+                    <option value="">— Top Level Category —</option>
+                </select>
+            </div>
+            <div class="vf-row">
+                <div class="vf-group">
+                    <label>Visibility</label>
+                    <select id="vc_visibility">
+                        <option value="public">🌐 Public</option>
+                        <option value="members">🔒 Members Only</option>
+                    </select>
+                </div>
+                <div class="vf-group">
+                    <label>Icon / Emoji <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+                    <input type="text" id="vc_icon" placeholder="e.g. 📚 🏒 🧠">
+                </div>
+            </div>
+            <div class="vf-group">
+                <label>Description <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+                <textarea id="vc_description" placeholder="Brief description of this category..."></textarea>
+            </div>
+        </div>
+        <div class="vault-modal-footer">
+            <button class="vault-btn vault-btn-outline" onclick="vaultCloseModal('category')">Cancel</button>
+            <button class="vault-btn vault-btn-primary" onclick="vaultSaveCategory()">💾 Save Category</button>
+        </div>
+    </div>
+</div>
+
+<!-- Page Modal -->
+<div class="vault-modal-overlay" id="vaultPageModal">
+    <div class="vault-modal" style="max-width:800px;">
+        <div class="vault-modal-header">
+            <h3 id="vaultPageModalTitle">New Page</h3>
+            <button class="vault-modal-close" onclick="vaultCloseModal('page')">✕</button>
+        </div>
+        <div class="vault-modal-body">
+            <div class="vf-group">
+                <label>Page Title *</label>
+                <input type="text" id="vp_title" placeholder="e.g. Coach Berry's Book Club">
+            </div>
+            <div class="vf-row">
+                <div class="vf-group">
+                    <label>Category *</label>
+                    <select id="vp_category"></select>
+                </div>
+                <div class="vf-group">
+                    <label>Visibility</label>
+                    <select id="vp_visibility">
+                        <option value="public">🌐 Public</option>
+                        <option value="members">🔒 Members Only</option>
+                    </select>
+                </div>
+            </div>
+            <div class="vf-group">
+                <label>Page Type</label>
+                <select id="vp_type" onchange="vaultTogglePageType()">
+                    <option value="article">📄 Article / Guide</option>
+                    <option value="booklist">📚 Book List</option>
+                    <option value="links">🔗 Resource Links</option>
+                    <option value="video">🎥 Video Page</option>
+                </select>
+            </div>
+            <div class="vf-group">
+                <label>Content</label>
+                <div class="rich-toolbar">
+                    <button class="rich-btn" onclick="vaultFormat('bold')"><b>B</b></button>
+                    <button class="rich-btn" onclick="vaultFormat('italic')"><i>I</i></button>
+                    <button class="rich-btn" onclick="vaultFormat('h2')">H2</button>
+                    <button class="rich-btn" onclick="vaultFormat('h3')">H3</button>
+                    <button class="rich-btn" onclick="vaultFormat('ul')">• List</button>
+                    <button class="rich-btn" onclick="vaultFormat('ol')">1. List</button>
+                    <button class="rich-btn" onclick="vaultFormat('hr')">── Line</button>
+                </div>
+                <textarea class="rich-editor" id="vp_content" placeholder="Write your page content here... You can use HTML tags for formatting."></textarea>
+            </div>
+            <div class="vf-group">
+                <label>Excerpt <span style="font-weight:400;color:var(--text-light)">(short preview shown on category page)</span></label>
+                <input type="text" id="vp_excerpt" placeholder="One sentence description...">
+            </div>
+        </div>
+        <div class="vault-modal-footer">
+            <button class="vault-btn vault-btn-outline" onclick="vaultCloseModal('page')">Cancel</button>
+            <button class="vault-btn vault-btn-primary" onclick="vaultSavePage()">💾 Save Page</button>
+        </div>
+    </div>
+</div>
+
+<!-- Book Modal -->
+<div class="vault-modal-overlay" id="vaultBookModal">
+    <div class="vault-modal">
+        <div class="vault-modal-header">
+            <h3 id="vaultBookModalTitle">Add Book</h3>
+            <button class="vault-modal-close" onclick="vaultCloseModal('book')">✕</button>
+        </div>
+        <div class="vault-modal-body">
+            <div class="vf-row">
+                <div class="vf-group">
+                    <label>Book Title *</label>
+                    <input type="text" id="vb_title" placeholder="e.g. The Talent Code">
+                </div>
+                <div class="vf-group">
+                    <label>Author *</label>
+                    <input type="text" id="vb_author" placeholder="e.g. Daniel Coyle">
+                </div>
+            </div>
+            <div class="vf-group">
+                <label>Cover Image URL</label>
+                <input type="text" id="vb_cover" placeholder="Paste Amazon or direct image URL..." oninput="vaultPreviewCover()">
+                <div class="vf-hint">Go to the book on Amazon, right-click the cover image → Copy Image Address</div>
+                <img id="vb_cover_preview" class="book-cover-preview" alt="Cover preview">
+            </div>
+            <div class="vf-group">
+                <label>Why I Recommend It *</label>
+                <textarea id="vb_why" placeholder="Tell your members why this book matters for development on and off the ice..."></textarea>
+            </div>
+            <div class="vf-group">
+                <label>Amazon Affiliate Buy Link</label>
+                <input type="text" id="vb_link" placeholder="Paste your Amazon affiliate URL here...">
+                <div class="vf-hint">Log into Amazon Associates → search the book → click "Get Link" → paste the full URL here</div>
+            </div>
+            <div class="vf-row">
+                <div class="vf-group">
+                    <label>Category Tag</label>
+                    <select id="vb_tag">
+                        <option value="On Ice Development">🏒 On Ice Development</option>
+                        <option value="Mental Game">🧠 Mental Game</option>
+                        <option value="Physical Training">💪 Physical Training</option>
+                        <option value="Leadership">🏆 Leadership</option>
+                        <option value="Life Skills">⭐ Life Skills</option>
+                        <option value="Coaching">🎯 Coaching</option>
+                        <option value="Nutrition">🥗 Nutrition</option>
+                    </select>
+                </div>
+                <div class="vf-group">
+                    <label>Visibility</label>
+                    <select id="vb_visibility">
+                        <option value="public">🌐 Public</option>
+                        <option value="members">🔒 Members Only</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="vault-modal-footer">
+            <button class="vault-btn vault-btn-outline" onclick="vaultCloseModal('book')">Cancel</button>
+            <button class="vault-btn vault-btn-primary" onclick="vaultSaveBook()">💾 Save Book</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, setDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allCategories = [];
+let allPages = [];
+let editingCatId = null;
+let editingPageId = null;
+let editingBookId = null;
+
+async function loadVaultAdmin() {
+    await loadCategories();
+    await loadPages();
+    await loadSubmissions();
+    renderCategoryTree();
+}
+
+async function loadCategories() {
+    const snap = await getDocs(collection(db, 'vault_categories'));
+    allCategories = [];
+    snap.forEach(d => allCategories.push({ id: d.id, ...d.data() }));
+    allCategories.sort((a,b) => (a.order||0) - (b.order||0));
+}
+
+async function loadPages() {
+    const snap = await getDocs(collection(db, 'vault_pages'));
+    allPages = [];
+    snap.forEach(d => allPages.push({ id: d.id, ...d.data() }));
+}
+
+async function loadSubmissions() {
+    const snap = await getDocs(query(collection(db, 'vault_submissions'), where('status','==','pending')));
+    const list = [];
+    snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+    const container = document.getElementById('vaultSubmissionsList');
+    if (!list.length) {
+        container.innerHTML = '<div class="empty-vault"><span>📥</span>No pending submissions.</div>';
+        return;
+    }
+    container.innerHTML = list.map(s => `
+        <div class="submission-card">
+            <h4>${esc(s.title)}</h4>
+            <div class="submission-meta">Submitted by ${esc(s.submitterName||'Unknown')} · ${esc(s.submitterEmail||'')} · ${s.createdAt ? new Date(s.createdAt).toLocaleDateString() : ''}</div>
+            <div class="submission-meta">Suggested category: <strong>${esc(s.suggestedCategory||'None')}</strong></div>
+            <div class="submission-preview">${esc(s.content||'').substring(0,300)}${(s.content||'').length>300?'...':''}</div>
+            <div class="row-actions">
+                <button class="vault-btn vault-btn-sm vault-btn-approve" onclick="approveSubmission('${s.id}')">✓ Approve & Create Page</button>
+                <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="rejectSubmission('${s.id}')">✕ Reject</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderCategoryTree() {
+    const container = document.getElementById('vaultCategoryTree');
+    const topLevel = allCategories.filter(c => !c.parentId);
+    if (!topLevel.length) {
+        container.innerHTML = '<div class="empty-vault"><span>📂</span>No categories yet. Click "New Category" to get started.</div>';
+        return;
+    }
+
+    container.innerHTML = topLevel.map(cat => {
+        const subCats = allCategories.filter(c => c.parentId === cat.id);
+        const directPages = allPages.filter(p => p.categoryId === cat.id);
+        const badge = cat.visibility === 'members'
+            ? '<span class="visibility-badge badge-members">🔒 Members</span>'
+            : '<span class="visibility-badge badge-public">🌐 Public</span>';
+
+        const subHTML = subCats.map(sub => {
+            const subPages = allPages.filter(p => p.categoryId === sub.id);
+            const subBadge = sub.visibility === 'members'
+                ? '<span class="visibility-badge badge-members">🔒 Members</span>'
+                : '<span class="visibility-badge badge-public">🌐 Public</span>';
+            return `
+            <div class="subcategory-row">
+                <div class="category-row-left">
+                    <span>${sub.icon||'📁'}</span>
+                    <span class="category-name">${esc(sub.name)}</span>
+                    <span class="category-meta">(${subPages.length} pages)</span>
+                    ${subBadge}
+                </div>
+                <div class="row-actions">
+                    <button class="vault-btn vault-btn-sm vault-btn-edit" onclick="vaultEditCategory('${sub.id}',event)">Edit</button>
+                    <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="vaultDeleteCategory('${sub.id}',event)">Delete</button>
+                </div>
+            </div>
+            ${subPages.length ? `<div class="page-list">${subPages.map(p => pageRowHTML(p)).join('')}</div>` : ''}`;
+        }).join('');
+
+        return `
+        <div class="category-row" onclick="toggleCategory('${cat.id}')">
+            <div class="category-row-left">
+                <span class="category-toggle" id="toggle_${cat.id}">▶</span>
+                <span>${cat.icon||'📂'}</span>
+                <span class="category-name">${esc(cat.name)}</span>
+                <span class="category-meta">(${subCats.length} sub-cats · ${directPages.length} pages)</span>
+                ${badge}
+            </div>
+            <div class="row-actions" onclick="event.stopPropagation()">
+                <button class="vault-btn vault-btn-sm vault-btn-edit" onclick="vaultEditCategory('${cat.id}',event)">Edit</button>
+                <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="vaultDeleteCategory('${cat.id}',event)">Delete</button>
+            </div>
+        </div>
+        <div class="subcategory-list" id="sublist_${cat.id}">
+            ${subHTML}
+            ${directPages.length ? `<div class="page-list">${directPages.map(p => pageRowHTML(p)).join('')}</div>` : ''}
+        </div>`;
+    }).join('');
+}
+
+function pageRowHTML(p) {
+    const badge = p.visibility === 'members'
+        ? '<span class="visibility-badge badge-members">🔒</span>'
+        : '<span class="visibility-badge badge-public">🌐</span>';
+    const typeIcon = { article:'📄', booklist:'📚', links:'🔗', video:'🎥' }[p.type] || '📄';
+    return `
+    <div class="page-row">
+        <div>
+            <span class="page-title">${typeIcon} ${esc(p.title)}</span>
+            ${badge}
+        </div>
+        <div class="row-actions">
+            <button class="vault-btn vault-btn-sm vault-btn-edit" onclick="vaultEditPage('${p.id}')">Edit</button>
+            <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="vaultDeletePage('${p.id}')">Delete</button>
+        </div>
+    </div>`;
+}
+
+window.toggleCategory = function(id) {
+    const sublist = document.getElementById(`sublist_${id}`);
+    const toggle = document.getElementById(`toggle_${id}`);
+    sublist.classList.toggle('open');
+    toggle.classList.toggle('open');
+};
+
+function populateCategorySelects() {
+    const parentSelect = document.getElementById('vc_parent');
+    const pageSelect = document.getElementById('vp_category');
+    const topLevel = allCategories.filter(c => !c.parentId);
+
+    parentSelect.innerHTML = '<option value="">— Top Level Category —</option>' +
+        topLevel.map(c => `<option value="${c.id}">${c.icon||''} ${esc(c.name)}</option>`).join('');
+
+    pageSelect.innerHTML = allCategories.map(c => {
+        const parent = c.parentId ? allCategories.find(p => p.id === c.parentId) : null;
+        const label = parent ? `${parent.icon||''}${esc(parent.name)} › ${c.icon||''}${esc(c.name)}` : `${c.icon||''}${esc(c.name)}`;
+        return `<option value="${c.id}">${label}</option>`;
+    }).join('');
+}
+
+window.vaultSwitchTab = function(tab) {
+    document.querySelectorAll('.vault-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.vault-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`vault${tab.charAt(0).toUpperCase()+tab.slice(1)}Panel`).classList.add('active');
+    event.target.classList.add('active');
+};
+
+window.vaultOpenModal = function(type) {
+    if (type === 'category') {
+        editingCatId = null;
+        document.getElementById('vaultCategoryModalTitle').textContent = 'New Category';
+        ['vc_name','vc_icon','vc_description'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('vc_visibility').value = 'public';
+        populateCategorySelects();
+        document.getElementById('vc_parent').value = '';
+    } else if (type === 'page') {
+        editingPageId = null;
+        document.getElementById('vaultPageModalTitle').textContent = 'New Page';
+        ['vp_title','vp_content','vp_excerpt'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('vp_visibility').value = 'public';
+        document.getElementById('vp_type').value = 'article';
+        populateCategorySelects();
+    } else if (type === 'book') {
+        editingBookId = null;
+        document.getElementById('vaultBookModalTitle').textContent = 'Add Book';
+        ['vb_title','vb_author','vb_cover','vb_why','vb_link'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('vb_cover_preview').style.display = 'none';
+        document.getElementById('vb_visibility').value = 'public';
+        document.getElementById('vb_tag').value = 'On Ice Development';
+    }
+    document.getElementById(`vault${type.charAt(0).toUpperCase()+type.slice(1)}Modal`).classList.add('open');
+};
+
+window.vaultCloseModal = function(type) {
+    document.getElementById(`vault${type.charAt(0).toUpperCase()+type.slice(1)}Modal`).classList.remove('open');
+};
+
+window.vaultSaveCategory = async function() {
+    const name = document.getElementById('vc_name').value.trim();
+    if (!name) { alert('Category name is required.'); return; }
+    const data = {
+        name,
+        parentId: document.getElementById('vc_parent').value || null,
+        visibility: document.getElementById('vc_visibility').value,
+        icon: document.getElementById('vc_icon').value.trim(),
+        description: document.getElementById('vc_description').value.trim(),
+        updatedAt: Date.now()
+    };
+    if (!editingCatId) data.createdAt = Date.now();
+    try {
+        if (editingCatId) {
+            await updateDoc(doc(db, 'vault_categories', editingCatId), data);
+        } else {
+            await addDoc(collection(db, 'vault_categories'), data);
+        }
+        vaultCloseModal('category');
+        await loadVaultAdmin();
+    } catch(e) { alert('Error saving category: ' + e.message); }
+};
+
+window.vaultSavePage = async function() {
+    const title = document.getElementById('vp_title').value.trim();
+    const categoryId = document.getElementById('vp_category').value;
+    if (!title) { alert('Page title is required.'); return; }
+    if (!categoryId) { alert('Please select a category.'); return; }
+    const data = {
+        title,
+        categoryId,
+        visibility: document.getElementById('vp_visibility').value,
+        type: document.getElementById('vp_type').value,
+        content: document.getElementById('vp_content').value,
+        excerpt: document.getElementById('vp_excerpt').value.trim(),
+        updatedAt: Date.now()
+    };
+    if (!editingPageId) data.createdAt = Date.now();
+    try {
+        if (editingPageId) {
+            await updateDoc(doc(db, 'vault_pages', editingPageId), data);
+        } else {
+            await addDoc(collection(db, 'vault_pages'), data);
+        }
+        vaultCloseModal('page');
+        await loadVaultAdmin();
+    } catch(e) { alert('Error saving page: ' + e.message); }
+};
+
+window.vaultSaveBook = async function() {
+    const title = document.getElementById('vb_title').value.trim();
+    const author = document.getElementById('vb_author').value.trim();
+    const why = document.getElementById('vb_why').value.trim();
+    if (!title || !author || !why) { alert('Title, author, and recommendation are required.'); return; }
+    const data = {
+        title, author, why,
+        cover: document.getElementById('vb_cover').value.trim(),
+        link: document.getElementById('vb_link').value.trim(),
+        tag: document.getElementById('vb_tag').value,
+        visibility: document.getElementById('vb_visibility').value,
+        type: 'book',
+        updatedAt: Date.now()
+    };
+    if (!editingBookId) data.createdAt = Date.now();
+    try {
+        if (editingBookId) {
+            await updateDoc(doc(db, 'vault_books', editingBookId), data);
+        } else {
+            await addDoc(collection(db, 'vault_books'), data);
+        }
+        vaultCloseModal('book');
+        alert('Book saved! It will appear on the Book Club page.');
+    } catch(e) { alert('Error saving book: ' + e.message); }
+};
+
+window.vaultEditCategory = async function(id, e) {
+    e && e.stopPropagation();
+    editingCatId = id;
+    const snap = await getDoc(doc(db, 'vault_categories', id));
+    if (!snap.exists()) return;
+    const d = snap.data();
+    populateCategorySelects();
+    document.getElementById('vc_name').value = d.name || '';
+    document.getElementById('vc_icon').value = d.icon || '';
+    document.getElementById('vc_description').value = d.description || '';
+    document.getElementById('vc_visibility').value = d.visibility || 'public';
+    document.getElementById('vc_parent').value = d.parentId || '';
+    document.getElementById('vaultCategoryModalTitle').textContent = 'Edit Category';
+    document.getElementById('vaultCategoryModal').classList.add('open');
+};
+
+window.vaultEditPage = async function(id) {
+    editingPageId = id;
+    const snap = await getDoc(doc(db, 'vault_pages', id));
+    if (!snap.exists()) return;
+    const d = snap.data();
+    populateCategorySelects();
+    document.getElementById('vp_title').value = d.title || '';
+    document.getElementById('vp_category').value = d.categoryId || '';
+    document.getElementById('vp_visibility').value = d.visibility || 'public';
+    document.getElementById('vp_type').value = d.type || 'article';
+    document.getElementById('vp_content').value = d.content || '';
+    document.getElementById('vp_excerpt').value = d.excerpt || '';
+    document.getElementById('vaultPageModalTitle').textContent = 'Edit Page';
+    document.getElementById('vaultPageModal').classList.add('open');
+};
+
+window.vaultDeleteCategory = async function(id, e) {
+    e && e.stopPropagation();
+    if (!confirm('Delete this category? Pages inside it will not be deleted but will become uncategorized.')) return;
+    await deleteDoc(doc(db, 'vault_categories', id));
+    await loadVaultAdmin();
+};
+
+window.vaultDeletePage = async function(id) {
+    if (!confirm('Delete this page?')) return;
+    await deleteDoc(doc(db, 'vault_pages', id));
+    await loadVaultAdmin();
+};
+
+window.approveSubmission = async function(id) {
+    const snap = await getDoc(doc(db, 'vault_submissions', id));
+    if (!snap.exists()) return;
+    const s = snap.data();
+    populateCategorySelects();
+    document.getElementById('vp_title').value = s.title || '';
+    document.getElementById('vp_content').value = s.content || '';
+    document.getElementById('vp_excerpt').value = s.excerpt || '';
+    document.getElementById('vp_visibility').value = 'public';
+    document.getElementById('vaultPageModalTitle').textContent = 'Approve Submission as Page';
+    document.getElementById('vaultPageModal').classList.add('open');
+    await updateDoc(doc(db, 'vault_submissions', id), { status: 'approved' });
+};
+
+window.rejectSubmission = async function(id) {
+    if (!confirm('Reject and remove this submission?')) return;
+    await updateDoc(doc(db, 'vault_submissions', id), { status: 'rejected' });
+    await loadSubmissions();
+};
+
+window.vaultPreviewCover = function() {
+    const url = document.getElementById('vb_cover').value.trim();
+    const preview = document.getElementById('vb_cover_preview');
+    if (url) {
+        preview.src = url;
+        preview.style.display = 'block';
+    } else {
+        preview.style.display = 'none';
+    }
+};
+
+window.vaultFormat = function(cmd) {
+    const ta = document.getElementById('vp_content');
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = ta.value.substring(start, end);
+    const map = {
+        bold: `<strong>${selected}</strong>`,
+        italic: `<em>${selected}</em>`,
+        h2: `<h2>${selected}</h2>`,
+        h3: `<h3>${selected}</h3>`,
+        ul: `<ul>\n  <li>${selected}</li>\n</ul>`,
+        ol: `<ol>\n  <li>${selected}</li>\n</ol>`,
+        hr: `\n<hr>\n`
+    };
+    const replacement = map[cmd] || selected;
+    ta.value = ta.value.substring(0, start) + replacement + ta.value.substring(end);
+    ta.focus();
+};
+
+document.querySelectorAll('.vault-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+            const type = overlay.id.replace('vault','').replace('Modal','').toLowerCase();
+            vaultCloseModal(type);
+        }
+    });
+});
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+window.loadVaultAdmin = loadVaultAdmin;
+loadVaultAdmin();
+</script>
