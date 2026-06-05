@@ -333,6 +333,7 @@
 
     <div class="vault-tabs">
         <button class="vault-tab-btn active" onclick="vaultSwitchTab('structure')">🗂 Structure</button>
+        <button class="vault-tab-btn" onclick="vaultSwitchTab('books')">📚 Books</button>
         <button class="vault-tab-btn" onclick="vaultSwitchTab('submissions')">📥 Submissions</button>
     </div>
 
@@ -345,6 +346,15 @@
                 <div id="vaultCategoryTree">
                     <div class="empty-vault"><span>📂</span>No categories yet. Click "New Category" to get started.</div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="vaultBooksPanel" class="vault-panel">
+        <div class="vault-section-card">
+            <div class="vault-section-header"><h3>📚 Book Club</h3></div>
+            <div class="vault-section-body">
+                <div id="vaultBooksList"><div class="empty-vault"><span>📚</span>No books added yet.</div></div>
             </div>
         </div>
     </div>
@@ -554,6 +564,7 @@ async function loadVaultAdmin() {
     await loadCategories();
     await loadPages();
     await loadSubmissions();
+    await loadBooks();
     renderCategoryTree();
 }
 
@@ -776,6 +787,66 @@ window.vaultSavePage = async function() {
     } catch(e) { alert('Error saving page: ' + e.message); }
 };
 
+
+    async function loadBooks() {
+        const snap = await getDocs(collection(db, 'vault_books'));
+        const books = [];
+        snap.forEach(d => books.push({ id: d.id, ...d.data() }));
+        books.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+        const container = document.getElementById('vaultBooksList');
+        if (!container) return;
+        if (!books.length) {
+            container.innerHTML = '<div class="empty-vault"><span>📚</span>No books added yet. Click "Add Book" above.</div>';
+            return;
+        }
+        container.innerHTML = books.map(b => {
+            const cover = b.cover
+                ? `<img src="${b.cover}" style="width:45px;height:60px;object-fit:cover;border-radius:3px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">`
+                : `<div style="width:45px;height:60px;background:var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">📖</div>`;
+            const vis = b.visibility === 'members'
+                ? '<span style="color:#9333ea;font-weight:600;">🔒 Members</span>'
+                : '<span style="color:#16a34a;font-weight:600;">🌐 Public</span>';
+            return `<div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.2rem;border:1.5px solid var(--border);border-radius:8px;margin-bottom:0.6rem;background:#fafafa;">
+                <div style="display:flex;gap:1rem;align-items:center;">
+                    ${cover}
+                    <div>
+                        <div style="font-weight:700;font-size:0.95rem;">${esc(b.title)}</div>
+                        <div style="font-size:0.82rem;color:var(--text-light);">by ${esc(b.author)}</div>
+                        <div style="font-size:0.78rem;margin-top:0.2rem;">${vis} · ${esc(b.tag||'')}</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:0.4rem;flex-shrink:0;">
+                    <button class="vault-btn vault-btn-sm vault-btn-edit" onclick="vaultEditBook('${b.id}')">Edit</button>
+                    <button class="vault-btn vault-btn-sm vault-btn-danger" onclick="vaultDeleteBook('${b.id}')">Delete</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    window.vaultEditBook = async function(id) {
+        editingBookId = id;
+        const snap = await getDoc(doc(db, 'vault_books', id));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        document.getElementById('vb_title').value = d.title || '';
+        document.getElementById('vb_author').value = d.author || '';
+        document.getElementById('vb_cover').value = d.cover || '';
+        document.getElementById('vb_why').value = d.why || '';
+        document.getElementById('vb_link').value = d.link || '';
+        document.getElementById('vb_tag').value = d.tag || 'On Ice Development';
+        document.getElementById('vb_visibility').value = d.visibility || 'public';
+        const preview = document.getElementById('vb_cover_preview');
+        if (d.cover) { preview.src = d.cover; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
+        document.getElementById('vaultBookModalTitle').textContent = 'Edit Book';
+        document.getElementById('vaultBookModal').classList.add('open');
+    };
+
+    window.vaultDeleteBook = async function(id) {
+        if (!confirm('Delete this book?')) return;
+        await deleteDoc(doc(db, 'vault_books', id));
+        await loadBooks();
+    };
+
 window.vaultSaveBook = async function() {
     const title = document.getElementById('vb_title').value.trim();
     const author = document.getElementById('vb_author').value.trim();
@@ -798,7 +869,7 @@ window.vaultSaveBook = async function() {
             await addDoc(collection(db, 'vault_books'), data);
         }
         vaultCloseModal('book');
-        alert('Book saved! It will appear on the Book Club page.');
+        await loadBooks();
     } catch(e) { alert('Error saving book: ' + e.message); }
 };
 
