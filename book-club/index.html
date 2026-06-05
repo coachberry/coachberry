@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Berry's Book Club</title>
+    <meta name="description" content="Books recommended by Coach Berry for development on and off the ice — mental game, leadership, physical training, and life skills.">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <script src="/footer.js"></script>
+    <style>
+        .bc-hero {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 60%, #1a0a00 100%);
+            color: white;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bc-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(255,36,0,0.12) 0%, transparent 70%);
+        }
+
+        .bc-hero-content { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+
+        .bc-hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 0.8rem;
+        }
+
+        .bc-hero h1 span { color: #FF2400; }
+
+        .bc-hero p {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.72);
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .bc-main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .bc-filter-bar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2.5rem;
+            justify-content: center;
+        }
+
+        .bc-filter-btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
+            border: 1.5px solid #e0e0e0;
+            background: white;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1a1a1a;
+        }
+
+        .bc-filter-btn:hover { border-color: #FF2400; color: #FF2400; }
+        .bc-filter-btn.active { background: #FF2400; color: white; border-color: #FF2400; }
+
+        .bc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .bc-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bc-card:hover {
+            box-shadow: 0 10px 32px rgba(0,0,0,0.14);
+            transform: translateY(-4px);
+        }
+
+        .bc-card-cover {
+            background: #f8f9fa;
+            padding: 2rem 1.5rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .bc-card-cover img {
+            width: 120px;
+            height: 170px;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .bc-card-cover-placeholder {
+            width: 120px;
+            height: 170px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .bc-card-body {
+            padding: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.6rem;
+        }
+
+        .bc-tag {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            background: rgba(255,36,0,0.08);
+            color: #FF2400;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .bc-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .bc-author {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .bc-divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 0.2rem 0;
+        }
+
+        .bc-why-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #9ca3af;
+        }
+
+        .bc-why {
+            font-size: 0.88rem;
+            color: #374151;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .bc-buy-btn {
+            display: block;
+            margin-top: 0.8rem;
+            padding: 0.7rem 1rem;
+            background: #FF2400;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .bc-buy-btn:hover { background: #FF3a1f; transform: translateY(-1px); }
+
+        .bc-locked-card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            opacity: 0.75;
+        }
+
+        .bc-locked-body {
+            padding: 2rem 1.4rem;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .bc-locked-icon { font-size: 2rem; }
+        .bc-locked-title { font-weight: 800; font-size: 0.95rem; color: #000; }
+        .bc-locked-sub { font-size: 0.82rem; color: #6b7280; }
+
+        .bc-unlock-btn {
+            display: block;
+            margin: 0 1.4rem 1.4rem;
+            padding: 0.65rem 1rem;
+            background: #000;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .bc-unlock-btn:hover { background: #FF2400; }
+
+        .bc-empty {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: #6b7280;
+        }
+
+        .bc-empty span { display: block; font-size: 3rem; margin-bottom: 1rem; }
+
+        .bc-loading {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .bc-count {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            .bc-hero { padding: 3rem 1.5rem 2.5rem; }
+            .bc-main { padding: 2rem 1rem; }
+            .bc-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bc-hero">
+        <div class="bc-hero-content">
+            <h1>Coach Berry's <span>Book Club</span></h1>
+            <p>Every book on this list has shaped how I coach and how I live. These aren't just reads — they're tools for development on and off the ice.</p>
+        </div>
+    </div>
+
+    <div class="bc-main">
+        <div class="bc-filter-bar" id="filterBar">
+            <button class="bc-filter-btn active" onclick="filterBooks('All')">All Books</button>
+        </div>
+        <div class="bc-count" id="bookCount"></div>
+        <div class="bc-grid" id="bookGrid">
+            <div class="bc-loading">Loading books...</div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+        authDomain: "coach-berry.firebaseapp.com",
+        projectId: "coach-berry",
+        storageBucket: "coach-berry.firebasestorage.app",
+        messagingSenderId: "170282824286",
+        appId: "1:170282824286:web:5387ec9826c38466c07acf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let allBooks = [];
+    let activeFilter = 'All';
+
+    onAuthStateChanged(auth, user => {
+        currentUser = user;
+        renderBooks();
+    });
+
+    async function loadBooks() {
+        const snap = await getDocs(collection(db, 'vault_books'));
+        allBooks = [];
+        snap.forEach(d => allBooks.push({ id: d.id, ...d.data() }));
+        allBooks.sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+        buildFilters();
+        renderBooks();
+    }
+
+    function buildFilters() {
+        const tags = ['All', ...new Set(allBooks.map(b => b.tag).filter(Boolean))];
+        const bar = document.getElementById('filterBar');
+        bar.innerHTML = tags.map(tag =>
+            `<button class="bc-filter-btn ${tag === activeFilter ? 'active' : ''}" onclick="filterBooks('${tag}')">${tag}</button>`
+        ).join('');
+    }
+
+    function renderBooks() {
+        const grid = document.getElementById('bookGrid');
+        const filtered = activeFilter === 'All' ? allBooks : allBooks.filter(b => b.tag === activeFilter);
+
+        if (!filtered.length) {
+            grid.innerHTML = '<div class="bc-empty"><span>📚</span>No books here yet — check back soon!</div>';
+            document.getElementById('bookCount').textContent = '';
+            return;
+        }
+
+        const visible = filtered.filter(b => b.visibility === 'public' || currentUser);
+        const locked = filtered.filter(b => b.visibility === 'members' && !currentUser);
+
+        document.getElementById('bookCount').textContent = `${filtered.length} book${filtered.length !== 1 ? 's' : ''}`;
+
+        grid.innerHTML = [
+            ...visible.map(b => bookCardHTML(b)),
+            ...locked.map(b => lockedCardHTML(b))
+        ].join('');
+    }
+
+    function bookCardHTML(b) {
+        const cover = b.cover
+            ? `<img src="${esc(b.cover)}" alt="${esc(b.title)}" onerror="this.parentElement.innerHTML='<div class=\\'bc-card-cover-placeholder\\'>📖</div>'">`
+            : `<div class="bc-card-cover-placeholder">📖</div>`;
+        const buyBtn = b.link
+            ? `<a href="${esc(b.link)}" target="_blank" rel="noopener noreferrer" class="bc-buy-btn">📦 Get it on Amazon</a>`
+            : '';
+        return `
+        <div class="bc-card">
+            <div class="bc-card-cover">${cover}</div>
+            <div class="bc-card-body">
+                ${b.tag ? `<span class="bc-tag">${esc(b.tag)}</span>` : ''}
+                <div class="bc-title">${esc(b.title)}</div>
+                <div class="bc-author">by ${esc(b.author)}</div>
+                <hr class="bc-divider">
+                <div class="bc-why-label">Why I recommend it</div>
+                <div class="bc-why">${esc(b.why)}</div>
+                ${buyBtn}
+            </div>
+        </div>`;
+    }
+
+    function lockedCardHTML(b) {
+        return `
+        <div class="bc-locked-card">
+            <div class="bc-locked-body">
+                <div class="bc-locked-icon">🔒</div>
+                <div class="bc-locked-title">${esc(b.title)}</div>
+                <div class="bc-locked-sub">Members Only</div>
+            </div>
+            <a href="/#membership" class="bc-unlock-btn">Join to Unlock</a>
+        </div>`;
+    }
+
+    window.filterBooks = function(tag) {
+        activeFilter = tag;
+        document.querySelectorAll('.bc-filter-btn').forEach(b => {
+            b.classList.toggle('active', b.textContent === tag || (tag === 'All' && b.textContent === 'All Books'));
+        });
+        renderBooks();
+    };
+
+    function esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    loadBooks();
+    </script>
+</body>
+</html>

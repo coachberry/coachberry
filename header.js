@@ -9,8 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <li><a href="/#about">About</a></li>
                     <li><a href="/#services">Services</a></li>
                     <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/book-club/">Book Club</a></li>
                     <li><a href="/vault/">The Vault</a></li>
-                    <li><a href="/#content">Content</a></li>
+                    
                     <li id="authLink"><a href="/member-login/" class="cta-nav-secondary">Login</a></li>
                     <li><a href="/#membership" class="cta-nav">Join Now</a></li>
                 </ul>
