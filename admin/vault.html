@@ -333,7 +333,7 @@
 
     <div class="vault-tabs">
         <button class="vault-tab-btn active" onclick="vaultSwitchTab('structure')">🗂 Structure</button>
-        <button class="vault-tab-btn" onclick="vaultSwitchTab('books')">📚 Books</button>
+        <button class="vault-tab-btn" onclick="document.querySelectorAll('.vault-tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.vault-panel').forEach(p=>p.classList.remove('active'));document.getElementById('vaultBooksPanel').classList.add('active');this.classList.add('active');if(window.loadBooks)window.loadBooks();">📚 Books</button>
         <button class="vault-tab-btn" onclick="vaultSwitchTab('submissions')">📥 Submissions</button>
     </div>
 
