@@ -558,6 +558,7 @@ let editingPageId = null;
 let editingBookId = null;
 
 async function loadVaultAdmin() {
+    await loadBooks();
     await loadCategories();
     await loadPages();
     await loadSubmissions();
