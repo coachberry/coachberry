@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Goalie Account — Coach Berry</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <style>
+        body { background: linear-gradient(135deg, #000 0%, #1a1a1a 100%); min-height: 100vh; }
+
+        .signup-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem 1rem;
+        }
+
+        .signup-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+        }
+
+        .signup-header {
+            background: #000;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .signup-header img {
+            max-width: 140px;
+            margin-bottom: 1rem;
+        }
+
+        .signup-header h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 0 0.3rem;
+        }
+
+        .signup-header p {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.65);
+            margin: 0;
+        }
+
+        .goalie-welcome {
+            background: #fff8f8;
+            border-bottom: 1px solid #ffe0e0;
+            padding: 1rem 1.5rem;
+            display: none;
+        }
+
+        .goalie-welcome h3 {
+            margin: 0 0 0.2rem;
+            font-size: 1rem;
+            color: #FF2400;
+        }
+
+        .goalie-welcome p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .signup-body { padding: 1.8rem; }
+
+        .sg-group { margin-bottom: 1.2rem; }
+        .sg-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; color: #374151; }
+        .sg-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .sg-group input:focus { outline: none; border-color: #FF2400; box-shadow: 0 0 0 3px rgba(255,36,0,0.08); }
+        .sg-group input:disabled { background: #f8f9fa; color: #6b7280; }
+
+        .sg-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: #FF2400;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sg-btn:hover { background: #FF3a1f; transform: translateY(-1px); }
+        .sg-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .sg-error {
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .sg-success {
+            text-align: center;
+            padding: 2rem;
+            display: none;
+        }
+
+        .sg-success span { font-size: 3rem; display: block; margin-bottom: 1rem; }
+        .sg-success h3 { font-size: 1.2rem; margin: 0 0 0.5rem; }
+        .sg-success p { color: #6b7280; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        .sg-success-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: #FF2400;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .sg-success-btn:hover { background: #FF3a1f; }
+
+        .loading-profile {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1rem 0;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .login-link a { color: #FF2400; font-weight: 600; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="signup-wrap">
+        <div class="signup-box">
+            <div class="signup-header">
+                <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry">
+                <h1>Create Your Goalie Account</h1>
+                <p>Set up your account to access your development profile</p>
+            </div>
+
+            <div class="goalie-welcome" id="goalieWelcome">
+                <h3 id="welcomeName">Welcome!</h3>
+                <p id="welcomeSub">Your coach has set up a profile for you.</p>
+            </div>
+
+            <div class="signup-body">
+                <div class="loading-profile" id="loadingProfile">Loading your profile info...</div>
+
+                <div id="signupForm" style="display:none;">
+                    <div class="sg-error" id="sgError"></div>
+
+                    <div class="sg-group">
+                        <label>Email Address</label>
+                        <input type="email" id="sg_email" placeholder="your@email.com" disabled>
+                    </div>
+
+                    <div class="sg-group">
+                        <label>Create a Password</label>
+                        <input type="password" id="sg_password" placeholder="At least 6 characters">
+                    </div>
+
+                    <div class="sg-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="sg_confirm" placeholder="Repeat your password">
+                    </div>
+
+                    <button class="sg-btn" onclick="createAccount()" id="sgBtn">Create My Account</button>
+
+                    <div class="login-link">Already have an account? <a href="/member-login/">Sign in here</a></div>
+                </div>
+
+                <div class="sg-success" id="sgSuccess">
+                    <span>🥅</span>
+                    <h3>Account Created!</h3>
+                    <p>You're all set. Head to your profile to start logging goals, saves, and session notes.</p>
+                    <a href="/goalie/" class="sg-success-btn">Go to My Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+        authDomain: "coach-berry.firebaseapp.com",
+        projectId: "coach-berry",
+        storageBucket: "coach-berry.firebasestorage.app",
+        messagingSenderId: "170282824286",
+        appId: "1:170282824286:web:5387ec9826c38466c07acf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const goalieId = urlParams.get('id');
+
+    if (!goalieId) {
+        document.getElementById('loadingProfile').textContent = 'Invalid invite link. Please contact your coach.';
+    } else {
+        loadGoalieInfo();
+    }
+
+    async function loadGoalieInfo() {
+        try {
+            const snap = await getDoc(doc(db, 'goalies', goalieId));
+            if (!snap.exists()) {
+                document.getElementById('loadingProfile').textContent = 'Profile not found. Please contact your coach.';
+                return;
+            }
+            const g = snap.data();
+
+            if (g.accountLinked) {
+                document.getElementById('loadingProfile').innerHTML = 'You already have an account! <a href="/member-login/" style="color:#FF2400;font-weight:600;">Sign in here</a>';
+                return;
+            }
+
+            document.getElementById('sg_email').value = g.email || '';
+            document.getElementById('welcomeName').textContent = `Welcome, ${g.firstName}!`;
+            document.getElementById('welcomeSub').textContent = `${g.team ? g.team + ' · ' : ''}Your coach has set up a development profile for you.`;
+            document.getElementById('goalieWelcome').style.display = 'block';
+            document.getElementById('loadingProfile').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        } catch(e) {
+            document.getElementById('loadingProfile').textContent = 'Error loading profile: ' + e.message;
+        }
+    }
+
+    window.createAccount = async function() {
+        const email = document.getElementById('sg_email').value.trim();
+        const password = document.getElementById('sg_password').value;
+        const confirm = document.getElementById('sg_confirm').value;
+        const errorDiv = document.getElementById('sgError');
+        const btn = document.getElementById('sgBtn');
+
+        errorDiv.style.display = 'none';
+
+        if (!password || password.length < 6) {
+            errorDiv.textContent = 'Password must be at least 6 characters.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (password !== confirm) {
+            errorDiv.textContent = 'Passwords do not match.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Creating account...';
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            await updateDoc(doc(db, 'goalies', goalieId), {
+                accountLinked: true,
+                accountCreatedAt: Date.now()
+            });
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('goalieWelcome').style.display = 'none';
+            document.getElementById('sgSuccess').style.display = 'block';
+        } catch(e) {
+            let msg = e.message;
+            if (e.code === 'auth/email-already-in-use') msg = 'An account with this email already exists. Try signing in instead.';
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Create My Account';
+        }
+    };
+    </script>
+</body>
+</html>
