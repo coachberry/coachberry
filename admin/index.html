@@ -372,7 +372,7 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
-                errorDiv.textContent = 'Invalid email or password';
+                errorDiv.textContent = 'Incorrect email or password. Please try again.';
                 errorDiv.classList.add('show');
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Sign In';
