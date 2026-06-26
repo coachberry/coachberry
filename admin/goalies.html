@@ -1,0 +1,901 @@
+<!-- Coach Berry - Goalies Admin Tab -->
+<style>
+    .goalies-admin { max-width: 1100px; }
+
+    .goalies-toolbar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .goalies-toolbar-left { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .g-btn {
+        padding: 0.65rem 1.4rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .g-btn-primary { background: #FF2400; color: white; }
+    .g-btn-primary:hover { background: #FF3a1f; transform: translateY(-1px); }
+    .g-btn-outline { background: white; color: #000; border: 1.5px solid #e0e0e0; }
+    .g-btn-outline:hover { background: #f8f9fa; }
+    .g-btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; font-weight: 600; border: none; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
+    .g-btn-edit { background: #e8f4fd; color: #0369a1; }
+    .g-btn-edit:hover { background: #bfdbfe; }
+    .g-btn-delete { background: #fff0f0; color: #c62828; }
+    .g-btn-delete:hover { background: #fecaca; }
+    .g-btn-view { background: #f0fdf4; color: #16a34a; }
+    .g-btn-view:hover { background: #bbf7d0; }
+
+    .goalies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .goalie-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        overflow: hidden;
+        transition: all 0.2s;
+    }
+
+    .goalie-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.12); transform: translateY(-2px); }
+
+    .goalie-card-header {
+        background: #000;
+        color: white;
+        padding: 1.2rem 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .goalie-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #FF2400;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .goalie-card-name { font-weight: 800; font-size: 1rem; margin: 0; }
+    .goalie-card-sub { font-size: 0.82rem; color: rgba(255,255,255,0.65); margin: 0.2rem 0 0; }
+
+    .goalie-card-body { padding: 1.2rem 1.4rem; }
+
+    .goalie-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .goalie-stat {
+        text-align: center;
+        padding: 0.6rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .goalie-stat-num { font-weight: 800; font-size: 1.2rem; color: #FF2400; display: block; }
+    .goalie-stat-label { font-size: 0.72rem; color: #6b7280; display: block; }
+
+    .goalie-card-meta { font-size: 0.82rem; color: #6b7280; margin-bottom: 1rem; }
+    .goalie-card-meta span { margin-right: 0.8rem; }
+
+    .goalie-card-actions { display: flex; gap: 0.5rem; }
+
+    .goalie-detail-panel {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        overflow: hidden;
+        display: none;
+    }
+
+    .goalie-detail-panel.open { display: block; }
+
+    .goalie-detail-header {
+        background: #000;
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .goalie-detail-header h2 { margin: 0; font-size: 1.3rem; }
+
+    .goalie-detail-tabs {
+        display: flex;
+        border-bottom: 2px solid #e0e0e0;
+        padding: 0 2rem;
+        background: white;
+        overflow-x: auto;
+    }
+
+    .goalie-detail-tab {
+        padding: 0.9rem 1.2rem;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #6b7280;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+    .goalie-detail-tab:hover { color: #000; }
+    .goalie-detail-tab.active { color: #FF2400; border-bottom-color: #FF2400; }
+
+    .goalie-detail-body { padding: 2rem; }
+    .goalie-detail-section { display: none; }
+    .goalie-detail-section.active { display: block; }
+
+    .log-entry {
+        border: 1.5px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin-bottom: 0.8rem;
+        background: #fafafa;
+    }
+
+    .log-entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.6rem;
+    }
+
+    .log-entry-date { font-size: 0.8rem; color: #6b7280; }
+    .log-entry-title { font-weight: 700; font-size: 0.95rem; }
+    .log-entry-meta { font-size: 0.82rem; color: #6b7280; margin-top: 0.3rem; }
+    .log-entry-note { font-size: 0.88rem; color: #374151; margin-top: 0.6rem; line-height: 1.5; border-left: 3px solid #e0e0e0; padding-left: 0.8rem; }
+
+    .net-heatmap {
+        display: inline-grid;
+        grid-template-columns: repeat(3, 60px);
+        grid-template-rows: repeat(3, 40px);
+        gap: 3px;
+        margin: 1rem 0;
+        border: 2px solid #000;
+        padding: 3px;
+        background: #000;
+        border-radius: 4px;
+    }
+
+    .net-zone {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 2px;
+        color: white;
+        transition: background 0.3s;
+    }
+
+    .ai-insights-card {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border-radius: 12px;
+        padding: 1.8rem;
+        color: white;
+        margin-bottom: 1.5rem;
+    }
+
+    .ai-insights-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #60a5fa;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .ai-insight-section { margin-bottom: 1.2rem; }
+    .ai-insight-section h4 { font-size: 0.82rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 0.5rem; }
+
+    .ai-insight-item {
+        background: rgba(255,255,255,0.05);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.5rem;
+        border-left: 3px solid #FF2400;
+    }
+
+    .ai-insight-item.strength { border-left-color: #22c55e; }
+    .ai-insight-item.mental { border-left-color: #a78bfa; }
+    .ai-insight-item.focus { border-left-color: #f59e0b; }
+
+    .ai-insight-skill { font-weight: 700; font-size: 0.88rem; margin-bottom: 0.2rem; }
+    .ai-insight-reason { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; }
+
+    .ai-loading { text-align: center; padding: 2rem; color: #94a3b8; }
+    .ai-generate-btn {
+        padding: 0.7rem 1.5rem;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 0.5rem;
+    }
+    .ai-generate-btn:hover { background: #2563eb; }
+    .ai-generate-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .coach-note-form { margin-top: 1rem; }
+    .coach-note-form textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 0.9rem;
+        resize: vertical;
+        min-height: 80px;
+    }
+    .coach-note-form textarea:focus { outline: none; border-color: #FF2400; }
+
+    .empty-goalies {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6b7280;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .empty-goalies span { display: block; font-size: 3rem; margin-bottom: 1rem; }
+
+    .g-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 1000;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        overflow-y: auto;
+    }
+
+    .g-modal-overlay.open { display: flex; }
+
+    .g-modal {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 560px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        animation: gModalIn 0.25s ease;
+    }
+
+    @keyframes gModalIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    .g-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.3rem 1.8rem; border-bottom: 1px solid #e0e0e0; }
+    .g-modal-header h3 { margin: 0; font-size: 1.1rem; }
+    .g-modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #6b7280; }
+    .g-modal-close:hover { color: #FF2400; }
+    .g-modal-body { padding: 1.8rem; }
+    .g-modal-footer { display: flex; justify-content: flex-end; gap: 0.8rem; padding: 1.2rem 1.8rem; border-top: 1px solid #e0e0e0; }
+
+    .gf-group { margin-bottom: 1.1rem; }
+    .gf-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; }
+    .gf-group input, .gf-group select {
+        width: 100%;
+        padding: 0.7rem 0.9rem;
+        border: 1.5px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 0.92rem;
+        font-family: inherit;
+        transition: border-color 0.2s;
+    }
+    .gf-group input:focus, .gf-group select:focus { outline: none; border-color: #FF2400; box-shadow: 0 0 0 3px rgba(255,36,0,0.08); }
+    .gf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .gf-hint { font-size: 0.78rem; color: #6b7280; margin-top: 0.3rem; }
+    .g-btn-cancel { padding: 0.65rem 1.4rem; background: #f8f9fa; border: 1.5px solid #e0e0e0; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    .invite-box {
+        background: #f0fdf4;
+        border: 1.5px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        margin-top: 1rem;
+        font-size: 0.88rem;
+    }
+
+    .invite-link {
+        font-family: monospace;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.82rem;
+        word-break: break-all;
+        display: block;
+        margin-top: 0.4rem;
+    }
+
+    @media (max-width: 600px) {
+        .gf-row { grid-template-columns: 1fr; }
+        .goalies-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="goalies-admin">
+    <div class="goalies-toolbar">
+        <div class="goalies-toolbar-left">
+            <button class="g-btn g-btn-primary" onclick="gOpenModal()">＋ Add Goalie</button>
+            <button class="g-btn g-btn-outline" id="backToListBtn" onclick="showGoalieList()" style="display:none;">← Back to All Goalies</button>
+        </div>
+    </div>
+
+    <div id="goalieListView">
+        <div class="goalies-grid" id="goaliesGrid">
+            <div class="empty-goalies"><span>🥅</span>No goalies added yet. Click "Add Goalie" to get started.</div>
+        </div>
+    </div>
+
+    <div class="goalie-detail-panel" id="goalieDetailPanel">
+        <div class="goalie-detail-header">
+            <div>
+                <h2 id="detailName">Goalie Name</h2>
+                <div id="detailSub" style="font-size:0.85rem; color:rgba(255,255,255,0.65); margin-top:0.2rem;"></div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="g-btn-sm g-btn-edit" onclick="generateAIInsights()">🤖 AI Insights</button>
+            </div>
+        </div>
+        <div class="goalie-detail-tabs">
+            <button class="goalie-detail-tab active" onclick="switchDetailTab('overview')">Overview</button>
+            <button class="goalie-detail-tab" onclick="switchDetailTab('goals')">Goal Log</button>
+            <button class="goalie-detail-tab" onclick="switchDetailTab('saves')">Save Log</button>
+            <button class="goalie-detail-tab" onclick="switchDetailTab('intake')">Intake Forms</button>
+            <button class="goalie-detail-tab" onclick="switchDetailTab('ai')">AI Insights</button>
+        </div>
+        <div class="goalie-detail-body">
+            <div class="goalie-detail-section active" id="detailOverview"></div>
+            <div class="goalie-detail-section" id="detailGoals"></div>
+            <div class="goalie-detail-section" id="detailSaves"></div>
+            <div class="goalie-detail-section" id="detailIntake"></div>
+            <div class="goalie-detail-section" id="detailAI"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Goalie Modal -->
+<div class="g-modal-overlay" id="gModal">
+    <div class="g-modal">
+        <div class="g-modal-header">
+            <h3 id="gModalTitle">Add Goalie</h3>
+            <button class="g-modal-close" onclick="gCloseModal()">✕</button>
+        </div>
+        <div class="g-modal-body">
+            <div class="gf-row">
+                <div class="gf-group">
+                    <label>First Name *</label>
+                    <input type="text" id="g_firstName" placeholder="e.g. Jake">
+                </div>
+                <div class="gf-group">
+                    <label>Last Name *</label>
+                    <input type="text" id="g_lastName" placeholder="e.g. Thompson">
+                </div>
+            </div>
+            <div class="gf-row">
+                <div class="gf-group">
+                    <label>Email *</label>
+                    <input type="email" id="g_email" placeholder="goalie@email.com">
+                    <div class="gf-hint">Used for their login</div>
+                </div>
+                <div class="gf-group">
+                    <label>Team</label>
+                    <input type="text" id="g_team" placeholder="e.g. Franklin Admirals 16U">
+                </div>
+            </div>
+            <div class="gf-row">
+                <div class="gf-group">
+                    <label>Level</label>
+                    <select id="g_level">
+                        <option value="">Select...</option>
+                        <option>Mites / 8U</option>
+                        <option>Squirts / 10U</option>
+                        <option>Peewees / 12U</option>
+                        <option>Bantams / 14U</option>
+                        <option>Midgets / 16U</option>
+                        <option>Midgets / 18U</option>
+                        <option>High School</option>
+                        <option>Junior</option>
+                        <option>College</option>
+                        <option>Adult</option>
+                    </select>
+                </div>
+                <div class="gf-group">
+                    <label>Glove Hand</label>
+                    <select id="g_gloveSide">
+                        <option value="left">Left Catch</option>
+                        <option value="right">Right Catch</option>
+                    </select>
+                </div>
+            </div>
+            <div class="gf-group">
+                <label>Style</label>
+                <select id="g_style">
+                    <option value="">Not sure</option>
+                    <option value="butterfly">Butterfly</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="standup">Stand-up</option>
+                </select>
+            </div>
+            <div id="inviteSection" style="display:none;">
+                <div class="invite-box">
+                    <strong>Goalie Login Link</strong>
+                    <div class="gf-hint">Share this link with the goalie/parent to set up their account:</div>
+                    <span class="invite-link" id="inviteLinkDisplay"></span>
+                </div>
+            </div>
+        </div>
+        <div class="g-modal-footer">
+            <button class="g-btn-cancel" onclick="gCloseModal()">Cancel</button>
+            <button class="g-btn g-btn-primary" onclick="gSaveGoalie()">💾 Save Goalie</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, getDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allGolies = [];
+let currentGoalieId = null;
+let editingGoalieId = null;
+
+const ZONE_LABELS = { TL:'TL', TM:'TM', TR:'TR', ML:'ML', MM:'5H', MR:'MR', LL:'LL', LM:'LM', LR:'LR' };
+const ZONE_KEYS = ['TL','TM','TR','ML','MM','MR','LL','LM','LR'];
+
+async function loadGoalies() {
+    const snap = await getDocs(collection(db, 'goalies'));
+    allGolies = [];
+    snap.forEach(d => allGolies.push({ id: d.id, ...d.data() }));
+    allGolies.sort((a,b) => (a.lastName||'').localeCompare(b.lastName||''));
+    renderGoalieGrid();
+}
+
+function renderGoalieGrid() {
+    const grid = document.getElementById('goaliesGrid');
+    if (!allGolies.length) {
+        grid.innerHTML = '<div class="empty-goalies"><span>🥅</span>No goalies added yet. Click "Add Goalie" to get started.</div>';
+        return;
+    }
+    grid.innerHTML = allGolies.map(g => {
+        const initials = ((g.firstName||'?')[0] + (g.lastName||'?')[0]).toUpperCase();
+        return `<div class="goalie-card">
+            <div class="goalie-card-header">
+                <div class="goalie-avatar">${initials}</div>
+                <div>
+                    <p class="goalie-card-name">${esc(g.firstName)} ${esc(g.lastName)}</p>
+                    <p class="goalie-card-sub">${esc(g.team||'No team')} · ${esc(g.level||'')}</p>
+                </div>
+            </div>
+            <div class="goalie-card-body">
+                <div class="goalie-stats">
+                    <div class="goalie-stat"><span class="goalie-stat-num" id="sessions_${g.id}">-</span><span class="goalie-stat-label">Sessions</span></div>
+                    <div class="goalie-stat"><span class="goalie-stat-num" id="goals_${g.id}">-</span><span class="goalie-stat-label">Goals Logged</span></div>
+                    <div class="goalie-stat"><span class="goalie-stat-num" id="saves_${g.id}">-</span><span class="goalie-stat-label">Saves Logged</span></div>
+                </div>
+                <div class="goalie-card-meta">
+                    <span>${g.gloveSide === 'left' ? '🧤 Left Catch' : '🧤 Right Catch'}</span>
+                    <span>${esc(g.style||'')}</span>
+                </div>
+                <div class="goalie-card-actions">
+                    <button class="g-btn-sm g-btn-view" onclick="viewGoalie('${g.id}')">View Profile</button>
+                    <button class="g-btn-sm g-btn-edit" onclick="editGoalie('${g.id}')">Edit</button>
+                    <button class="g-btn-sm g-btn-delete" onclick="deleteGoalie('${g.id}')">Delete</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    allGolies.forEach(g => loadGoalieStats(g.id));
+}
+
+async function loadGoalieStats(id) {
+    const [goalSnap, saveSnap, intakeSnap] = await Promise.all([
+        getDocs(collection(db, 'goalies', id, 'goalLog')),
+        getDocs(collection(db, 'goalies', id, 'saveLog')),
+        getDocs(collection(db, 'goalies', id, 'intakes'))
+    ]);
+    const gEl = document.getElementById(`goals_${id}`);
+    const sEl = document.getElementById(`saves_${id}`);
+    const iEl = document.getElementById(`sessions_${id}`);
+    if (gEl) gEl.textContent = goalSnap.size;
+    if (sEl) sEl.textContent = saveSnap.size;
+    if (iEl) iEl.textContent = intakeSnap.size;
+}
+
+window.viewGoalie = async function(id) {
+    currentGoalieId = id;
+    const g = allGolies.find(g => g.id === id);
+    if (!g) return;
+
+    document.getElementById('goalieListView').style.display = 'none';
+    document.getElementById('goalieDetailPanel').classList.add('open');
+    document.getElementById('backToListBtn').style.display = 'inline-flex';
+    document.getElementById('detailName').textContent = `${g.firstName} ${g.lastName}`;
+    document.getElementById('detailSub').textContent = `${g.team||''} · ${g.level||''} · ${g.gloveSide === 'left' ? 'Left Catch' : 'Right Catch'}`;
+
+    switchDetailTab('overview');
+    await loadGoalieDetail(id, g);
+};
+
+window.showGoalieList = function() {
+    document.getElementById('goalieListView').style.display = 'block';
+    document.getElementById('goalieDetailPanel').classList.remove('open');
+    document.getElementById('backToListBtn').style.display = 'none';
+    currentGoalieId = null;
+};
+
+async function loadGoalieDetail(id, g) {
+    const [goalSnap, saveSnap, intakeSnap, aiSnap] = await Promise.all([
+        getDocs(collection(db, 'goalies', id, 'goalLog')),
+        getDocs(collection(db, 'goalies', id, 'saveLog')),
+        getDocs(collection(db, 'goalies', id, 'intakes')),
+        getDocs(collection(db, 'goalies', id, 'aiInsights'))
+    ]);
+
+    const goals = []; goalSnap.forEach(d => goals.push({ id: d.id, ...d.data() }));
+    const saves = []; saveSnap.forEach(d => saves.push({ id: d.id, ...d.data() }));
+    const intakes = []; intakeSnap.forEach(d => intakes.push({ id: d.id, ...d.data() }));
+    const insights = []; aiSnap.forEach(d => insights.push({ id: d.id, ...d.data() }));
+
+    goals.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    saves.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    intakes.sort((a,b) => (b.submittedAt||0) - (a.submittedAt||0));
+    insights.sort((a,b) => (b.generatedAt||0) - (a.generatedAt||0));
+
+    renderOverview(g, goals, saves, intakes, insights);
+    renderGoalLog(goals, id);
+    renderSaveLog(saves);
+    renderIntakeForms(intakes);
+    renderAIInsights(insights, id, g, goals, saves, intakes);
+}
+
+function buildHeatmap(goals) {
+    const counts = { TL:0, TM:0, TR:0, ML:0, MM:0, MR:0, LL:0, LM:0, LR:0 };
+    goals.forEach(g => { if (g.netZones) Object.keys(g.netZones).forEach(z => { if (counts[z] !== undefined) counts[z] += g.netZones[z]||0; }); });
+    const max = Math.max(...Object.values(counts), 1);
+    return `<div class="net-heatmap">
+        ${ZONE_KEYS.map(z => {
+            const intensity = counts[z] / max;
+            const r = Math.round(intensity * 255);
+            const bg = counts[z] > 0 ? `rgb(${r},${Math.round(30*(1-intensity))},${Math.round(30*(1-intensity))})` : '#1a1a1a';
+            return `<div class="net-zone" style="background:${bg};" title="${ZONE_LABELS[z]}: ${counts[z]} goals">${counts[z]||''}</div>`;
+        }).join('')}
+    </div>`;
+}
+
+function renderOverview(g, goals, saves, intakes, insights) {
+    const totalGoals = goals.reduce((sum, entry) => {
+        if (!entry.netZones) return sum;
+        return sum + Object.values(entry.netZones).reduce((a,b) => a+(b||0), 0);
+    }, 0);
+
+    const latestInsight = insights[0];
+    const insightHtml = latestInsight
+        ? `<div class="ai-insights-card">
+            <div class="ai-insights-label">🤖 Latest AI Insights — ${new Date(latestInsight.generatedAt).toLocaleDateString()}</div>
+            ${latestInsight.sessionFocus ? `<div class="ai-insight-item focus"><div class="ai-insight-skill">Next Session Focus</div><div class="ai-insight-reason">${esc(latestInsight.sessionFocus)}</div></div>` : ''}
+          </div>`
+        : '';
+
+    document.getElementById('detailOverview').innerHTML = `
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:1rem; margin-bottom:2rem;">
+            <div class="goalie-stat" style="padding:1.2rem;"><span class="goalie-stat-num">${intakes.length}</span><span class="goalie-stat-label">Intake Forms</span></div>
+            <div class="goalie-stat" style="padding:1.2rem;"><span class="goalie-stat-num">${goals.length}</span><span class="goalie-stat-label">Goal Entries</span></div>
+            <div class="goalie-stat" style="padding:1.2rem;"><span class="goalie-stat-num">${totalGoals}</span><span class="goalie-stat-label">Total Goals</span></div>
+            <div class="goalie-stat" style="padding:1.2rem;"><span class="goalie-stat-num">${saves.length}</span><span class="goalie-stat-label">Saves Logged</span></div>
+        </div>
+        ${goals.length ? `<div style="margin-bottom:2rem;"><h3 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:0.5rem;">Goal Heatmap (All Time)</h3>${buildHeatmap(goals)}<div style="font-size:0.75rem;color:#6b7280;margin-top:0.4rem;">Darker = more goals allowed</div></div>` : ''}
+        ${insightHtml}
+        <div style="margin-top:1.5rem;">
+            <h3 style="font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:0.5rem;">Profile Info</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.88rem;">
+                <div><strong>Email:</strong> ${esc(g.email||'')}</div>
+                <div><strong>Team:</strong> ${esc(g.team||'')}</div>
+                <div><strong>Level:</strong> ${esc(g.level||'')}</div>
+                <div><strong>Style:</strong> ${esc(g.style||'')}</div>
+                <div><strong>Glove:</strong> ${g.gloveSide === 'left' ? 'Left Catch' : 'Right Catch'}</div>
+            </div>
+        </div>`;
+}
+
+function renderGoalLog(goals, goalieId) {
+    if (!goals.length) {
+        document.getElementById('detailGoals').innerHTML = '<div style="text-align:center;padding:3rem;color:#6b7280;">No goal entries yet.</div>';
+        return;
+    }
+    document.getElementById('detailGoals').innerHTML = goals.map(g => {
+        const totalGoals = g.netZones ? Object.values(g.netZones).reduce((a,b) => a+(b||0), 0) : 0;
+        return `<div class="log-entry">
+            <div class="log-entry-header">
+                <div>
+                    <div class="log-entry-title">Goal Entry — ${totalGoals} goal${totalGoals!==1?'s':''}</div>
+                    <div class="log-entry-meta">${g.situation||''} ${g.traffic ? '· Traffic' : ''} ${g.shotType ? '· '+g.shotType : ''}</div>
+                </div>
+                <div class="log-entry-date">${g.createdAt ? new Date(g.createdAt).toLocaleDateString() : ''}</div>
+            </div>
+            ${g.netZones ? buildHeatmap([g]) : ''}
+            ${g.goalieNote ? `<div class="log-entry-note"><strong>Goalie's read:</strong> ${esc(g.goalieNote)}</div>` : ''}
+            ${g.coachNote ? `<div class="log-entry-note" style="border-left-color:#FF2400;"><strong>Coach note:</strong> ${esc(g.coachNote)}</div>` : ''}
+            <div class="coach-note-form" style="margin-top:0.8rem;">
+                <textarea placeholder="Add coach note..." id="coachNote_${g.id}">${g.coachNote||''}</textarea>
+                <button class="g-btn-sm g-btn-edit" style="margin-top:0.4rem;" onclick="saveCoachNote('${goalieId}','goalLog','${g.id}','coachNote_${g.id}')">Save Note</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderSaveLog(saves) {
+    if (!saves.length) {
+        document.getElementById('detailSaves').innerHTML = '<div style="text-align:center;padding:3rem;color:#6b7280;">No save entries yet.</div>';
+        return;
+    }
+    document.getElementById('detailSaves').innerHTML = saves.map(s => `
+        <div class="log-entry">
+            <div class="log-entry-header">
+                <div>
+                    <div class="log-entry-title">${esc(s.saveType||'Save')}</div>
+                    <div class="log-entry-meta">Self rating: ${s.selfRating||'-'}/5 ${s.coachRating ? '· Coach rating: '+s.coachRating+'/5' : ''}</div>
+                </div>
+                <div class="log-entry-date">${s.createdAt ? new Date(s.createdAt).toLocaleDateString() : ''}</div>
+            </div>
+            ${s.description ? `<div class="log-entry-note">${esc(s.description)}</div>` : ''}
+            ${s.videoUrl ? `<div style="margin-top:0.6rem;"><a href="${esc(s.videoUrl)}" target="_blank" style="color:#3b82f6;font-size:0.85rem;font-weight:600;">🎥 View Video</a></div>` : ''}
+            ${s.tags?.length ? `<div style="margin-top:0.5rem;">${s.tags.map(t => `<span style="background:#f0f4ff;color:#3b5bdb;padding:0.2rem 0.5rem;border-radius:12px;font-size:0.75rem;font-weight:600;margin-right:0.3rem;">${esc(t)}</span>`).join('')}</div>` : ''}
+        </div>`).join('');
+}
+
+function renderIntakeForms(intakes) {
+    if (!intakes.length) {
+        document.getElementById('detailIntake').innerHTML = '<div style="text-align:center;padding:3rem;color:#6b7280;">No intake forms submitted yet.</div>';
+        return;
+    }
+    document.getElementById('detailIntake').innerHTML = intakes.map(f => `
+        <div class="log-entry">
+            <div class="log-entry-header">
+                <div class="log-entry-title">Pre-Session Intake</div>
+                <div class="log-entry-date">${f.submittedAt ? new Date(f.submittedAt).toLocaleDateString() : ''}</div>
+            </div>
+            ${f.sessionGoals ? `<div class="log-entry-note"><strong>Goals:</strong> ${esc(f.sessionGoals)}</div>` : ''}
+            ${f.struggling ? `<div class="log-entry-note"><strong>Struggling with:</strong> ${esc(f.struggling)}</div>` : ''}
+            ${f.confidence ? `<div class="log-entry-meta" style="margin-top:0.5rem;">Confidence: <strong>${esc(f.confidence)}</strong></div>` : ''}
+            ${f.skills?.length ? `<div style="margin-top:0.5rem;">${f.skills.map(s => `<span style="background:#f0fdf4;color:#16a34a;padding:0.2rem 0.5rem;border-radius:12px;font-size:0.75rem;font-weight:600;margin-right:0.3rem;">${esc(s)}</span>`).join('')}</div>` : ''}
+        </div>`).join('');
+}
+
+function renderAIInsights(insights, goalieId, goalie, goals, saves, intakes) {
+    const container = document.getElementById('detailAI');
+    if (!insights.length) {
+        container.innerHTML = `
+            <div class="ai-insights-card">
+                <div class="ai-insights-label">🤖 AI Insights</div>
+                <p style="color:#94a3b8;font-size:0.9rem;">No insights generated yet. Click the button below to generate AI recommendations based on this goalie's logged data.</p>
+                <button class="ai-generate-btn" onclick="generateAIInsights()">Generate AI Insights</button>
+            </div>`;
+        return;
+    }
+    container.innerHTML = insights.map(insight => `
+        <div class="ai-insights-card" style="margin-bottom:1rem;">
+            <div class="ai-insights-label">🤖 AI Insights — ${new Date(insight.generatedAt).toLocaleDateString()}</div>
+            ${insight.sessionFocus ? `<div class="ai-insight-section"><h4>Next Session Focus</h4><div class="ai-insight-item focus"><div class="ai-insight-reason">${esc(insight.sessionFocus)}</div></div></div>` : ''}
+            ${insight.workOn?.length ? `<div class="ai-insight-section"><h4>Work On</h4>${insight.workOn.map(w => `<div class="ai-insight-item"><div class="ai-insight-skill">${esc(w.skill)}</div><div class="ai-insight-reason">${esc(w.reason)}</div></div>`).join('')}</div>` : ''}
+            ${insight.strengths?.length ? `<div class="ai-insight-section"><h4>Strengths</h4>${insight.strengths.map(s => `<div class="ai-insight-item strength"><div class="ai-insight-skill">${esc(s.skill)}</div><div class="ai-insight-reason">${esc(s.reason)}</div></div>`).join('')}</div>` : ''}
+            ${insight.mentalNote ? `<div class="ai-insight-section"><h4>Mental Game</h4><div class="ai-insight-item mental"><div class="ai-insight-reason">${esc(insight.mentalNote)}</div></div></div>` : ''}
+        </div>`).join('') +
+        `<button class="ai-generate-btn" onclick="generateAIInsights()">🔄 Regenerate Insights</button>`;
+}
+
+window.generateAIInsights = async function() {
+    if (!currentGoalieId) return;
+    const g = allGolies.find(g => g.id === currentGoalieId);
+    if (!g) return;
+
+    const btn = document.querySelector('.ai-generate-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
+    document.getElementById('detailAI').innerHTML = '<div class="ai-insights-card"><div class="ai-loading">🤖 Analyzing goalie data...</div></div>';
+
+    const [goalSnap, saveSnap, intakeSnap] = await Promise.all([
+        getDocs(collection(db, 'goalies', currentGoalieId, 'goalLog')),
+        getDocs(collection(db, 'goalies', currentGoalieId, 'saveLog')),
+        getDocs(collection(db, 'goalies', currentGoalieId, 'intakes'))
+    ]);
+
+    const goals = []; goalSnap.forEach(d => goals.push(d.data()));
+    const saves = []; saveSnap.forEach(d => saves.push(d.data()));
+    const intakes = []; intakeSnap.forEach(d => intakes.push(d.data()));
+
+    const goalieData = {
+        name: `${g.firstName} ${g.lastName}`,
+        level: g.level,
+        gloveSide: g.gloveSide,
+        style: g.style,
+        recentGoals: goals.slice(0, 20),
+        recentSaves: saves.slice(0, 10),
+        recentIntakes: intakes.slice(0, 5)
+    };
+
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 1000,
+                system: 'You are an assistant helping a hockey goalie coach analyze a young goalie\'s development profile. Return only valid JSON, no markdown, no preamble.',
+                messages: [{
+                    role: 'user',
+                    content: `Based on the data below, return a JSON object with these fields:
+- work_on: array of 3 objects, each with "skill" and "reason" (1-2 sentences citing specific data)
+- strengths: array of 2 objects, each with "skill" and "reason"
+- mental_note: string (1-2 sentences if confidence data shows a pattern, otherwise null)
+- session_focus: string (the single most important thing to prioritize next session)
+
+Goalie data:
+${JSON.stringify(goalieData, null, 2)}`
+                }]
+            })
+        });
+
+        const data = await response.json();
+        const text = data.content?.find(c => c.type === 'text')?.text || '';
+        const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+        const insightData = {
+            generatedAt: Date.now(),
+            workOn: parsed.work_on || [],
+            strengths: parsed.strengths || [],
+            mentalNote: parsed.mental_note || null,
+            sessionFocus: parsed.session_focus || ''
+        };
+
+        await addDoc(collection(db, 'goalies', currentGoalieId, 'aiInsights'), insightData);
+        renderAIInsights([insightData], currentGoalieId, g, goals, saves, intakes);
+        switchDetailTab('ai');
+    } catch(e) {
+        document.getElementById('detailAI').innerHTML = `<div class="ai-insights-card"><p style="color:#f87171;">Error generating insights: ${e.message}</p><button class="ai-generate-btn" onclick="generateAIInsights()">Try Again</button></div>`;
+    }
+};
+
+window.saveCoachNote = async function(goalieId, subcollection, entryId, textareaId) {
+    const note = document.getElementById(textareaId).value;
+    try {
+        await updateDoc(doc(db, 'goalies', goalieId, subcollection, entryId), { coachNote: note });
+        alert('Note saved!');
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.switchDetailTab = function(tab) {
+    document.querySelectorAll('.goalie-detail-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.goalie-detail-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`detail${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.add('active');
+    event.target?.classList.add('active');
+};
+
+window.gOpenModal = function() {
+    editingGoalieId = null;
+    document.getElementById('gModalTitle').textContent = 'Add Goalie';
+    ['g_firstName','g_lastName','g_email','g_team'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('g_level').value = '';
+    document.getElementById('g_gloveSide').value = 'left';
+    document.getElementById('g_style').value = '';
+    document.getElementById('inviteSection').style.display = 'none';
+    document.getElementById('gModal').classList.add('open');
+};
+
+window.gCloseModal = function() {
+    document.getElementById('gModal').classList.remove('open');
+};
+
+window.gSaveGoalie = async function() {
+    const firstName = document.getElementById('g_firstName').value.trim();
+    const lastName = document.getElementById('g_lastName').value.trim();
+    const email = document.getElementById('g_email').value.trim();
+    if (!firstName || !lastName || !email) { alert('First name, last name, and email are required.'); return; }
+    const data = {
+        firstName, lastName, email,
+        team: document.getElementById('g_team').value.trim(),
+        level: document.getElementById('g_level').value,
+        gloveSide: document.getElementById('g_gloveSide').value,
+        style: document.getElementById('g_style').value,
+        updatedAt: Date.now()
+    };
+    if (!editingGoalieId) data.createdAt = Date.now();
+    try {
+        let goalieId = editingGoalieId;
+        if (editingGoalieId) {
+            await updateDoc(doc(db, 'goalies', editingGoalieId), data);
+        } else {
+            const ref = await addDoc(collection(db, 'goalies'), data);
+            goalieId = ref.id;
+        }
+        const inviteUrl = `https://coach-berry.com/goalie/?id=${goalieId}`;
+        document.getElementById('inviteLinkDisplay').textContent = inviteUrl;
+        document.getElementById('inviteSection').style.display = 'block';
+        document.getElementById('gModalTitle').textContent = 'Goalie Saved!';
+        await loadGoalies();
+    } catch(e) { alert('Error saving: ' + e.message); }
+};
+
+window.editGoalie = async function(id) {
+    editingGoalieId = id;
+    const g = allGolies.find(g => g.id === id);
+    if (!g) return;
+    document.getElementById('g_firstName').value = g.firstName || '';
+    document.getElementById('g_lastName').value = g.lastName || '';
+    document.getElementById('g_email').value = g.email || '';
+    document.getElementById('g_team').value = g.team || '';
+    document.getElementById('g_level').value = g.level || '';
+    document.getElementById('g_gloveSide').value = g.gloveSide || 'left';
+    document.getElementById('g_style').value = g.style || '';
+    document.getElementById('inviteSection').style.display = 'none';
+    document.getElementById('gModalTitle').textContent = 'Edit Goalie';
+    document.getElementById('gModal').classList.add('open');
+};
+
+window.deleteGoalie = async function(id) {
+    if (!confirm('Delete this goalie profile? All their data will be lost.')) return;
+    await deleteDoc(doc(db, 'goalies', id));
+    await loadGoalies();
+};
+
+document.getElementById('gModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('gModal')) gCloseModal();
+});
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+window.loadGoaliesAdmin = loadGoalies;
+loadGoalies();
+</script>

@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Goalie Profile — Coach Berry</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <style>
+        body { background: #f5f5f5; }
+
+        .goalie-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            border-radius: 14px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #FF2400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .profile-name { font-size: 1.6rem; font-weight: 900; margin: 0 0 0.3rem; }
+        .profile-sub { color: rgba(255,255,255,0.65); font-size: 0.9rem; }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-stat {
+            background: white;
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .profile-stat-num { font-size: 1.6rem; font-weight: 800; color: #FF2400; display: block; }
+        .profile-stat-label { font-size: 0.75rem; color: #6b7280; display: block; margin-top: 0.2rem; }
+
+        .profile-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .profile-tab {
+            padding: 0.9rem 1.3rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #6b7280;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .profile-tab:hover { color: #000; }
+        .profile-tab.active { color: #FF2400; border-bottom-color: #FF2400; }
+
+        .tab-section { display: none; }
+        .tab-section.active { display: block; }
+
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-card h3 {
+            margin: 0 0 1.5rem;
+            font-size: 1.1rem;
+            color: #000;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .fg-group { margin-bottom: 1.2rem; }
+        .fg-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 0.4rem; color: #374151; }
+        .fg-group input, .fg-group select, .fg-group textarea {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        .fg-group input:focus, .fg-group select:focus, .fg-group textarea:focus {
+            outline: none;
+            border-color: #FF2400;
+            box-shadow: 0 0 0 3px rgba(255,36,0,0.08);
+        }
+        .fg-group textarea { resize: vertical; min-height: 90px; }
+        .fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .submit-btn {
+            padding: 0.85rem 2rem;
+            background: #FF2400;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .submit-btn:hover { background: #FF3a1f; transform: translateY(-1px); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .success-msg {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1.5px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .skill-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+        }
+
+        .skill-pill {
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            border: 1.5px solid #e0e0e0;
+            background: white;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #374151;
+        }
+
+        .skill-pill.selected {
+            background: #FF2400;
+            color: white;
+            border-color: #FF2400;
+        }
+
+        /* Net diagram */
+        .net-diagram-wrap { margin: 0.5rem 0 1rem; }
+        .net-diagram-label { font-size: 0.78rem; color: #6b7280; margin-bottom: 0.4rem; font-weight: 600; }
+
+        .net-diagram {
+            display: inline-grid;
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(3, 55px);
+            gap: 3px;
+            border: 2.5px solid #000;
+            padding: 3px;
+            background: #000;
+            border-radius: 4px;
+        }
+
+        .net-cell {
+            background: #1a1a1a;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .net-cell:hover { background: #333; }
+        .net-cell.has-goals { background: #7f1d1d; }
+        .net-cell.has-goals:hover { background: #991b1b; }
+
+        .net-cell-count {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .net-cell-label {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+        }
+
+        .net-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .net-ctrl-btn {
+            padding: 0.3rem 0.7rem;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .net-ctrl-btn:hover { background: #e0e0e0; }
+
+        /* Rink diagram */
+        .rink-diagram { margin: 0.5rem 0 1rem; }
+
+        .rink-zone-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            max-width: 300px;
+        }
+
+        .rink-zone {
+            padding: 0.6rem 0.4rem;
+            background: #f0f4ff;
+            border: 2px solid #c7d2fe;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #3730a3;
+            transition: all 0.15s;
+        }
+
+        .rink-zone:hover { background: #e0e7ff; }
+        .rink-zone.selected { background: #3b5bdb; color: white; border-color: #3b5bdb; }
+
+        .log-entry {
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 0.8rem;
+            background: white;
+        }
+
+        .log-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; }
+        .log-entry-title { font-weight: 700; font-size: 0.95rem; }
+        .log-entry-date { font-size: 0.78rem; color: #6b7280; }
+        .log-entry-meta { font-size: 0.82rem; color: #6b7280; }
+        .log-entry-note { font-size: 0.85rem; color: #374151; margin-top: 0.5rem; line-height: 1.5; border-left: 3px solid #e0e0e0; padding-left: 0.7rem; }
+
+        .mini-heatmap {
+            display: inline-grid;
+            grid-template-columns: repeat(3, 36px);
+            grid-template-rows: repeat(3, 26px);
+            gap: 2px;
+            border: 1.5px solid #000;
+            padding: 2px;
+            background: #000;
+            border-radius: 3px;
+            margin-top: 0.5rem;
+        }
+
+        .mini-zone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            border-radius: 1px;
+        }
+
+        .empty-state { text-align: center; padding: 3rem; color: #6b7280; }
+        .empty-state span { display: block; font-size: 2.5rem; margin-bottom: 0.8rem; }
+
+        .confidence-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.4rem; }
+        .conf-btn {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            border: 1.5px solid #e0e0e0;
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .conf-btn.selected { background: #FF2400; color: white; border-color: #FF2400; }
+
+        .rating-stars { display: flex; gap: 0.3rem; margin-top: 0.4rem; }
+        .star { font-size: 1.4rem; cursor: pointer; color: #d1d5db; transition: color 0.15s; }
+        .star.active { color: #f59e0b; }
+
+        @media (max-width: 600px) {
+            .fg-row { grid-template-columns: 1fr; }
+            .profile-header { flex-direction: column; text-align: center; }
+            .net-diagram { grid-template-columns: repeat(3, 65px); grid-template-rows: repeat(3, 45px); }
+        }
+    </style>
+</head>
+<body>
+<div class="goalie-page">
+    <div id="loadingState" style="text-align:center; padding:4rem; color:#6b7280;">Loading your profile...</div>
+    <div id="profileContent" style="display:none;">
+
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileInitials">?</div>
+            <div>
+                <p class="profile-name" id="profileName">Loading...</p>
+                <p class="profile-sub" id="profileSub"></p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat"><span class="profile-stat-num" id="statGoals">0</span><span class="profile-stat-label">Goals Logged</span></div>
+            <div class="profile-stat"><span class="profile-stat-num" id="statSaves">0</span><span class="profile-stat-label">Saves Logged</span></div>
+            <div class="profile-stat"><span class="profile-stat-num" id="statIntakes">0</span><span class="profile-stat-label">Intake Forms</span></div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="profile-tab active" onclick="switchTab('logGoal', this)">🥅 Log a Goal</button>
+            <button class="profile-tab" onclick="switchTab('logSave', this)">🧤 Log a Save</button>
+            <button class="profile-tab" onclick="switchTab('intake', this)">📋 Pre-Session Form</button>
+            <button class="profile-tab" onclick="switchTab('history', this)">📊 My History</button>
+        </div>
+
+        <!-- LOG A GOAL -->
+        <div class="tab-section active" id="tab-logGoal">
+            <div class="form-card">
+                <h3>🥅 Log a Goal Allowed</h3>
+                <div class="success-msg" id="goalSuccess">Goal logged! Thanks for tracking your game.</div>
+
+                <div class="fg-group">
+                    <label>Where did it go in? Click each zone to count</label>
+                    <div class="net-diagram-wrap">
+                        <div class="net-diagram-label">TOP ↑ (Shooter's perspective)</div>
+                        <div class="net-diagram" id="netDiagram">
+                            <div class="net-cell" data-zone="TL" onclick="netClick('TL')"><span class="net-cell-count" id="nz-TL">0</span><span class="net-cell-label">Top Left</span></div>
+                            <div class="net-cell" data-zone="TM" onclick="netClick('TM')"><span class="net-cell-count" id="nz-TM">0</span><span class="net-cell-label">Top Mid</span></div>
+                            <div class="net-cell" data-zone="TR" onclick="netClick('TR')"><span class="net-cell-count" id="nz-TR">0</span><span class="net-cell-label">Top Right</span></div>
+                            <div class="net-cell" data-zone="ML" onclick="netClick('ML')"><span class="net-cell-count" id="nz-ML">0</span><span class="net-cell-label">Mid Left</span></div>
+                            <div class="net-cell" data-zone="MM" onclick="netClick('MM')"><span class="net-cell-count" id="nz-MM">0</span><span class="net-cell-label">5-Hole</span></div>
+                            <div class="net-cell" data-zone="MR" onclick="netClick('MR')"><span class="net-cell-count" id="nz-MR">0</span><span class="net-cell-label">Mid Right</span></div>
+                            <div class="net-cell" data-zone="LL" onclick="netClick('LL')"><span class="net-cell-count" id="nz-LL">0</span><span class="net-cell-label">Low Left</span></div>
+                            <div class="net-cell" data-zone="LM" onclick="netClick('LM')"><span class="net-cell-count" id="nz-LM">0</span><span class="net-cell-label">Low Mid</span></div>
+                            <div class="net-cell" data-zone="LR" onclick="netClick('LR')"><span class="net-cell-count" id="nz-LR">0</span><span class="net-cell-label">Low Right</span></div>
+                        </div>
+                        <div class="net-controls">
+                            <button class="net-ctrl-btn" onclick="netReset()">Reset Zones</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fg-row">
+                    <div class="fg-group">
+                        <label>Shot Type</label>
+                        <select id="gl_shotType">
+                            <option value="">Select...</option>
+                            <option>Wrist shot</option>
+                            <option>Slap shot</option>
+                            <option>Snap shot</option>
+                            <option>Backhand</option>
+                            <option>Tip-in</option>
+                            <option>Deflection</option>
+                            <option>Rebound</option>
+                            <option>Cross-ice</option>
+                            <option>Wraparound</option>
+                        </select>
+                    </div>
+                    <div class="fg-group">
+                        <label>Situation</label>
+                        <select id="gl_situation">
+                            <option value="">Select...</option>
+                            <option>Even strength</option>
+                            <option>Power play against</option>
+                            <option>Shorthanded</option>
+                            <option>Breakaway</option>
+                            <option>2-on-1</option>
+                            <option>3-on-2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Shot Origin</label>
+                    <div class="rink-diagram">
+                        <div class="rink-zone-grid" id="rinkZones">
+                            <div class="rink-zone" data-zone="Left Point" onclick="rinkClick(this)">Left Point</div>
+                            <div class="rink-zone" data-zone="High Slot" onclick="rinkClick(this)">High Slot</div>
+                            <div class="rink-zone" data-zone="Right Point" onclick="rinkClick(this)">Right Point</div>
+                            <div class="rink-zone" data-zone="Left Wing" onclick="rinkClick(this)">Left Wing</div>
+                            <div class="rink-zone" data-zone="Slot" onclick="rinkClick(this)">Slot</div>
+                            <div class="rink-zone" data-zone="Right Wing" onclick="rinkClick(this)">Right Wing</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Traffic in front?</label>
+                    <div class="confidence-btns">
+                        <button class="conf-btn" onclick="toggleSingle(this, 'trafficGroup')" data-group="trafficGroup">Yes</button>
+                        <button class="conf-btn" onclick="toggleSingle(this, 'trafficGroup')" data-group="trafficGroup">No</button>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Game context <span style="font-weight:400;color:#6b7280;">(optional)</span></label>
+                    <input type="text" id="gl_context" placeholder="e.g. Regular season vs Nashville, 2nd period">
+                </div>
+
+                <div class="fg-group">
+                    <label>Your read — what do you think happened?</label>
+                    <textarea id="gl_note" placeholder="What were you thinking? What could you have done differently? Be honest with yourself..."></textarea>
+                </div>
+
+                <button class="submit-btn" onclick="submitGoalLog()">Log Goal</button>
+            </div>
+        </div>
+
+        <!-- LOG A SAVE -->
+        <div class="tab-section" id="tab-logSave">
+            <div class="form-card">
+                <h3>🧤 Log a Great Save</h3>
+                <div class="success-msg" id="saveSuccess">Save logged! Keep tracking those big stops.</div>
+
+                <div class="fg-group">
+                    <label>Save Type</label>
+                    <div class="skill-pills" id="saveTypePills">
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Blocker</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Glove</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Pad</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Stick</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Desperation</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveType')">Rebound control</span>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Tags</label>
+                    <div class="skill-pills" id="saveTagPills">
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Breakaway stop</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Cross-ice redirect</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Post integration</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Screened shot</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Tip-in stop</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">2-on-1 stop</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'saveTag')">Penalty shot stop</span>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Description</label>
+                    <textarea id="sv_description" placeholder="Describe the save — what happened, what you did, why it stood out..."></textarea>
+                </div>
+
+                <div class="fg-group">
+                    <label>Video Link <span style="font-weight:400;color:#6b7280;">(YouTube, Hudl, etc.)</span></label>
+                    <input type="url" id="sv_video" placeholder="https://...">
+                </div>
+
+                <div class="fg-group">
+                    <label>How difficult was this save?</label>
+                    <div class="rating-stars" id="selfRatingStars">
+                        <span class="star" onclick="setRating(1)">★</span>
+                        <span class="star" onclick="setRating(2)">★</span>
+                        <span class="star" onclick="setRating(3)">★</span>
+                        <span class="star" onclick="setRating(4)">★</span>
+                        <span class="star" onclick="setRating(5)">★</span>
+                    </div>
+                </div>
+
+                <button class="submit-btn" onclick="submitSaveLog()">Log Save</button>
+            </div>
+        </div>
+
+        <!-- PRE-SESSION INTAKE -->
+        <div class="tab-section" id="tab-intake">
+            <div class="form-card">
+                <h3>📋 Pre-Session Intake Form</h3>
+                <div class="success-msg" id="intakeSuccess">Form submitted! Your coach will see this before your session.</div>
+
+                <div class="fg-group">
+                    <label>What do you want to work on today?</label>
+                    <textarea id="in_goals" placeholder="What's on your mind going into this session?"></textarea>
+                </div>
+
+                <div class="fg-group">
+                    <label>Skills to focus on</label>
+                    <div class="skill-pills" id="skillPills">
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Butterfly technique</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Butterfly slides</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Post integration / VH</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">T-push / shuffle</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Tracking puck</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Positioning / angles</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Crease movement</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Glove saves</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Blocker saves</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Stick / poke check</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Rebound control</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Breakaways / 1-on-1</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Screened shots</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Tip-ins / deflections</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Puck handling</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Communication with D</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Mental game / focus</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">Recovery after goals</span>
+                        <span class="skill-pill" onclick="togglePill(this, 'skill')">General conditioning</span>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Where are you struggling lately?</label>
+                    <textarea id="in_struggling" placeholder="Be honest — what's been giving you trouble?"></textarea>
+                </div>
+
+                <div class="fg-group">
+                    <label>Any recent games to share?</label>
+                    <textarea id="in_recentGames" placeholder="How have your last few games gone? Anything specific come up?"></textarea>
+                </div>
+
+                <div class="fg-group">
+                    <label>How is your confidence right now?</label>
+                    <div class="confidence-btns" id="confidenceBtns">
+                        <button class="conf-btn" onclick="toggleSingle(this, 'confidence')">Low</button>
+                        <button class="conf-btn" onclick="toggleSingle(this, 'confidence')">Inconsistent</button>
+                        <button class="conf-btn" onclick="toggleSingle(this, 'confidence')">Average</button>
+                        <button class="conf-btn" onclick="toggleSingle(this, 'confidence')">Good</button>
+                        <button class="conf-btn" onclick="toggleSingle(this, 'confidence')">High</button>
+                    </div>
+                </div>
+
+                <div class="fg-group">
+                    <label>Any injuries or physical notes?</label>
+                    <input type="text" id="in_injuries" placeholder="e.g. Sore left knee, tight hip flexor...">
+                </div>
+
+                <div class="fg-group">
+                    <label>Anything else for your coach?</label>
+                    <textarea id="in_other" placeholder="Questions, requests, things on your mind..."></textarea>
+                </div>
+
+                <button class="submit-btn" onclick="submitIntake()">Submit to Coach</button>
+            </div>
+        </div>
+
+        <!-- HISTORY -->
+        <div class="tab-section" id="tab-history">
+            <div id="historyContent">
+                <div class="empty-state"><span>📊</span>Loading your history...</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, doc, addDoc, getDocs, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let goalieId = null;
+let goalieData = null;
+let netZones = { TL:0, TM:0, TR:0, ML:0, MM:0, MR:0, LL:0, LM:0, LR:0 };
+let selectedRinkZone = null;
+let selfRating = 0;
+let allGoals = [];
+let allSaves = [];
+let allIntakes = [];
+
+const ZONE_KEYS = ['TL','TM','TR','ML','MM','MR','LL','LM','LR'];
+
+// Get goalie ID from URL or from auth
+const urlParams = new URLSearchParams(window.location.search);
+const urlGoalieId = urlParams.get('id');
+
+onAuthStateChanged(auth, async user => {
+    if (urlGoalieId) {
+        goalieId = urlGoalieId;
+        await loadGoalieProfile();
+    } else if (user) {
+        // Find goalie by email
+        const snap = await getDocs(collection(db, 'goalies'));
+        snap.forEach(d => {
+            if (d.data().email === user.email) goalieId = d.id;
+        });
+        if (goalieId) {
+            await loadGoalieProfile();
+        } else {
+            document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:4rem;color:#6b7280;">No goalie profile found for your account. Please contact your coach.</div>';
+        }
+    } else {
+        window.location.href = '/member-login/?redirect=/goalie/';
+    }
+});
+
+async function loadGoalieProfile() {
+    const snap = await getDoc(doc(db, 'goalies', goalieId));
+    if (!snap.exists()) {
+        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:4rem;color:#6b7280;">Profile not found.</div>';
+        return;
+    }
+    goalieData = snap.data();
+
+    document.getElementById('profileInitials').textContent = ((goalieData.firstName||'?')[0] + (goalieData.lastName||'?')[0]).toUpperCase();
+    document.getElementById('profileName').textContent = `${goalieData.firstName} ${goalieData.lastName}`;
+    document.getElementById('profileSub').textContent = `${goalieData.team||''} · ${goalieData.level||''} · ${goalieData.gloveSide === 'left' ? 'Left Catch' : 'Right Catch'}`;
+
+    await loadHistory();
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('profileContent').style.display = 'block';
+}
+
+async function loadHistory() {
+    const [goalSnap, saveSnap, intakeSnap] = await Promise.all([
+        getDocs(collection(db, 'goalies', goalieId, 'goalLog')),
+        getDocs(collection(db, 'goalies', goalieId, 'saveLog')),
+        getDocs(collection(db, 'goalies', goalieId, 'intakes'))
+    ]);
+
+    allGoals = []; goalSnap.forEach(d => allGoals.push({ id: d.id, ...d.data() }));
+    allSaves = []; saveSnap.forEach(d => allSaves.push({ id: d.id, ...d.data() }));
+    allIntakes = []; intakeSnap.forEach(d => allIntakes.push({ id: d.id, ...d.data() }));
+
+    allGoals.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    allSaves.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    allIntakes.sort((a,b) => (b.submittedAt||0) - (a.submittedAt||0));
+
+    document.getElementById('statGoals').textContent = allGoals.length;
+    document.getElementById('statSaves').textContent = allSaves.length;
+    document.getElementById('statIntakes').textContent = allIntakes.length;
+
+    renderHistory();
+}
+
+function renderHistory() {
+    const container = document.getElementById('historyContent');
+    let html = '';
+
+    if (allGoals.length) {
+        html += `<div class="form-card"><h3>🥅 Recent Goal Entries</h3>`;
+        html += allGoals.slice(0,5).map(g => {
+            const total = g.netZones ? Object.values(g.netZones).reduce((a,b) => a+(b||0), 0) : 0;
+            return `<div class="log-entry">
+                <div class="log-entry-header">
+                    <div class="log-entry-title">${total} goal${total!==1?'s':''} — ${g.situation||'No situation'}</div>
+                    <div class="log-entry-date">${g.createdAt ? new Date(g.createdAt).toLocaleDateString() : ''}</div>
+                </div>
+                <div class="log-entry-meta">${g.shotType||''} ${g.shotOrigin ? '· from '+g.shotOrigin : ''}</div>
+                ${g.netZones ? buildMiniHeatmap(g.netZones) : ''}
+                ${g.goalieNote ? `<div class="log-entry-note">${esc(g.goalieNote)}</div>` : ''}
+                ${g.coachNote ? `<div class="log-entry-note" style="border-left-color:#FF2400;"><strong>Coach:</strong> ${esc(g.coachNote)}</div>` : ''}
+            </div>`;
+        }).join('');
+        html += `</div>`;
+    }
+
+    if (allSaves.length) {
+        html += `<div class="form-card"><h3>🧤 Recent Saves</h3>`;
+        html += allSaves.slice(0,5).map(s => `
+            <div class="log-entry">
+                <div class="log-entry-header">
+                    <div class="log-entry-title">${esc(s.saveType||'Save')}</div>
+                    <div class="log-entry-date">${s.createdAt ? new Date(s.createdAt).toLocaleDateString() : ''}</div>
+                </div>
+                ${s.description ? `<div class="log-entry-note">${esc(s.description)}</div>` : ''}
+                ${s.videoUrl ? `<a href="${esc(s.videoUrl)}" target="_blank" style="color:#3b82f6;font-size:0.82rem;font-weight:600;display:block;margin-top:0.4rem;">🎥 View Video</a>` : ''}
+            </div>`).join('');
+        html += `</div>`;
+    }
+
+    if (!allGoals.length && !allSaves.length) {
+        html = '<div class="empty-state"><span>📊</span>No entries yet. Start logging goals and saves to build your history.</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function buildMiniHeatmap(zones) {
+    const max = Math.max(...Object.values(zones), 1);
+    return `<div class="mini-heatmap">
+        ${ZONE_KEYS.map(z => {
+            const count = zones[z]||0;
+            const intensity = count / max;
+            const bg = count > 0 ? `rgb(${Math.round(intensity*200+55)},${Math.round(30*(1-intensity))},${Math.round(30*(1-intensity))})` : '#1a1a1a';
+            return `<div class="mini-zone" style="background:${bg};">${count||''}</div>`;
+        }).join('')}
+    </div>`;
+}
+
+// Net diagram
+window.netClick = function(zone) {
+    netZones[zone]++;
+    document.getElementById(`nz-${zone}`).textContent = netZones[zone];
+    const cell = document.querySelector(`[data-zone="${zone}"]`);
+    if (cell) cell.classList.add('has-goals');
+};
+
+window.netReset = function() {
+    ZONE_KEYS.forEach(z => {
+        netZones[z] = 0;
+        document.getElementById(`nz-${z}`).textContent = '0';
+        const cell = document.querySelector(`[data-zone="${z}"]`);
+        if (cell) cell.classList.remove('has-goals');
+    });
+};
+
+// Rink zone
+window.rinkClick = function(el) {
+    document.querySelectorAll('.rink-zone').forEach(z => z.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedRinkZone = el.dataset.zone;
+};
+
+// Pills
+window.togglePill = function(el, group) {
+    el.classList.toggle('selected');
+};
+
+// Single select buttons
+window.toggleSingle = function(el, group) {
+    el.parentElement.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+};
+
+// Star rating
+window.setRating = function(val) {
+    selfRating = val;
+    document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < val));
+};
+
+// Tab switcher
+window.switchTab = function(tabId, btn) {
+    document.querySelectorAll('.tab-section').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    btn.classList.add('active');
+};
+
+// Submit goal log
+window.submitGoalLog = async function() {
+    const totalGoals = Object.values(netZones).reduce((a,b) => a+b, 0);
+    const trafficBtn = document.querySelector('#tab-logGoal .conf-btn.selected');
+
+    const data = {
+        netZones: { ...netZones },
+        shotType: document.getElementById('gl_shotType').value,
+        situation: document.getElementById('gl_situation').value,
+        shotOrigin: selectedRinkZone,
+        traffic: trafficBtn?.textContent === 'Yes',
+        context: document.getElementById('gl_context').value.trim(),
+        goalieNote: document.getElementById('gl_note').value.trim(),
+        createdAt: Date.now(),
+        createdBy: 'goalie'
+    };
+
+    try {
+        await addDoc(collection(db, 'goalies', goalieId, 'goalLog'), data);
+        document.getElementById('goalSuccess').style.display = 'block';
+        netReset();
+        document.getElementById('gl_shotType').value = '';
+        document.getElementById('gl_situation').value = '';
+        document.getElementById('gl_note').value = '';
+        document.getElementById('gl_context').value = '';
+        document.querySelectorAll('#tab-logGoal .conf-btn').forEach(b => b.classList.remove('selected'));
+        document.querySelectorAll('.rink-zone').forEach(z => z.classList.remove('selected'));
+        selectedRinkZone = null;
+        await loadHistory();
+        setTimeout(() => document.getElementById('goalSuccess').style.display = 'none', 4000);
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+// Submit save log
+window.submitSaveLog = async function() {
+    const saveTypes = [...document.querySelectorAll('#saveTypePills .skill-pill.selected')].map(p => p.textContent);
+    const saveTags = [...document.querySelectorAll('#saveTagPills .skill-pill.selected')].map(p => p.textContent);
+
+    const data = {
+        saveType: saveTypes.join(', ') || 'Save',
+        tags: saveTags,
+        description: document.getElementById('sv_description').value.trim(),
+        videoUrl: document.getElementById('sv_video').value.trim(),
+        selfRating,
+        createdAt: Date.now(),
+        createdBy: 'goalie'
+    };
+
+    try {
+        await addDoc(collection(db, 'goalies', goalieId, 'saveLog'), data);
+        document.getElementById('saveSuccess').style.display = 'block';
+        document.getElementById('sv_description').value = '';
+        document.getElementById('sv_video').value = '';
+        document.querySelectorAll('#saveTypePills .skill-pill, #saveTagPills .skill-pill').forEach(p => p.classList.remove('selected'));
+        setRating(0);
+        await loadHistory();
+        setTimeout(() => document.getElementById('saveSuccess').style.display = 'none', 4000);
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+// Submit intake
+window.submitIntake = async function() {
+    const skills = [...document.querySelectorAll('#skillPills .skill-pill.selected')].map(p => p.textContent);
+    const confidenceBtn = document.querySelector('#confidenceBtns .conf-btn.selected');
+
+    const data = {
+        sessionGoals: document.getElementById('in_goals').value.trim(),
+        skills,
+        struggling: document.getElementById('in_struggling').value.trim(),
+        recentGames: document.getElementById('in_recentGames').value.trim(),
+        confidence: confidenceBtn?.textContent || '',
+        injuries: document.getElementById('in_injuries').value.trim(),
+        other: document.getElementById('in_other').value.trim(),
+        submittedAt: Date.now(),
+        submittedBy: 'goalie'
+    };
+
+    try {
+        await addDoc(collection(db, 'goalies', goalieId, 'intakes'), data);
+        document.getElementById('intakeSuccess').style.display = 'block';
+        ['in_goals','in_struggling','in_recentGames','in_injuries','in_other'].forEach(id => document.getElementById(id).value = '');
+        document.querySelectorAll('#skillPills .skill-pill, #confidenceBtns .conf-btn').forEach(el => el.classList.remove('selected'));
+        await loadHistory();
+        setTimeout(() => document.getElementById('intakeSuccess').style.display = 'none', 4000);
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+</script>
+</body>
+</html>

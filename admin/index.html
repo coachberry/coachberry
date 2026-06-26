@@ -314,6 +314,9 @@
                 <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
                 <li><a onclick="switchTab('inbox')" class="menu-item" data-tab="inbox">📧 Inbox <span id="adminInboxUnreadBadge" style="display: none; background: #FF2400; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">0</span></a></li>
                 <hr class="sidebar-divider">
+                <div class="sidebar-section-label">Coaching</div>
+                <li><a onclick="switchTab('goalies')" class="menu-item" data-tab="goalies">🥅 Goalies</a></li>
+                <hr class="sidebar-divider">
                 <div class="sidebar-section-label">My Portfolio</div>
                 <li><a onclick="switchTab('resume')" class="menu-item" data-tab="resume">🏒 Coaching Resume</a></li>
                 <li><a onclick="switchTab('book-club')" class="menu-item" data-tab="book-club">📚 Book Club</a></li>
@@ -332,6 +335,7 @@
             <div id="blog" class="tab-content"></div>
             <div id="updates" class="tab-content"></div>
             <div id="inbox" class="tab-content"></div>
+            <div id="goalies" class="tab-content"></div>
             <div id="resume" class="tab-content"></div>
             <div id="book-club" class="tab-content"></div>
             <div id="vault" class="tab-content"></div>
@@ -436,6 +440,7 @@
                 blog: 'Blog Posts',
                 updates: 'Updates',
                 inbox: 'Inbox',
+                goalies: 'Goalies',
                 resume: 'Coaching Resume',
                 'book-club': 'Book Club',
                 vault: 'The Vault'
