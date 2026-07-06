@@ -7,245 +7,83 @@
     <link rel="stylesheet" href="/styles.css">
     <script src="/header.js"></script>
     <style>
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            padding: 2rem;
-        }
-
-        .login-box {
-            background: var(--white);
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-box img {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 1.5rem;
-        }
-
-        .login-box .subtitle {
-            text-align: center;
-            color: var(--accent);
-            font-weight: 600;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-            color: var(--text);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.9rem;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 0.9rem;
-            background: var(--accent);
-            color: var(--white);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .login-btn:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-        }
-
-        .login-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: none;
-            border-left: 4px solid #c62828;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .signup-link {
-            text-align: center;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-light);
-        }
-
-        .signup-link a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-
-        .forgot-password-link {
-            text-align: right;
-            margin-top: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .forgot-password-link a {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .forgot-password-link a:hover {
-            text-decoration: underline;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: var(--text-light);
-        }
-
-        .modal-close:hover {
-            color: var(--text);
-        }
-
-        .modal h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-        }
-
-        .modal p {
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: none;
-            border-left: 4px solid #4CAF50;
-        }
-
-        .success-message.show {
-            display: block;
-        }
+        .login-container { display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#000 0%,#1a1a1a 100%); padding:2rem; }
+        .login-box { background:#fff; padding:3rem; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.3); width:100%; max-width:400px; }
+        .login-box img { max-width:100%; height:auto; margin-bottom:1.5rem; display:block; }
+        .subtitle { text-align:center; color:#FF2400; font-weight:600; margin-bottom:2rem; font-size:0.95rem; }
+        .form-group { margin-bottom:1.5rem; }
+        .form-group label { display:block; font-weight:600; margin-bottom:0.6rem; color:#1a1a1a; }
+        .form-group input { width:100%; padding:0.9rem; border:2px solid #e0e0e0; border-radius:6px; font-size:1rem; font-family:inherit; transition:all 0.3s; }
+        .form-group input:focus { outline:none; border-color:#FF2400; box-shadow:0 0 0 3px rgba(255,36,0,0.1); }
+        .login-btn { width:100%; padding:0.9rem; background:#FF2400; color:#fff; border:none; border-radius:6px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.3s; }
+        .login-btn:hover { background:#FF3a1f; transform:translateY(-2px); }
+        .login-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .error-msg { background:#ffebee; color:#c62828; padding:1rem; border-radius:6px; margin-bottom:1rem; display:none; border-left:4px solid #c62828; font-size:0.9rem; line-height:1.5; }
+        .error-msg.show { display:block; }
+        .verify-notice { background:#fff8e1; color:#b45309; padding:1rem; border-radius:6px; margin-bottom:1rem; display:none; border-left:4px solid #f59e0b; font-size:0.88rem; line-height:1.6; }
+        .verify-notice.show { display:block; }
+        .resend-link { display:inline-block; margin-top:0.4rem; color:#b45309; font-weight:700; cursor:pointer; text-decoration:underline; font-size:0.85rem; }
+        .forgot-link { text-align:right; margin-top:0.5rem; margin-bottom:1rem; }
+        .forgot-link a { color:#FF2400; text-decoration:none; font-size:0.88rem; font-weight:600; }
+        .forgot-link a:hover { text-decoration:underline; }
+        .signup-link { text-align:center; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid #e0e0e0; color:#6b7280; font-size:0.9rem; }
+        .signup-link a { color:#FF2400; text-decoration:none; font-weight:700; }
+        .signup-link a:hover { text-decoration:underline; }
+        .modal { display:none; position:fixed; z-index:1000; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; }
+        .modal.active { display:flex; }
+        .modal-content { background:#fff; padding:2rem; border-radius:12px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; }
+        .modal-close { position:absolute; top:1rem; right:1rem; font-size:1.5rem; cursor:pointer; background:none; border:none; color:#6b7280; }
+        .modal h2 { margin-bottom:1rem; font-size:1.3rem; }
+        .modal p { color:#6b7280; margin-bottom:1.5rem; font-size:0.9rem; }
+        .success-msg { background:#f0fdf4; color:#16a34a; padding:1rem; border-radius:6px; margin-bottom:1rem; display:none; border-left:4px solid #16a34a; font-size:0.9rem; }
+        .success-msg.show { display:block; }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-box">
-            <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo">
-            <div class="subtitle">Member Dashboard</div>
-            <div class="error-message" id="loginError"></div>
+            <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry">
+            <div class="subtitle">Member Login</div>
+
+            <div class="verify-notice" id="verifyNotice">
+                📧 Please verify your email before signing in. Check your inbox for a verification link.
+                <span class="resend-link" onclick="resendVerification()">Resend verification email</span>
+            </div>
+
+            <div class="error-msg" id="loginError"></div>
+
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label for="email">Email Address</label>
+                    <label>Email Address</label>
                     <input type="email" id="email" placeholder="Enter your email" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label>Password</label>
                     <input type="password" id="password" placeholder="Enter your password" required>
                 </div>
-                <div class="forgot-password-link">
-                    <a href="#" onclick="openForgotPasswordModal(event)">Forgot Password?</a>
+                <div class="forgot-link">
+                    <a href="#" onclick="openResetModal(event)">Forgot Password?</a>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
             </form>
+
             <div class="signup-link">
-                Don't have an account? <a href="/#membership">Sign up here</a>
+                Don't have an account? <a href="/member-signup/">Join for free</a>
             </div>
         </div>
     </div>
 
-    <!-- Forgot Password Modal -->
-    <div id="forgotPasswordModal" class="modal">
+    <div id="resetModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeForgotPasswordModal()">&times;</button>
+            <button class="modal-close" onclick="closeResetModal()">&times;</button>
             <h2>Reset Password</h2>
-            <p>Enter your email address and we'll send you a link to reset your password.</p>
-            <div class="success-message" id="forgotPasswordSuccess"></div>
-            <div class="error-message" id="forgotPasswordError"></div>
-            <form id="forgotPasswordForm" onsubmit="handleForgotPassword(event)">
+            <p>Enter your email and we'll send you a reset link.</p>
+            <div class="success-msg" id="resetSuccess"></div>
+            <div class="error-msg" id="resetError"></div>
+            <form onsubmit="handleReset(event)">
                 <div class="form-group">
-                    <label for="forgotEmail">Email Address</label>
-                    <input type="email" id="forgotEmail" placeholder="Enter your email" required>
+                    <label>Email Address</label>
+                    <input type="email" id="resetEmail" placeholder="Enter your email" required>
                 </div>
                 <button type="submit" class="login-btn" id="resetBtn">Send Reset Link</button>
             </form>
@@ -254,7 +92,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -267,103 +105,90 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        let unverifiedUser = null;
 
-        // Check if already logged in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = '/member-dashboard/';
-            }
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('unverified') === '1') {
+            document.getElementById('verifyNotice').classList.add('show');
+        }
+
+        onAuthStateChanged(auth, user => {
+            if (user && user.emailVerified) window.location.href = '/member-dashboard/';
         });
 
         window.handleLogin = async function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
+            const btn = document.getElementById('loginBtn');
             const errorDiv = document.getElementById('loginError');
+            const verifyDiv = document.getElementById('verifyNotice');
 
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = 'Signing In...';
+            btn.disabled = true;
+            btn.textContent = 'Signing In...';
             errorDiv.classList.remove('show');
+            verifyDiv.classList.remove('show');
 
             try {
-                await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = '/member-dashboard/';
-            } catch (error) {
-                let errorMessage = 'Invalid email or password';
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Email not found';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Incorrect password';
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                if (!cred.user.emailVerified) {
+                    unverifiedUser = cred.user;
+                    await signOut(auth);
+                    verifyDiv.classList.add('show');
+                    btn.disabled = false;
+                    btn.textContent = 'Sign In';
+                    return;
                 }
-                
-                errorDiv.textContent = errorMessage;
+                window.location.href = '/member-dashboard/';
+            } catch(e) {
+                let msg = 'Incorrect email or password. Please try again.';
+                if (e.code === 'auth/user-not-found') msg = 'No account found with that email.';
+                else if (e.code === 'auth/wrong-password') msg = 'Incorrect password.';
+                else if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please wait and try again.';
+                errorDiv.textContent = msg;
                 errorDiv.classList.add('show');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = 'Sign In';
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
             }
         };
 
-        window.handleForgotPassword = async function(event) {
+        window.resendVerification = async function() {
+            if (!unverifiedUser) { alert('Please sign in first so we can resend your verification email.'); return; }
+            try {
+                await sendEmailVerification(unverifiedUser);
+                alert('Verification email resent! Check your inbox.');
+            } catch(e) { alert('Error: ' + e.message); }
+        };
+
+        window.handleReset = async function(event) {
             event.preventDefault();
-            const email = document.getElementById('forgotEmail').value;
-            const resetBtn = document.getElementById('resetBtn');
-            const errorDiv = document.getElementById('forgotPasswordError');
-            const successDiv = document.getElementById('forgotPasswordSuccess');
-
-            resetBtn.disabled = true;
-            resetBtn.innerHTML = 'Sending...';
-            errorDiv.classList.remove('show');
+            const email = document.getElementById('resetEmail').value;
+            const btn = document.getElementById('resetBtn');
+            const successDiv = document.getElementById('resetSuccess');
+            const errorDiv = document.getElementById('resetError');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
             successDiv.classList.remove('show');
-
+            errorDiv.classList.remove('show');
             try {
                 await sendPasswordResetEmail(auth, email);
-                successDiv.textContent = '✓ Password reset link sent! Check your email for instructions.';
+                successDiv.textContent = 'Reset link sent! Check your email.';
                 successDiv.classList.add('show');
-                document.getElementById('forgotPasswordForm').reset();
-                
-                // Close modal after 3 seconds
-                setTimeout(() => {
-                    closeForgotPasswordModal();
-                }, 3000);
-            } catch (error) {
-                let errorMessage = 'Error sending reset link';
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Email not found. Please check and try again.';
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = 'Invalid email address';
-                }
-                
-                errorDiv.textContent = errorMessage;
+                setTimeout(() => closeResetModal(), 3000);
+            } catch(e) {
+                errorDiv.textContent = e.code === 'auth/user-not-found' ? 'No account found with that email.' : 'Error sending reset link.';
                 errorDiv.classList.add('show');
             } finally {
-                resetBtn.disabled = false;
-                resetBtn.innerHTML = 'Send Reset Link';
+                btn.disabled = false;
+                btn.textContent = 'Send Reset Link';
             }
         };
     </script>
 
     <script>
-        // Non-module functions for modal
-        function openForgotPasswordModal(event) {
-            event.preventDefault();
-            document.getElementById('forgotPasswordModal').classList.add('active');
-        }
-
-        function closeForgotPasswordModal() {
-            document.getElementById('forgotPasswordModal').classList.remove('active');
-            document.getElementById('forgotPasswordError').classList.remove('show');
-            document.getElementById('forgotPasswordSuccess').classList.remove('show');
-            document.getElementById('forgotPasswordForm').reset();
-        }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('forgotPasswordModal');
-            if (event.target === modal) {
-                closeForgotPasswordModal();
-            }
-        });
+        function openResetModal(e) { e.preventDefault(); document.getElementById('resetModal').classList.add('active'); }
+        function closeResetModal() { document.getElementById('resetModal').classList.remove('active'); }
+        document.addEventListener('click', e => { if (e.target === document.getElementById('resetModal')) closeResetModal(); });
     </script>
 </body>
 </html>

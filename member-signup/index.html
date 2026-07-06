@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Coach Berry — Create Your Account</title>
+    <meta name="description" content="Create your free Coach Berry member account to access The Vault, track your hockey development, and connect with Coach Berry.">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/header.js"></script>
+    <style>
+        body { background:linear-gradient(135deg,#000 0%,#1a1a1a 100%); min-height:100vh; }
+        .signup-wrap { display:flex; justify-content:center; align-items:flex-start; min-height:80vh; padding:2rem 1rem; }
+        .signup-box { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.4); width:100%; max-width:480px; overflow:hidden; }
+        .signup-hero { background:#000; color:#fff; padding:2rem; text-align:center; }
+        .signup-hero img { max-width:130px; margin:0 auto 1rem; display:block; }
+        .signup-hero h1 { font-size:1.3rem; font-weight:800; margin:0 0 0.3rem; }
+        .signup-hero p { font-size:0.85rem; color:rgba(255,255,255,0.6); margin:0; }
+        .signup-benefits { display:flex; justify-content:center; gap:1.2rem; padding:0.8rem 1.5rem; background:#111; flex-wrap:wrap; }
+        .benefit { font-size:0.75rem; color:rgba(255,255,255,0.55); display:flex; align-items:center; gap:0.3rem; }
+        .benefit span { color:#FF2400; font-weight:700; }
+        .signup-body { padding:1.8rem; }
+        .sg-group { margin-bottom:1rem; }
+        .sg-group label { display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.35rem; color:#374151; }
+        .sg-group input, .sg-group select { width:100%; padding:0.75rem 0.9rem; border:1.5px solid #e0e0e0; border-radius:8px; font-size:0.92rem; font-family:inherit; transition:border-color 0.2s; }
+        .sg-group input:focus, .sg-group select:focus { outline:none; border-color:#FF2400; box-shadow:0 0 0 3px rgba(255,36,0,0.08); }
+        .sg-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .sg-hint { font-size:0.75rem; color:#9ca3af; margin-top:0.25rem; }
+        .pill-group { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.35rem; }
+        .pill { padding:0.3rem 0.75rem; border-radius:20px; border:1.5px solid #e0e0e0; background:#fff; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.15s; color:#374151; }
+        .pill.selected { background:#FF2400; color:#fff; border-color:#FF2400; }
+        .sg-btn { width:100%; padding:0.9rem; background:#FF2400; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.2s; margin-top:0.5rem; }
+        .sg-btn:hover { background:#FF3a1f; transform:translateY(-1px); }
+        .sg-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .sg-error { background:#ffebee; color:#c62828; border-radius:8px; padding:0.8rem 1rem; margin-bottom:1rem; font-size:0.88rem; font-weight:600; display:none; border-left:4px solid #c62828; }
+        .terms { font-size:0.75rem; color:#9ca3af; text-align:center; margin-top:0.8rem; line-height:1.5; }
+        .login-link { text-align:center; padding:1.2rem; background:#f8f9fa; border-top:1px solid #e0e0e0; font-size:0.88rem; color:#6b7280; }
+        .login-link a { color:#FF2400; font-weight:700; text-decoration:none; }
+        .verify-screen { display:none; padding:2.5rem 2rem; text-align:center; }
+        .verify-icon { font-size:3.5rem; margin-bottom:1rem; display:block; }
+        .verify-screen h2 { font-size:1.2rem; margin:0 0 0.6rem; }
+        .verify-screen p { color:#6b7280; font-size:0.88rem; line-height:1.6; margin-bottom:1.2rem; }
+        .verify-email { background:#f0f4ff; border-radius:8px; padding:0.5rem 1rem; font-weight:700; color:#3730a3; margin-bottom:1.2rem; display:inline-block; }
+        .resend-btn { background:none; border:1.5px solid #e0e0e0; border-radius:8px; padding:0.6rem 1.2rem; font-weight:600; font-size:0.85rem; cursor:pointer; color:#374151; transition:all 0.2s; }
+        .resend-btn:hover { background:#f8f9fa; }
+        @media (max-width:500px) { .sg-row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <div class="signup-wrap">
+        <div class="signup-box">
+            <div class="signup-hero">
+                <img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent.png" alt="Coach Berry">
+                <h1>Create Your Member Account</h1>
+                <p>Track your development, access The Vault, connect with Coach Berry</p>
+            </div>
+            <div class="signup-benefits">
+                <div class="benefit"><span>✓</span> The Vault access</div>
+                <div class="benefit"><span>✓</span> Player profile</div>
+                <div class="benefit"><span>✓</span> Development tracking</div>
+                <div class="benefit"><span>✓</span> Free to join</div>
+            </div>
+
+            <div class="signup-body" id="signupBody">
+                <div class="sg-error" id="sgError"></div>
+                <div class="sg-row">
+                    <div class="sg-group"><label>First Name *</label><input type="text" id="sg_first" placeholder="First name"></div>
+                    <div class="sg-group"><label>Last Name *</label><input type="text" id="sg_last" placeholder="Last name"></div>
+                </div>
+                <div class="sg-group"><label>Email Address *</label><input type="email" id="sg_email" placeholder="your@email.com"></div>
+                <div class="sg-group"><label>Password *</label><input type="password" id="sg_pw" placeholder="At least 6 characters"></div>
+                <div class="sg-group"><label>Confirm Password *</label><input type="password" id="sg_pw2" placeholder="Repeat your password"></div>
+                <div class="sg-group">
+                    <label>Position <span style="font-weight:400;color:#9ca3af;">(optional)</span></label>
+                    <div class="pill-group" id="posPills">
+                        <span class="pill" onclick="selectPos(this)">Goalie</span>
+                        <span class="pill" onclick="selectPos(this)">Defense</span>
+                        <span class="pill" onclick="selectPos(this)">Forward</span>
+                        <span class="pill" onclick="selectPos(this)">Center</span>
+                        <span class="pill" onclick="selectPos(this)">Wing</span>
+                        <span class="pill" onclick="selectPos(this)">Parent / Fan</span>
+                        <span class="pill" onclick="selectPos(this)">Coach</span>
+                    </div>
+                </div>
+                <button class="sg-btn" onclick="createAccount()" id="sgBtn">Create My Account</button>
+                <div class="terms">By creating an account you agree to our terms. Your login info is private and never shared.</div>
+            </div>
+
+            <div class="verify-screen" id="verifyScreen">
+                <span class="verify-icon">📧</span>
+                <h2>Check Your Email</h2>
+                <p>We sent a verification link to:</p>
+                <div class="verify-email" id="verifyEmail"></div>
+                <p>Click the link in that email to activate your account. Once verified you can sign in and access your dashboard.</p>
+                <button class="resend-btn" onclick="resendVerify()">Resend Verification Email</button>
+                <div style="margin-top:1.2rem;"><a href="/member-login/" style="color:#FF2400;font-weight:700;text-decoration:none;font-size:0.88rem;">Already verified? Sign in →</a></div>
+            </div>
+
+            <div class="login-link">Already have an account? <a href="/member-login/">Sign in here</a></div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+        authDomain: "coach-berry.firebaseapp.com",
+        projectId: "coach-berry",
+        storageBucket: "coach-berry.firebasestorage.app",
+        messagingSenderId: "170282824286",
+        appId: "1:170282824286:web:5387ec9826c38466c07acf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let selectedPosition = '';
+    let currentUserRef = null;
+
+    window.selectPos = function(el) {
+        document.querySelectorAll('#posPills .pill').forEach(p => p.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedPosition = el.textContent;
+    };
+
+    window.createAccount = async function() {
+        const first = document.getElementById('sg_first').value.trim();
+        const last = document.getElementById('sg_last').value.trim();
+        const email = document.getElementById('sg_email').value.trim();
+        const pw = document.getElementById('sg_pw').value;
+        const pw2 = document.getElementById('sg_pw2').value;
+        const errDiv = document.getElementById('sgError');
+        const btn = document.getElementById('sgBtn');
+
+        errDiv.style.display = 'none';
+        if (!first || !last) { showErr('Please enter your first and last name.'); return; }
+        if (!email) { showErr('Please enter your email address.'); return; }
+        if (!pw || pw.length < 6) { showErr('Password must be at least 6 characters.'); return; }
+        if (pw !== pw2) { showErr('Passwords do not match.'); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Creating account...';
+
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, pw);
+            const user = cred.user;
+
+            await setDoc(doc(db, 'members', user.uid), {
+                firstName: first,
+                lastName: last,
+                email,
+                position: selectedPosition,
+                roles: ['member'],
+                emailVerified: false,
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            });
+
+            await sendEmailVerification(user);
+            currentUserRef = user;
+
+            document.getElementById('signupBody').style.display = 'none';
+            document.getElementById('verifyEmail').textContent = email;
+            document.getElementById('verifyScreen').style.display = 'block';
+        } catch(e) {
+            let msg = e.message;
+            if (e.code === 'auth/email-already-in-use') msg = 'An account with this email already exists. Try signing in instead.';
+            if (e.code === 'auth/invalid-email') msg = 'Please enter a valid email address.';
+            showErr(msg);
+            btn.disabled = false;
+            btn.textContent = 'Create My Account';
+        }
+    };
+
+    window.resendVerify = async function() {
+        if (!currentUserRef) return;
+        try {
+            await sendEmailVerification(currentUserRef);
+            alert('Verification email resent!');
+        } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    function showErr(msg) {
+        const d = document.getElementById('sgError');
+        d.textContent = msg;
+        d.style.display = 'block';
+    }
+    </script>
+</body>
+</html>

@@ -3,739 +3,825 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Berry - Member Dashboard</title>
+    <title>My Dashboard — Coach Berry</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/header.js"></script>
-    <script src="/footer.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        .member-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            width: 100%;
-        }
-
-        .dashboard-header {
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .dashboard-header h1 {
-            margin: 0;
-            color: var(--primary-dark);
-            flex: 1;
-        }
-
-        .logout-btn {
-            padding: 0.6rem 1.2rem;
-            background: #d32f2f;
-            color: var(--white);
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: #b71c1c;
-            transform: translateY(-1px);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .tab-btn:hover {
-            color: var(--text);
-        }
-
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: #ffffff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 2rem;
-            width: 100%;
-        }
-
-        .card h2 {
-            margin-top: 0;
-            color: #000;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            width: 100%;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.9rem;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            width: 100%;
-        }
-
-        .save-btn {
-            padding: 0.9rem 2rem;
-            background: #FF2400;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .save-btn:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-        }
-
-        .save-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .message {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .message.show {
-            display: block;
-        }
-
-        .message.success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid var(--success);
-        }
-
-        .saved-posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .post-card {
-            background: var(--light-gray);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
-        }
-
-        .post-card h3 {
-            margin-top: 0;
-            color: var(--primary-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .post-card p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .remove-post-btn {
-            padding: 0.5rem 1rem;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .remove-post-btn:hover {
-            background: #d32f2f;
-        }
-
-        .messages-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .message-item {
-            background: var(--light-gray);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--accent);
-        }
-
-        .message-item h4 {
-            margin: 0 0 0.5rem 0;
-            color: var(--primary-dark);
-        }
-
-        .message-item .meta {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        .message-item p {
-            margin: 0;
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-light);
-        }
-
-        .compose-message {
-            margin-bottom: 2rem;
-        }
-
-        /* Blog Card Styles - EXACT match from /blog page */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-            width: 100%;
-        }
-
-        .blog-card {
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .blog-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-            border-color: var(--accent);
-        }
-
-        .blog-card-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 2rem;
-            color: var(--white);
-            min-height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .blog-card h3 {
-            font-size: 1.4rem;
-            margin: 0;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-            color: white;
-        }
-
-        .blog-card-body {
-            padding: 2rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .blog-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .blog-category {
-            display: inline-block;
-            background: rgba(255, 36, 0, 0.1);
-            color: var(--accent);
-            padding: 0.35rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .blog-excerpt {
-            color: var(--text-light);
-            margin-bottom: 1rem;
-            line-height: 1.8;
-            flex-grow: 1;
-        }
-
-        .blog-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .read-more {
-            color: var(--accent);
-            font-weight: 600;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            text-decoration: none;
-        }
-
-        .read-more:hover {
-            color: var(--accent-light);
-        }
-
-        .save-blog-btn {
-            background: var(--accent);
-            color: var(--white);
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .save-blog-btn:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-        }
-
-        .save-blog-btn.saved {
-            background: #4CAF50;
-        }
-
-        .blog-actions {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .saved-posts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            width: 100%;
-        }
-
-        /* Modal Styling - match /blog page */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            animation: fadeIn 0.3s ease;
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 2rem 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: white;
-            padding: 3rem;
-            border-radius: 12px;
-            max-width: 800px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .tab-btn {
-                text-align: left;
-            }
-        }
+        body { background:#f5f5f5; margin:0; font-family:system-ui,-apple-system,sans-serif; }
+        .dash-wrap { display:grid; grid-template-columns:230px 1fr; min-height:100vh; max-width:1280px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; align-items:start; }
+        .dash-sidebar { position:sticky; top:80px; }
+        .profile-card { background:#000; border-radius:12px; padding:1.5rem; color:#fff; margin-bottom:1rem; text-align:center; }
+        .profile-avatar { width:60px; height:60px; border-radius:50%; background:#FF2400; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:800; margin:0 auto 0.8rem; color:#fff; }
+        .profile-name { font-weight:800; font-size:0.95rem; margin:0 0 0.2rem; }
+        .profile-email { font-size:0.72rem; color:rgba(255,255,255,0.45); margin:0 0 0.8rem; }
+        .role-badge { display:inline-block; padding:0.18rem 0.55rem; border-radius:20px; font-size:0.68rem; font-weight:700; margin:0.12rem; }
+        .role-member { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.65); }
+        .role-3d-goalie { background:rgba(255,36,0,0.25); color:#ff7f6a; }
+        .role-3d-player { background:rgba(59,130,246,0.25); color:#93c5fd; }
+        .role-3d-hockey { background:rgba(245,158,11,0.25); color:#fcd34d; }
+        .dash-nav { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden; }
+        .nav-section { padding:0.45rem 1.1rem 0.2rem; font-size:0.65rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#9ca3af; background:#f8f9fa; border-bottom:1px solid #f0f0f0; }
+        .nav-item { display:flex; align-items:center; gap:0.6rem; padding:0.8rem 1.1rem; cursor:pointer; font-weight:600; font-size:0.88rem; color:#374151; border-left:3px solid transparent; transition:all 0.2s; border-bottom:1px solid #f5f5f5; }
+        .nav-item:last-child { border-bottom:none; }
+        .nav-item:hover { background:#f8f9fa; color:#000; }
+        .nav-item.active { color:#FF2400; border-left-color:#FF2400; background:#fff5f5; }
+        .nav-item .ni { font-size:1rem; }
+        .logout-btn { margin-top:1rem; width:100%; padding:0.65rem; background:#fff0f0; color:#c62828; border:1.5px solid #fecaca; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+        .logout-btn:hover { background:#fecaca; }
+        .dash-main { min-width:0; }
+        .d-section { display:none; }
+        .d-section.active { display:block; }
+        .section-title { font-size:1.4rem; font-weight:900; color:#000; margin:0 0 0.3rem; }
+        .section-sub { color:#6b7280; font-size:0.88rem; margin:0 0 1.5rem; }
+        .d-card { background:#fff; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.06); margin-bottom:1.5rem; overflow:hidden; }
+        .d-card-head { display:flex; justify-content:space-between; align-items:center; padding:1.1rem 1.4rem; border-bottom:1px solid #f0f0f0; }
+        .d-card-head h3 { margin:0; font-size:0.95rem; font-weight:800; }
+        .d-card-body { padding:1.4rem; }
+        .edit-btn { padding:0.35rem 0.9rem; background:#f8f9fa; border:1.5px solid #e0e0e0; border-radius:6px; font-weight:600; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+        .edit-btn:hover { background:#e0e0e0; }
+        .save-btn { padding:0.35rem 0.9rem; background:#FF2400; color:#fff; border:none; border-radius:6px; font-weight:700; font-size:0.8rem; cursor:pointer; display:none; }
+        .save-btn:hover { background:#FF3a1f; }
+        .add-btn { padding:0.5rem 1.1rem; background:#000; color:#fff; border:none; border-radius:7px; font-weight:700; font-size:0.82rem; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:0.3rem; }
+        .add-btn:hover { background:#FF2400; transform:translateY(-1px); }
+        .add-btn-sm { padding:0.32rem 0.75rem; font-size:0.78rem; }
+        .pf-group { margin-bottom:1rem; }
+        .pf-group label { display:block; font-weight:600; font-size:0.8rem; margin-bottom:0.3rem; color:#374151; }
+        .pf-group input, .pf-group select, .pf-group textarea { width:100%; padding:0.65rem 0.85rem; border:1.5px solid #e0e0e0; border-radius:7px; font-size:0.88rem; font-family:inherit; transition:border-color 0.2s; background:#fff; }
+        .pf-group input:focus, .pf-group select:focus, .pf-group textarea:focus { outline:none; border-color:#FF2400; box-shadow:0 0 0 3px rgba(255,36,0,0.08); }
+        .pf-group textarea { resize:vertical; min-height:80px; }
+        .pf-group input:disabled, .pf-group select:disabled, .pf-group textarea:disabled { background:#f8f9fa; color:#6b7280; }
+        .pf-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .pill-wrap { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.3rem; }
+        .pill { padding:0.28rem 0.75rem; border-radius:20px; border:1.5px solid #e0e0e0; background:#fff; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.15s; color:#374151; user-select:none; }
+        .pill.selected { background:#FF2400; color:#fff; border-color:#FF2400; }
+        .pill.disabled { pointer-events:none; opacity:0.7; }
+        .entry-card { border:1.5px solid #e0e0e0; border-radius:8px; padding:1rem 1.1rem; margin-bottom:0.7rem; background:#fafafa; }
+        .entry-head { display:flex; justify-content:space-between; align-items:flex-start; }
+        .entry-title { font-weight:800; font-size:0.92rem; margin:0 0 0.15rem; }
+        .entry-meta { font-size:0.78rem; color:#6b7280; }
+        .entry-body { font-size:0.85rem; color:#374151; margin-top:0.45rem; line-height:1.5; }
+        .del-btn { background:none; border:none; color:#d1d5db; cursor:pointer; font-size:0.95rem; padding:0; flex-shrink:0; }
+        .del-btn:hover { color:#FF2400; }
+        .highlight-row { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:0.9rem 1.1rem; border:1.5px solid #e0e0e0; border-radius:8px; margin-bottom:0.6rem; background:#fafafa; }
+        .hl-title { font-weight:700; font-size:0.9rem; }
+        .hl-meta { font-size:0.76rem; color:#6b7280; margin-top:0.1rem; }
+        .watch-link { color:#3b82f6; font-weight:700; font-size:0.82rem; text-decoration:none; white-space:nowrap; }
+        .watch-link:hover { text-decoration:underline; }
+        .working-row { display:flex; align-items:center; gap:0.7rem; padding:0.65rem 0; border-bottom:1px solid #f0f0f0; }
+        .working-row:last-child { border-bottom:none; }
+        .w-dot { width:7px; height:7px; border-radius:50%; background:#FF2400; flex-shrink:0; }
+        .w-text { font-size:0.88rem; flex:1; }
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:0.8rem; margin-bottom:1.5rem; }
+        .stat-box { background:#fff; border-radius:10px; padding:1rem; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+        .stat-num { font-size:1.5rem; font-weight:800; color:#FF2400; display:block; }
+        .stat-label { font-size:0.7rem; color:#6b7280; display:block; margin-top:0.15rem; }
+        .empty-state { text-align:center; padding:2rem; color:#9ca3af; }
+        .empty-state span { display:block; font-size:1.8rem; margin-bottom:0.4rem; }
+        .empty-state p { margin:0; font-size:0.85rem; }
+        .toast { background:#f0fdf4; color:#16a34a; border:1.5px solid #bbf7d0; border-radius:8px; padding:0.7rem 1rem; font-weight:600; font-size:0.85rem; margin-bottom:1rem; display:none; }
+        .net-grid { display:inline-grid; grid-template-columns:repeat(3,72px); grid-template-rows:repeat(3,50px); gap:3px; border:2px solid #000; padding:2px; background:#000; border-radius:4px; }
+        .net-cell { background:#1a1a1a; border-radius:2px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:0.72rem; font-weight:700; color:rgba(255,255,255,0.5); transition:all 0.15s; }
+        .net-cell:hover { background:#333; color:#fff; }
+        .net-cell.selected { background:#FF2400; color:#fff; }
+        .rink-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; max-width:260px; margin-top:0.4rem; }
+        .rink-zone { padding:0.5rem 0.3rem; background:#f0f4ff; border:2px solid #c7d2fe; border-radius:6px; text-align:center; cursor:pointer; font-size:0.73rem; font-weight:600; color:#3730a3; transition:all 0.15s; }
+        .rink-zone:hover { background:#e0e7ff; }
+        .rink-zone.selected { background:#3b5bdb; color:#fff; border-color:#3b5bdb; }
+        .star { font-size:1.3rem; cursor:pointer; color:#d1d5db; transition:color 0.15s; }
+        .star.active { color:#f59e0b; }
+        .sub-btn { padding:0.75rem 1.5rem; background:#FF2400; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.92rem; cursor:pointer; transition:all 0.2s; width:100%; margin-top:0.5rem; }
+        .sub-btn:hover { background:#FF3a1f; }
+        .sub-btn:disabled { opacity:0.6; cursor:not-allowed; }
+        .g-tabs { display:flex; border-bottom:2px solid #e0e0e0; margin-bottom:1.5rem; overflow-x:auto; }
+        .g-tab { padding:0.75rem 1.1rem; background:none; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; cursor:pointer; font-weight:600; font-size:0.85rem; color:#6b7280; white-space:nowrap; transition:all 0.2s; }
+        .g-tab:hover { color:#000; }
+        .g-tab.active { color:#FF2400; border-bottom-color:#FF2400; }
+        .g-sub { display:none; }
+        .g-sub.active { display:block; }
+        .locked-box { background:linear-gradient(135deg,#000 0%,#1a1a1a 100%); border-radius:12px; padding:2.5rem; text-align:center; color:#fff; }
+        .locked-box h3 { font-size:1.2rem; margin:1rem 0 0.5rem; }
+        .locked-box p { color:rgba(255,255,255,0.6); font-size:0.88rem; margin-bottom:1.5rem; line-height:1.6; max-width:380px; margin-left:auto; margin-right:auto; }
+        .apply-btn { padding:0.75rem 1.8rem; background:#FF2400; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:0.92rem; cursor:pointer; transition:all 0.2s; }
+        .apply-btn:hover { background:#FF3a1f; transform:translateY(-1px); }
+        .vault-cat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.2rem; }
+        .vault-cat-card { background:#fafafa; border:1.5px solid #e0e0e0; border-radius:10px; padding:1.3rem; cursor:pointer; transition:all 0.2s; }
+        .vault-cat-card:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); border-color:#FF2400; }
+        .vault-cat-name { font-weight:800; font-size:0.92rem; margin-bottom:0.3rem; }
+        .vault-cat-desc { font-size:0.78rem; color:#6b7280; }
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:flex-start; padding:2rem 1rem; overflow-y:auto; }
+        .modal-overlay.open { display:flex; }
+        .modal-box { background:#fff; border-radius:12px; width:100%; max-width:520px; box-shadow:0 20px 60px rgba(0,0,0,0.25); animation:mIn 0.2s ease; }
+        @keyframes mIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        .modal-head { display:flex; justify-content:space-between; align-items:center; padding:1.1rem 1.4rem; border-bottom:1px solid #e0e0e0; }
+        .modal-head h3 { margin:0; font-size:0.95rem; font-weight:800; }
+        .modal-close-btn { background:none; border:none; font-size:1.3rem; cursor:pointer; color:#9ca3af; }
+        .modal-close-btn:hover { color:#FF2400; }
+        .modal-body { padding:1.4rem; }
+        .modal-foot { display:flex; justify-content:flex-end; gap:0.7rem; padding:1rem 1.4rem; border-top:1px solid #e0e0e0; }
+        .m-cancel { padding:0.55rem 1.1rem; background:#f8f9fa; border:1.5px solid #e0e0e0; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem; }
+        .m-save { padding:0.55rem 1.2rem; background:#FF2400; color:#fff; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.85rem; }
+        .m-save:hover { background:#FF3a1f; }
+        @media (max-width:800px) { .dash-wrap{grid-template-columns:1fr;} .dash-sidebar{position:static;} .pf-row{grid-template-columns:1fr;} }
     </style>
 </head>
 <body>
-    <div class="member-container">
-        <div class="dashboard-header">
-            <h1>Member Dashboard</h1>
-            <div style="display: flex; gap: 1rem;">
-                <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
-                <a href="/member-login/" class="logout-btn" style="background: var(--secondary); text-decoration: none; display: flex; align-items: center;">← Back to Login</a>
+<div class="dash-wrap">
+    <aside class="dash-sidebar">
+        <div class="profile-card">
+            <div class="profile-avatar" id="pAvatar">?</div>
+            <p class="profile-name" id="pName">Loading...</p>
+            <p class="profile-email" id="pEmail"></p>
+            <div id="pRoles"></div>
+        </div>
+        <nav class="dash-nav">
+            <div class="nav-section">My Account</div>
+            <div class="nav-item active" onclick="goTo('overview',this)"><span class="ni">🏠</span>Overview</div>
+            <div class="nav-item" onclick="goTo('profile',this)"><span class="ni">👤</span>My Profile</div>
+            <div class="nav-item" onclick="goTo('teams',this)"><span class="ni">🏒</span>Teams & History</div>
+            <div class="nav-item" onclick="goTo('highlights',this)"><span class="ni">🎥</span>Highlights</div>
+            <div class="nav-item" onclick="goTo('development',this)"><span class="ni">📈</span>Development</div>
+            <div class="nav-section">Content</div>
+            <div class="nav-item" onclick="goTo('vault',this)"><span class="ni">🔐</span>The Vault</div>
+            <div class="nav-item" id="goalieNav" style="display:none;" onclick="goTo('goalie',this)"><span class="ni">🥅</span>3D Goalie Tool</div>
+            <div class="nav-section">Account</div>
+            <div class="nav-item" onclick="goTo('settings',this)"><span class="ni">⚙️</span>Settings</div>
+        </nav>
+        <button class="logout-btn" onclick="doLogout()">🚪 Sign Out</button>
+    </aside>
+
+    <main class="dash-main">
+
+        <!-- OVERVIEW -->
+        <div class="d-section active" id="s-overview">
+            <h2 class="section-title" id="welcomeMsg">Welcome back!</h2>
+            <p class="section-sub">Your hockey development hub.</p>
+            <div class="stat-grid" id="ovStats"></div>
+            <div class="d-card">
+                <div class="d-card-head"><h3>📈 Currently Working On</h3></div>
+                <div class="d-card-body" id="ovWorking"><div class="empty-state"><span>📈</span><p>Nothing added yet — go to Development to add focus areas.</p></div></div>
+            </div>
+            <div class="d-card">
+                <div class="d-card-head"><h3>🎥 Recent Highlights</h3></div>
+                <div class="d-card-body" id="ovHighlights"><div class="empty-state"><span>🎥</span><p>No highlights yet.</p></div></div>
             </div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('profile')">👤 Profile</button>
-            <button class="tab-btn" onclick="switchTab('saved')">💾 Saved Content</button>
-            <button class="tab-btn" onclick="switchTab('inbox')">📧 Inbox <span id="inboxUnreadBadge" style="display: none; background: #FF2400; color: white; border-radius: 50%; width: 24px; height: 24px; font-size: 0.75rem; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">0</span></button>
-        </div>
-
-        <!-- Profile Tab -->
-        <div id="profile" class="tab-content active">
-            <div class="card">
-                <h2>My Profile</h2>
-                <div class="message" id="profileMessage"></div>
-                <form id="profileForm" onsubmit="handleProfileUpdate(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" required>
-                        </div>
+        <!-- PROFILE -->
+        <div class="d-section" id="s-profile">
+            <h2 class="section-title">My Profile</h2>
+            <p class="section-sub">Your hockey identity — keep it updated as you grow.</p>
+            <div class="d-card">
+                <div class="d-card-head">
+                    <h3>Basic Info</h3>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="edit-btn" id="pfEditBtn" onclick="togglePfEdit()">Edit</button>
+                        <button class="save-btn" id="pfSaveBtn" onclick="saveProfile()">Save</button>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" disabled style="background: var(--light-gray); cursor: not-allowed;">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="tel" id="phone">
-                        </div>
-                    </div>
-                    <button type="submit" class="save-btn">Update Profile</button>
-                </form>
-            </div>
-
-            <!-- Change Password Section -->
-            <div class="card">
-                <h2>Change Password</h2>
-                <div class="message" id="passwordMessage"></div>
-                <form id="passwordForm" onsubmit="handleChangePassword(event)">
-                    <div class="form-group">
-                        <label for="currentPassword">Current Password</label>
-                        <input type="password" id="currentPassword" placeholder="Enter your current password" required>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="newPassword">New Password</label>
-                            <input type="password" id="newPassword" placeholder="Enter new password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">Confirm Password</label>
-                            <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="save-btn">Change Password</button>
-                </form>
-            </div>
-
-            <!-- Player Profile Section -->
-            <div class="card" id="playerProfileSection" style="display: none;">
-                <h2>My Player Profile</h2>
-                <div class="message" id="playerProfileMessage"></div>
-                <form id="playerProfileForm" onsubmit="handlePlayerProfileUpdate(event)">
-                    <div class="form-group">
-                        <label>Positions</label>
-                        <div style="display: flex; gap: 2rem; margin-bottom: 1rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                <input type="checkbox" id="posForward" onchange="updatePlayerPositions()"> Forward
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                <input type="checkbox" id="posDefense" onchange="updatePlayerPositions()"> Defense
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
-                                <input type="checkbox" id="posGoalie" onchange="updatePlayerPositions()"> Goalie
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="playerYearsExp">Years of Playing Experience</label>
-                            <input type="number" id="playerYearsExp" min="0" max="100" placeholder="e.g., 5">
-                        </div>
-                        <div class="form-group">
-                            <label for="playerBirthYearProfile">Birth Year</label>
-                            <input type="number" id="playerBirthYearProfile" min="1980" max="2030" placeholder="e.g., 2008">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Current Teams</label>
-                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
-                            <thead>
-                                <tr style="background: var(--secondary); color: white;">
-                                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border);">Organization</th>
-                                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border);">Age & Level (e.g., 12UAA)</th>
-                                    <th style="padding: 0.75rem; text-align: center; border: 1px solid var(--border); width: 80px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="playerTeamsTable">
-                            </tbody>
-                        </table>
-                        <button type="button" onclick="addPlayerTeamRow()" style="background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Add Team</button>
-                    </div>
-
-                    <button type="submit" class="save-btn">Update Player Profile</button>
-                </form>
-            </div>
-
-            <!-- Coach Profile Section -->
-            <div class="card" id="coachProfileSection" style="display: none;">
-                <h2>My Coach Profile</h2>
-                <div class="message" id="coachProfileMessage"></div>
-                <form id="coachProfileForm" onsubmit="handleCoachProfileUpdate(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="coachYearsExp">Years of Coaching Experience</label>
-                            <input type="number" id="coachYearsExp" min="0" max="100" placeholder="e.g., 10">
-                        </div>
-                        <div class="form-group">
-                            <label for="coachUSAHockeyLevel">USA Hockey Certification Level</label>
-                            <input type="number" id="coachUSAHockeyLevel" min="1" max="5" placeholder="e.g., 3">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Coaching Teams</label>
-                        <div id="coachTeamsList" style="margin-bottom: 1rem;"></div>
-                        <button type="button" onclick="addCoachTeamField()" style="background: var(--secondary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600;">+ Add Team</button>
-                    </div>
-
-                    <button type="submit" class="save-btn">Update Coach Profile</button>
-                </form>
-            </div>
-
-            <!-- Parents: My Players Section -->
-            <div class="card" id="playersSection" style="display: none;">
-                <h2>My Players</h2>
-                <div id="playersList" style="margin-top: 2rem;"></div>
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                    <h3>Add Player</h3>
-                    <form id="addPlayerForm" onsubmit="handleAddPlayer(event)">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="playerName">Child's Name</label>
-                                <input type="text" id="playerName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="playerBirthYear">Birth Year</label>
-                                <input type="number" id="playerBirthYear" min="1990" max="2030" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="playerTeam">Current Team</label>
-                            <input type="text" id="playerTeam" placeholder="e.g., Local Juniors">
-                        </div>
-                        <button type="submit" class="save-btn">Add Player</button>
-                    </form>
                 </div>
-            </div>
-
-            <!-- Coach/Parent: Teams Section -->
-            <div class="card" id="teamsSection" style="display: none;">
-                <h2>Team Organizations</h2>
-                <div id="teamsList" style="margin-top: 2rem;"></div>
-                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                    <h3>Add Team</h3>
-                    <form id="addTeamForm" onsubmit="handleAddTeam(event)">
-                        <div class="form-group">
-                            <label for="teamName">Team Name</label>
-                            <input type="text" id="teamName" placeholder="e.g., Local Hockey League" required>
+                <div class="d-card-body">
+                    <div class="pf-row">
+                        <div class="pf-group"><label>First Name</label><input type="text" id="pf_first" disabled></div>
+                        <div class="pf-group"><label>Last Name</label><input type="text" id="pf_last" disabled></div>
+                    </div>
+                    <div class="pf-row">
+                        <div class="pf-group"><label>Hometown</label><input type="text" id="pf_hometown" placeholder="e.g. Nashville, TN" disabled></div>
+                        <div class="pf-group"><label>Birth Year</label><input type="text" id="pf_birthYear" placeholder="e.g. 2008" disabled></div>
+                    </div>
+                    <div class="pf-group">
+                        <label>Position(s)</label>
+                        <div class="pill-wrap" id="posPills">
+                            <span class="pill disabled" onclick="pfPill(this)">Goalie</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Defense</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Center</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Left Wing</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Right Wing</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Forward</span>
                         </div>
-                        <button type="submit" class="save-btn">Add Team</button>
-                    </form>
+                    </div>
+                    <div class="pf-row">
+                        <div class="pf-group"><label>Shoots / Catches</label><select id="pf_shoots" disabled><option value="">Select...</option><option>Left</option><option>Right</option></select></div>
+                        <div class="pf-group"><label>Current Team</label><input type="text" id="pf_team" placeholder="e.g. Franklin Admirals 16U" disabled></div>
+                    </div>
+                    <div class="pf-group"><label>About Me</label><textarea id="pf_bio" placeholder="Your hockey story, what drives you, your goals..." disabled></textarea></div>
+                    <div class="pf-group">
+                        <label>Big Picture Goals</label>
+                        <div class="pill-wrap" id="goalPills">
+                            <span class="pill disabled" onclick="pfPill(this)">Make top team at tryouts</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Play high school varsity</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Play junior hockey</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Play college hockey</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Keep the starting job</span>
+                            <span class="pill disabled" onclick="pfPill(this)">Improve and have fun</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Saved Content Tab -->
-        <div id="saved" class="tab-content">
-            <div class="card">
-                <h2>Saved Blog Posts</h2>
-                <div id="savedPostsList" class="saved-posts-grid"></div>
+        <!-- TEAMS -->
+        <div class="d-section" id="s-teams">
+            <h2 class="section-title">Teams & History</h2>
+            <p class="section-sub">Every team you've played for — your hockey resume.</p>
+            <div style="margin-bottom:1rem;"><button class="add-btn" onclick="openM('team')">＋ Add Team</button></div>
+            <div id="teamsList"><div class="empty-state"><span>🏒</span><p>No teams added yet.</p></div></div>
+        </div>
+
+        <!-- HIGHLIGHTS -->
+        <div class="d-section" id="s-highlights">
+            <h2 class="section-title">Highlights</h2>
+            <p class="section-sub">Your best moments — goals, saves, big plays.</p>
+            <div style="margin-bottom:1rem;"><button class="add-btn" onclick="openM('highlight')">＋ Add Highlight</button></div>
+            <div id="hlList"><div class="empty-state"><span>🎥</span><p>No highlights yet. Add your first video.</p></div></div>
+        </div>
+
+        <!-- DEVELOPMENT -->
+        <div class="d-section" id="s-development">
+            <h2 class="section-title">Development</h2>
+            <p class="section-sub">Track what you're working on and how you're improving.</p>
+            <div class="d-card">
+                <div class="d-card-head"><h3>📈 Currently Working On</h3><button class="add-btn add-btn-sm" onclick="openM('working')">＋ Add</button></div>
+                <div class="d-card-body" id="workingList"><div class="empty-state"><span>📈</span><p>Add skills and focus areas.</p></div></div>
+            </div>
+            <div class="d-card">
+                <div class="d-card-head"><h3>🏕️ Camps & Clinics</h3><button class="add-btn add-btn-sm" onclick="openM('camp')">＋ Add</button></div>
+                <div class="d-card-body" id="campsList"><div class="empty-state"><span>🏕️</span><p>No camps added yet.</p></div></div>
+            </div>
+            <div class="d-card">
+                <div class="d-card-head"><h3>📝 Notes & Reflections</h3><button class="add-btn add-btn-sm" onclick="openM('note')">＋ Add Note</button></div>
+                <div class="d-card-body" id="notesList"><div class="empty-state"><span>📝</span><p>No notes yet.</p></div></div>
             </div>
         </div>
 
-        <!-- Inbox Tab -->
-        <div id="inbox" class="tab-content">
-            <div class="card compose-message">
-                <h2>Send Message to Coach</h2>
-                <div class="message" id="messageMessage"></div>
-                <form id="messageForm" onsubmit="handleSendMessage(event)">
-                    <div class="form-group">
-                        <label for="messageSubject">Subject</label>
-                        <input type="text" id="messageSubject" placeholder="e.g., Question about drills" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="messageContent">Message</label>
-                        <textarea id="messageContent" placeholder="Type your message..." rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="save-btn">Send Message</button>
-                </form>
-            </div>
+        <!-- VAULT -->
+        <div class="d-section" id="s-vault">
+            <h2 class="section-title">The Vault</h2>
+            <p class="section-sub">Exclusive content from Coach Berry.</p>
+            <div id="vaultContent"><div class="empty-state"><span>🔐</span><p>Loading...</p></div></div>
+        </div>
 
-            <div class="card">
-                <h2>📧 My Messages</h2>
-                <div id="inboxList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
-            </div>
+        <!-- GOALIE TOOL -->
+        <div class="d-section" id="s-goalie">
+            <h2 class="section-title">3D Goalie Tool</h2>
+            <p class="section-sub">Track your development with Coach Berry's goalie system.</p>
+            <div id="goalieContent"></div>
+        </div>
 
-            <div class="card">
-                <button onclick="toggleArchivedMessages()" style="width: 100%; background: none; border: none; padding: 0; cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between;">
-                    <h2 style="margin: 0; color: var(--primary-dark); font-size: 1.5rem;">📁 Archived Messages</h2>
-                    <span id="archivedToggleIcon" style="font-size: 1.5rem; color: var(--text-light); transition: transform 0.3s ease;">▼</span>
-                </button>
-                <div id="archivedMessagesContainer" style="display: none; margin-top: 1rem;">
-                    <div id="archivedMessagesList" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+        <!-- SETTINGS -->
+        <div class="d-section" id="s-settings">
+            <h2 class="section-title">Account Settings</h2>
+            <p class="section-sub">Manage your login and account details.</p>
+            <div class="d-card">
+                <div class="d-card-head"><h3>Change Password</h3></div>
+                <div class="d-card-body">
+                    <div class="pf-group"><label>Current Password</label><input type="password" id="s_curPw" placeholder="Current password"></div>
+                    <div class="pf-group"><label>New Password</label><input type="password" id="s_newPw" placeholder="At least 6 characters"></div>
+                    <div class="pf-group"><label>Confirm New Password</label><input type="password" id="s_confPw" placeholder="Repeat new password"></div>
+                    <div id="pwMsg" style="display:none;padding:0.7rem;border-radius:6px;margin-bottom:0.8rem;font-size:0.85rem;font-weight:600;"></div>
+                    <button class="add-btn" onclick="changePw()">Update Password</button>
                 </div>
             </div>
         </div>
 
-        <!-- Message Thread Modal -->
-        <div id="threadModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; padding: 1rem;">
-            <div style="background: var(--white); border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative;">
-                <button onclick="closeThreadModal()" style="position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-light); z-index: 10;">×</button>
-                
-                <div style="padding: 2rem; overflow-y: auto; flex: 1;">
-                    <h2 id="threadSubject" style="margin-top: 0; color: var(--primary-dark); padding-right: 2rem;"></h2>
-                    <div id="threadMessages" style="margin: 2rem 0;"></div>
-                    
-                    <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border);">
-                        <label style="display: block; font-weight: 600; margin-bottom: 1rem;">Reply to Coach</label>
-                        <textarea id="threadReplyContent" placeholder="Type your reply..." rows="4" style="width: 100%; padding: 1rem; border: 2px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box;"></textarea>
-                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                            <button onclick="sendThreadReply()" style="background: var(--accent); color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">Send Reply</button>
-                            <button id="archiveThreadBtn" onclick="archiveThreadMessage()" style="background: #FFC107; color: #000; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">📁 Archive</button>
-                            <button id="unarchiveThreadBtn" onclick="unarchiveThreadMessage()" style="background: #FFC107; color: #000; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer; display: none;">↩️ Unarchive</button>
-                            <button onclick="deleteThreadMessage()" style="background: #dc3545; color: white; border: none; padding: 0.8rem 2rem; border-radius: 6px; font-weight: 600; cursor: pointer;">🗑️ Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h3 id="mTitle">Add</h3>
+            <button class="modal-close-btn" onclick="closeM()">✕</button>
+        </div>
+        <div class="modal-body" id="mBody"></div>
+        <div class="modal-foot">
+            <button class="m-cancel" onclick="closeM()">Cancel</button>
+            <button class="m-save" onclick="saveM()">Save</button>
         </div>
     </div>
+</div>
 
-    <!-- Module script for Firebase logic -->
-    <script type="module" src="/member-dashboard/script.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-    <!-- Non-module script for onclick handlers -->
-    <script src="/member-dashboard/handlers.js"></script>
+const firebaseConfig = {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let user = null, member = null, modalType = null;
+let pfEditing = false;
+let goalieId = null;
+let netZoneSel = null, rinkZoneSel = null, saveRating = 0;
+
+const ROLES = {
+    'member': { label:'Member', cls:'role-member' },
+    '3d-goalie': { label:'3D Goalie', cls:'role-3d-goalie' },
+    '3d-player': { label:'3D Player', cls:'role-3d-player' },
+    '3d-hockey': { label:'3D Hockey', cls:'role-3d-hockey' }
+};
+
+const ZONES = ['TL','TM','TR','ML','MM','MR','LL','LM','LR'];
+
+onAuthStateChanged(auth, async u => {
+    if (!u) { window.location.href = '/member-login/'; return; }
+    if (!u.emailVerified) { window.location.href = '/member-login/?unverified=1'; return; }
+    user = u;
+    await initMember();
+});
+
+async function initMember() {
+    let snap = await getDoc(doc(db, 'members', user.uid));
+    if (!snap.exists()) {
+        await setDoc(doc(db, 'members', user.uid), {
+            firstName:'', lastName:'', email:user.email,
+            roles:['member'], emailVerified:true,
+            createdAt:Date.now(), updatedAt:Date.now()
+        });
+        snap = await getDoc(doc(db, 'members', user.uid));
+    }
+    member = snap.data();
+    renderSidebar();
+    await loadAll();
+    checkGoalieAccess();
+    loadVault();
+}
+
+function renderSidebar() {
+    const init = ((member.firstName||'?')[0]+(member.lastName||'?')[0]).toUpperCase();
+    document.getElementById('pAvatar').textContent = init;
+    document.getElementById('pName').textContent = (member.firstName+' '+member.lastName).trim() || 'Member';
+    document.getElementById('pEmail').textContent = member.email||'';
+    document.getElementById('welcomeMsg').textContent = `Welcome back, ${member.firstName||''}!`;
+    const roles = member.roles||['member'];
+    document.getElementById('pRoles').innerHTML = roles.map(r => {
+        const info = ROLES[r]||{label:r,cls:'role-member'};
+        return `<span class="role-badge ${info.cls}">${info.label}</span>`;
+    }).join('');
+}
+
+async function loadAll() {
+    const [tS,hS,wS,cS,nS] = await Promise.all([
+        getDocs(collection(db,'members',user.uid,'teams')),
+        getDocs(collection(db,'members',user.uid,'highlights')),
+        getDocs(collection(db,'members',user.uid,'workingOn')),
+        getDocs(collection(db,'members',user.uid,'camps')),
+        getDocs(collection(db,'members',user.uid,'notes'))
+    ]);
+    const teams=[],hl=[],working=[],camps=[],notes=[];
+    tS.forEach(d=>teams.push({id:d.id,...d.data()}));
+    hS.forEach(d=>hl.push({id:d.id,...d.data()}));
+    wS.forEach(d=>working.push({id:d.id,...d.data()}));
+    cS.forEach(d=>camps.push({id:d.id,...d.data()}));
+    nS.forEach(d=>notes.push({id:d.id,...d.data()}));
+    [teams,hl,working,camps,notes].forEach(a=>a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)));
+
+    renderProfile();
+    renderTeams(teams);
+    renderHL(hl);
+    renderWorking(working);
+    renderCamps(camps);
+    renderNotes(notes);
+    renderOverview(teams,hl,working);
+}
+
+function renderProfile() {
+    const d = member;
+    const fields = {pf_first:'firstName',pf_last:'lastName',pf_hometown:'hometown',pf_birthYear:'birthYear',pf_team:'currentTeam',pf_bio:'bio'};
+    Object.entries(fields).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.value=d[key]||''; });
+    document.getElementById('pf_shoots').value = d.shoots||'';
+    const pos = d.positions||[];
+    document.querySelectorAll('#posPills .pill').forEach(p => p.classList.toggle('selected', pos.includes(p.textContent)));
+    const goals = d.hockeyGoals||[];
+    document.querySelectorAll('#goalPills .pill').forEach(p => p.classList.toggle('selected', goals.includes(p.textContent)));
+}
+
+function renderTeams(teams) {
+    const el = document.getElementById('teamsList');
+    if (!teams.length) { el.innerHTML='<div class="empty-state"><span>🏒</span><p>No teams added yet.</p></div>'; return; }
+    el.innerHTML = teams.map(t=>`<div class="entry-card">
+        <div class="entry-head"><div><p class="entry-title">${esc(t.name)}</p><p class="entry-meta">${esc(t.season||'')}${t.level?' · '+esc(t.level):''}${t.role?' · '+esc(t.role):''}</p></div>
+        <button class="del-btn" onclick="delEntry('teams','${t.id}')">✕</button></div>
+        ${t.coach?`<p class="entry-body">Coach: ${esc(t.coach)}</p>`:''}
+        ${t.stats?`<p class="entry-body">${esc(t.stats)}</p>`:''}
+        ${t.notes?`<p class="entry-body">${esc(t.notes)}</p>`:''}
+    </div>`).join('');
+}
+
+function renderHL(hl) {
+    const el = document.getElementById('hlList');
+    if (!hl.length) { el.innerHTML='<div class="empty-state"><span>🎥</span><p>No highlights yet.</p></div>'; return; }
+    el.innerHTML = hl.map(h=>`<div class="highlight-row">
+        <div><p class="hl-title">${esc(h.title)}</p><p class="hl-meta">${esc(h.date||'')}${h.type?' · '+esc(h.type):''}</p>${h.description?`<p class="hl-meta">${esc(h.description)}</p>`:''}</div>
+        <div style="display:flex;gap:0.6rem;align-items:center;flex-shrink:0;">${h.url?`<a href="${esc(h.url)}" target="_blank" class="watch-link">▶ Watch</a>`:''}<button class="del-btn" onclick="delEntry('highlights','${h.id}')">✕</button></div>
+    </div>`).join('');
+    document.getElementById('ovHighlights').innerHTML = hl.slice(0,3).map(h=>`<div class="highlight-row">
+        <div><p class="hl-title">${esc(h.title)}</p><p class="hl-meta">${esc(h.date||'')}</p></div>
+        ${h.url?`<a href="${esc(h.url)}" target="_blank" class="watch-link">▶ Watch</a>`:''}
+    </div>`).join('') || '<div class="empty-state"><span>🎥</span><p>No highlights yet.</p></div>';
+}
+
+function renderWorking(working) {
+    const el = document.getElementById('workingList');
+    if (!working.length) { el.innerHTML='<div class="empty-state"><span>📈</span><p>Add things you\'re working on.</p></div>'; return; }
+    el.innerHTML = working.map(w=>`<div class="working-row"><div class="w-dot"></div><div class="w-text">${esc(w.text)}</div><button class="del-btn" onclick="delEntry('workingOn','${w.id}')">✕</button></div>`).join('');
+    document.getElementById('ovWorking').innerHTML = el.innerHTML;
+}
+
+function renderCamps(camps) {
+    const el = document.getElementById('campsList');
+    if (!camps.length) { el.innerHTML='<div class="empty-state"><span>🏕️</span><p>No camps added yet.</p></div>'; return; }
+    el.innerHTML = camps.map(c=>`<div class="entry-card">
+        <div class="entry-head"><div><p class="entry-title">${esc(c.name)}</p><p class="entry-meta">${esc(c.year||'')}${c.location?' · '+esc(c.location):''}</p></div>
+        <button class="del-btn" onclick="delEntry('camps','${c.id}')">✕</button></div>
+        ${c.notes?`<p class="entry-body">${esc(c.notes)}</p>`:''}
+    </div>`).join('');
+}
+
+function renderNotes(notes) {
+    const el = document.getElementById('notesList');
+    if (!notes.length) { el.innerHTML='<div class="empty-state"><span>📝</span><p>No notes yet.</p></div>'; return; }
+    el.innerHTML = notes.map(n=>`<div class="entry-card">
+        <div class="entry-head"><div><p class="entry-title">${esc(n.title||'Note')}</p><p class="entry-meta">${n.createdAt?new Date(n.createdAt).toLocaleDateString():''}${n.type?' · '+esc(n.type):''}</p></div>
+        <button class="del-btn" onclick="delEntry('notes','${n.id}')">✕</button></div>
+        <p class="entry-body">${esc(n.content)}</p>
+    </div>`).join('');
+}
+
+function renderOverview(teams,hl,working) {
+    document.getElementById('ovStats').innerHTML = `
+        <div class="stat-box"><span class="stat-num">${teams.length}</span><span class="stat-label">Teams</span></div>
+        <div class="stat-box"><span class="stat-num">${hl.length}</span><span class="stat-label">Highlights</span></div>
+        <div class="stat-box"><span class="stat-num">${working.length}</span><span class="stat-label">Focus Areas</span></div>`;
+}
+
+async function checkGoalieAccess() {
+    const roles = member.roles||[];
+    if (!roles.includes('3d-goalie') && !roles.includes('3d-hockey')) return;
+    document.getElementById('goalieNav').style.display = 'flex';
+    const snap = await getDocs(collection(db,'goalies'));
+    snap.forEach(d => { if (d.data().email === user.email) goalieId = d.id; });
+    if (goalieId) renderGoalieTool();
+    else document.getElementById('goalieContent').innerHTML = '<div class="locked-box"><div style="font-size:2.5rem;">🥅</div><h3>3D Goalie Tool</h3><p>Your goalie profile is being set up. Contact Coach Berry if you have questions.</p></div>';
+}
+
+async function renderGoalieTool() {
+    const [gS,sS,iS] = await Promise.all([
+        getDocs(collection(db,'goalies',goalieId,'goalLog')),
+        getDocs(collection(db,'goalies',goalieId,'saveLog')),
+        getDocs(collection(db,'goalies',goalieId,'intakes'))
+    ]);
+    const goals=[],saves=[],intakes=[];
+    gS.forEach(d=>goals.push({id:d.id,...d.data()}));
+    sS.forEach(d=>saves.push({id:d.id,...d.data()}));
+    iS.forEach(d=>intakes.push({id:d.id,...d.data()}));
+    [goals,saves].forEach(a=>a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)));
+    intakes.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0));
+
+    document.getElementById('goalieContent').innerHTML = `
+        <div class="g-tabs">
+            <button class="g-tab active" onclick="gTab('logGoal',this)">🥅 Log a Goal</button>
+            <button class="g-tab" onclick="gTab('logSave',this)">🧤 Log a Save</button>
+            <button class="g-tab" onclick="gTab('intake',this)">📋 Pre-Session</button>
+            <button class="g-tab" onclick="gTab('history',this)">📊 History</button>
+        </div>
+
+        <div class="g-sub active" id="gs-logGoal">
+            <div class="d-card"><div class="d-card-head"><h3>🥅 Log a Goal Allowed</h3></div><div class="d-card-body">
+                <div class="toast" id="goalToast">Goal logged!</div>
+                <div class="pf-group">
+                    <label>Net Zone — where did it go in? (select one)</label>
+                    <div class="net-grid">${ZONES.map(z=>`<div class="net-cell" data-zone="${z}" onclick="selZone('${z}')">${z==='MM'?'5H':z}</div>`).join('')}</div>
+                </div>
+                <div class="pf-row">
+                    <div class="pf-group"><label>Shot Type</label><select id="gl_shot"><option value="">Select...</option><option>Wrist shot</option><option>Slap shot</option><option>Snap shot</option><option>Backhand</option><option>Tip-in</option><option>Deflection</option><option>Rebound</option><option>Cross-ice</option><option>Wraparound</option></select></div>
+                    <div class="pf-group"><label>Situation</label><select id="gl_sit"><option value="">Select...</option><option>Even strength</option><option>Power play against</option><option>Shorthanded</option><option>Breakaway</option><option>2-on-1</option><option>3-on-2</option></select></div>
+                </div>
+                <div class="pf-group"><label>Shot Origin</label>
+                    <div class="rink-grid">
+                        <div class="rink-zone" onclick="selRink(this)">Left Point</div>
+                        <div class="rink-zone" onclick="selRink(this)">High Slot</div>
+                        <div class="rink-zone" onclick="selRink(this)">Right Point</div>
+                        <div class="rink-zone" onclick="selRink(this)">Left Wing</div>
+                        <div class="rink-zone" onclick="selRink(this)">Slot</div>
+                        <div class="rink-zone" onclick="selRink(this)">Right Wing</div>
+                    </div>
+                </div>
+                <div class="pf-row">
+                    <div class="pf-group"><label>Traffic in front?</label><select id="gl_traffic"><option value="">Select...</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+                    <div class="pf-group"><label>Game Context</label><input type="text" id="gl_ctx" placeholder="e.g. vs Nashville, 2nd period"></div>
+                </div>
+                <div class="pf-group"><label>Add Video of This Goal</label><input type="url" id="gl_vid" placeholder="YouTube, Hudl, etc."></div>
+                <div class="pf-group"><label>Goalie's Perspective — what did you see?</label><textarea id="gl_persp" placeholder="Describe what you saw leading up to the goal — the play, the shooter, what you tracked..."></textarea></div>
+                <div class="pf-group"><label>Self-Analysis — what would you do differently?</label><textarea id="gl_anal" placeholder="What could you have done better? What will you change next time?"></textarea></div>
+                <div class="pf-group"><label>Anything else?</label><textarea id="gl_other" placeholder="Any other context or notes about this goal..."></textarea></div>
+                <button class="sub-btn" onclick="submitGoal()">Log Goal</button>
+            </div></div>
+        </div>
+
+        <div class="g-sub" id="gs-logSave">
+            <div class="d-card"><div class="d-card-head"><h3>🧤 Log a Save</h3></div><div class="d-card-body">
+                <div class="toast" id="saveToast">Save logged!</div>
+                <div class="pf-row">
+                    <div class="pf-group"><label>Save Type</label><select id="sv_type"><option value="">Select...</option><option>Blocker</option><option>Glove</option><option>Pad</option><option>Stick</option><option>Desperation</option><option>Rebound control</option></select></div>
+                    <div class="pf-group"><label>Difficulty (1-5)</label><div style="display:flex;gap:0.3rem;margin-top:0.3rem;" id="saveStars">${[1,2,3,4,5].map(i=>`<span class="star" onclick="setStar(${i})">★</span>`).join('')}</div></div>
+                </div>
+                <div class="pf-group"><label>Video Link</label><input type="url" id="sv_vid" placeholder="YouTube, Hudl, etc."></div>
+                <div class="pf-group"><label>Description</label><textarea id="sv_desc" placeholder="Describe the save..."></textarea></div>
+                <div class="pf-group"><label>Tags</label><div class="pill-wrap">
+                    ${['Breakaway stop','Cross-ice redirect','Post integration','Screened shot','2-on-1 stop','Tip-in stop'].map(t=>`<span class="pill" onclick="this.classList.toggle('selected')">${t}</span>`).join('')}
+                </div></div>
+                <button class="sub-btn" onclick="submitSave()">Log Save</button>
+            </div></div>
+        </div>
+
+        <div class="g-sub" id="gs-intake">
+            <div class="d-card"><div class="d-card-head"><h3>📋 Pre-Session Intake</h3></div><div class="d-card-body">
+                <div class="toast" id="intakeToast">Submitted to Coach Berry!</div>
+                <div class="pf-group"><label>What do you want to work on today?</label><textarea id="in_goals" placeholder="What's on your mind going into this session?"></textarea></div>
+                <div class="pf-group"><label>Skills to focus on</label><div class="pill-wrap" id="skillPills">
+                    ${['Butterfly technique','Butterfly slides','Post integration / VH','T-push / shuffle','Tracking puck','Positioning / angles','Crease movement','Glove saves','Blocker saves','Stick / poke check','Rebound control','Breakaways / 1-on-1','Screened shots','Tip-ins / deflections','Puck handling','Communication with D','Mental game / focus','Recovery after goals','General conditioning'].map(s=>`<span class="pill" onclick="this.classList.toggle('selected')">${s}</span>`).join('')}
+                </div></div>
+                <div class="pf-group"><label>Where are you struggling?</label><textarea id="in_str" placeholder="Be honest — what's been giving you trouble?"></textarea></div>
+                <div class="pf-group"><label>Confidence level right now</label><div class="pill-wrap" id="confPills">
+                    ${['Low','Inconsistent','Average','Good','High'].map(c=>`<span class="pill" onclick="selConf(this)">${c}</span>`).join('')}
+                </div></div>
+                <div class="pf-group"><label>Recent games or injury notes</label><textarea id="in_rec" placeholder="How have your recent games gone? Anything physical to note?"></textarea></div>
+                <div class="pf-group"><label>Anything else for Coach Berry?</label><textarea id="in_other" placeholder="Questions, requests, things on your mind..."></textarea></div>
+                <button class="sub-btn" onclick="submitIntake()">Submit to Coach</button>
+            </div></div>
+        </div>
+
+        <div class="g-sub" id="gs-history">
+            <div class="d-card"><div class="d-card-head"><h3>📊 My Goalie History</h3></div><div class="d-card-body">
+                <div class="stat-grid" style="margin-bottom:1.2rem;">
+                    <div class="stat-box"><span class="stat-num">${goals.length}</span><span class="stat-label">Goals Logged</span></div>
+                    <div class="stat-box"><span class="stat-num">${saves.length}</span><span class="stat-label">Saves Logged</span></div>
+                    <div class="stat-box"><span class="stat-num">${intakes.length}</span><span class="stat-label">Intake Forms</span></div>
+                </div>
+                ${goals.length ? `<h4 style="font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:0.8rem;">Recent Goal Entries</h4>`+
+                    goals.slice(0,5).map(g=>`<div class="entry-card">
+                        <div class="entry-head"><div><p class="entry-title">Zone: ${esc(g.netZone||'—')} ${g.shotType?' · '+esc(g.shotType):''}</p>
+                        <p class="entry-meta">${esc(g.situation||'')}${g.createdAt?' · '+new Date(g.createdAt).toLocaleDateString():''}</p></div></div>
+                        ${g.perspective?`<p class="entry-body" style="border-left:3px solid #e0e0e0;padding-left:0.6rem;">${esc(g.perspective)}</p>`:''}
+                        ${g.coachNote?`<p class="entry-body" style="border-left:3px solid #FF2400;padding-left:0.6rem;"><strong>Coach:</strong> ${esc(g.coachNote)}</p>`:''}
+                    </div>`).join('') : '<div class="empty-state"><span>🥅</span><p>No goals logged yet.</p></div>'}
+            </div></div>
+        </div>`;
+
+    window.selZone = z => { netZoneSel=z; document.querySelectorAll('.net-cell').forEach(c=>c.classList.toggle('selected',c.dataset.zone===z)); };
+    window.selRink = el => { document.querySelectorAll('.rink-zone').forEach(z=>z.classList.remove('selected')); el.classList.add('selected'); rinkZoneSel=el.textContent; };
+    window.setStar = v => { saveRating=v; document.querySelectorAll('#saveStars .star').forEach((s,i)=>s.classList.toggle('active',i<v)); };
+    window.selConf = el => { document.querySelectorAll('#confPills .pill').forEach(p=>p.classList.remove('selected')); el.classList.add('selected'); };
+    window.gTab = (tab,btn) => {
+        document.querySelectorAll('.g-tab').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.g-sub').forEach(s=>s.classList.remove('active'));
+        document.getElementById(`gs-${tab}`).classList.add('active');
+        btn.classList.add('active');
+    };
+
+    window.submitGoal = async () => {
+        const data = {
+            netZone: netZoneSel,
+            shotType: document.getElementById('gl_shot').value,
+            situation: document.getElementById('gl_sit').value,
+            shotOrigin: rinkZoneSel,
+            traffic: document.getElementById('gl_traffic').value === 'yes',
+            context: document.getElementById('gl_ctx').value.trim(),
+            videoUrl: document.getElementById('gl_vid').value.trim(),
+            perspective: document.getElementById('gl_persp').value.trim(),
+            analysis: document.getElementById('gl_anal').value.trim(),
+            other: document.getElementById('gl_other').value.trim(),
+            createdAt: Date.now(), createdBy: 'goalie'
+        };
+        try {
+            await addDoc(collection(db,'goalies',goalieId,'goalLog'), data);
+            showToast('goalToast');
+            ['gl_shot','gl_sit','gl_traffic','gl_ctx','gl_vid','gl_persp','gl_anal','gl_other'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+            netZoneSel=null; rinkZoneSel=null;
+            document.querySelectorAll('.net-cell,.rink-zone').forEach(el=>el.classList.remove('selected'));
+        } catch(e) { alert('Error: '+e.message); }
+    };
+
+    window.submitSave = async () => {
+        const tags = [...document.querySelectorAll('#gs-logSave .pill.selected')].map(p=>p.textContent);
+        const data = {
+            saveType: document.getElementById('sv_type').value,
+            selfRating: saveRating,
+            videoUrl: document.getElementById('sv_vid').value.trim(),
+            description: document.getElementById('sv_desc').value.trim(),
+            tags, createdAt:Date.now(), createdBy:'goalie'
+        };
+        try {
+            await addDoc(collection(db,'goalies',goalieId,'saveLog'), data);
+            showToast('saveToast');
+            document.getElementById('sv_type').value=''; document.getElementById('sv_vid').value=''; document.getElementById('sv_desc').value='';
+            document.querySelectorAll('#gs-logSave .pill').forEach(p=>p.classList.remove('selected'));
+            saveRating=0; document.querySelectorAll('#saveStars .star').forEach(s=>s.classList.remove('active'));
+        } catch(e) { alert('Error: '+e.message); }
+    };
+
+    window.submitIntake = async () => {
+        const skills = [...document.querySelectorAll('#skillPills .pill.selected')].map(p=>p.textContent);
+        const conf = document.querySelector('#confPills .pill.selected');
+        const data = {
+            sessionGoals: document.getElementById('in_goals').value.trim(),
+            skills, confidence: conf?.textContent||'',
+            struggling: document.getElementById('in_str').value.trim(),
+            recentGames: document.getElementById('in_rec').value.trim(),
+            other: document.getElementById('in_other').value.trim(),
+            submittedAt: Date.now(), submittedBy:'goalie'
+        };
+        try {
+            await addDoc(collection(db,'goalies',goalieId,'intakes'), data);
+            showToast('intakeToast');
+            ['in_goals','in_str','in_rec','in_other'].forEach(id=>document.getElementById(id).value='');
+            document.querySelectorAll('#skillPills .pill,#confPills .pill').forEach(p=>p.classList.remove('selected'));
+        } catch(e) { alert('Error: '+e.message); }
+    };
+}
+
+function showToast(id) {
+    const t=document.getElementById(id); if(!t) return;
+    t.style.display='block'; setTimeout(()=>t.style.display='none',3000);
+}
+
+async function loadVault() {
+    const [catS,pageS] = await Promise.all([
+        getDocs(collection(db,'vault_categories')),
+        getDocs(collection(db,'vault_pages'))
+    ]);
+    const cats=[],pages=[];
+    catS.forEach(d=>cats.push({id:d.id,...d.data()}));
+    pageS.forEach(d=>pages.push({id:d.id,...d.data()}));
+    const roles = member.roles||[];
+    const topLevel = cats.filter(c=>!c.parentId);
+    const container = document.getElementById('vaultContent');
+    if (!topLevel.length) { container.innerHTML='<div class="empty-state"><span>🔐</span><p>Vault content coming soon.</p></div>'; return; }
+    container.innerHTML = '<div class="vault-cat-grid">'+topLevel.map(cat=>{
+        const locked = cat.visibility==='members' && !roles.includes('member');
+        return `<div class="vault-cat-card" onclick="window.open('/vault/','_blank')">
+            <div style="font-size:1.5rem;margin-bottom:0.5rem;">${cat.icon||'📂'}</div>
+            <div class="vault-cat-name">${esc(cat.name)}</div>
+            <div class="vault-cat-desc">${esc(cat.description||'')}${locked?' 🔒':''}</div>
+        </div>`;
+    }).join('')+'</div>';
+}
+
+// Profile edit
+window.togglePfEdit = function() {
+    pfEditing = !pfEditing;
+    ['pf_first','pf_last','pf_hometown','pf_birthYear','pf_shoots','pf_team','pf_bio'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!pfEditing;});
+    document.querySelectorAll('#posPills .pill,#goalPills .pill').forEach(p=>p.classList.toggle('disabled',!pfEditing));
+    document.getElementById('pfEditBtn').style.display = pfEditing?'none':'inline-block';
+    document.getElementById('pfSaveBtn').style.display = pfEditing?'inline-block':'none';
+};
+
+window.pfPill = function(el) { if (!pfEditing) return; el.classList.toggle('selected'); };
+
+window.saveProfile = async function() {
+    const positions = [...document.querySelectorAll('#posPills .pill.selected')].map(p=>p.textContent);
+    const hockeyGoals = [...document.querySelectorAll('#goalPills .pill.selected')].map(p=>p.textContent);
+    const val = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+    const data = {
+        firstName:val('pf_first'), lastName:val('pf_last'),
+        hometown:val('pf_hometown'), birthYear:val('pf_birthYear'),
+        shoots:val('pf_shoots'), currentTeam:val('pf_team'),
+        bio:val('pf_bio'), positions, hockeyGoals, updatedAt:Date.now()
+    };
+    try {
+        await updateDoc(doc(db,'members',user.uid), data);
+        member = {...member,...data};
+        renderSidebar();
+        togglePfEdit();
+    } catch(e) { alert('Error: '+e.message); }
+};
+
+// Modals
+const MODAL_DEFS = {
+    team: { title:'Add Team', html:`
+        <div class="pf-row"><div class="pf-group"><label>Team Name *</label><input type="text" id="m0" placeholder="e.g. Franklin Admirals 16U"></div><div class="pf-group"><label>Season</label><input type="text" id="m1" placeholder="e.g. 2023-24"></div></div>
+        <div class="pf-row"><div class="pf-group"><label>Level</label><input type="text" id="m2" placeholder="e.g. AAA, HS Varsity"></div><div class="pf-group"><label>Your Role</label><select id="m3"><option value="">Select...</option><option>Goalie</option><option>Defense</option><option>Forward</option><option>Captain</option><option>Alternate Captain</option></select></div></div>
+        <div class="pf-group"><label>Head Coach</label><input type="text" id="m4" placeholder="Coach name"></div>
+        <div class="pf-group"><label>Season Stats</label><input type="text" id="m5" placeholder="e.g. 2.14 GAA, .921 SV% or GP/G/A/PTS"></div>
+        <div class="pf-group"><label>Notes / Highlights</label><textarea id="m6" placeholder="Accomplishments, memories..."></textarea></div>` },
+    highlight: { title:'Add Highlight', html:`
+        <div class="pf-group"><label>Title *</label><input type="text" id="m0" placeholder="e.g. Game-winning save vs Preds 16U"></div>
+        <div class="pf-row"><div class="pf-group"><label>Type</label><select id="m1"><option value="">Select...</option><option>Goal</option><option>Save</option><option>Big Play</option><option>Game Highlights</option><option>Practice Clip</option><option>Skills Video</option></select></div><div class="pf-group"><label>Date</label><input type="text" id="m2" placeholder="e.g. March 2024"></div></div>
+        <div class="pf-group"><label>Video URL *</label><input type="url" id="m3" placeholder="YouTube, Hudl, Instagram..."></div>
+        <div class="pf-group"><label>Description</label><textarea id="m4" placeholder="What happened? Why does this clip stand out?"></textarea></div>` },
+    working: { title:'Add Focus Area', html:`
+        <div class="pf-group"><label>What are you working on? *</label><input type="text" id="m0" placeholder="e.g. Post integration, T-push speed, Angle play..."></div>
+        <div class="pf-group"><label>Notes</label><textarea id="m1" placeholder="More detail, drills, goals for this focus area..."></textarea></div>` },
+    camp: { title:'Add Camp / Clinic', html:`
+        <div class="pf-group"><label>Name *</label><input type="text" id="m0" placeholder="e.g. Nashville Predators Development Camp"></div>
+        <div class="pf-row"><div class="pf-group"><label>Year</label><input type="text" id="m1" placeholder="e.g. Summer 2023"></div><div class="pf-group"><label>Location</label><input type="text" id="m2" placeholder="e.g. Nashville, TN"></div></div>
+        <div class="pf-group"><label>Notes</label><textarea id="m3" placeholder="What you worked on, takeaways..."></textarea></div>` },
+    note: { title:'Add Note', html:`
+        <div class="pf-group"><label>Title</label><input type="text" id="m0" placeholder="e.g. Practice feedback, Game reflection..."></div>
+        <div class="pf-group"><label>Type</label><select id="m1"><option value="">Select...</option><option>Practice Note</option><option>Game Reflection</option><option>Coaching Feedback</option><option>Goal Setting</option><option>Other</option></select></div>
+        <div class="pf-group"><label>Note *</label><textarea id="m2" placeholder="Write your note here..."></textarea></div>` }
+};
+
+window.openM = function(type) {
+    modalType = type;
+    const def = MODAL_DEFS[type];
+    document.getElementById('mTitle').textContent = def.title;
+    document.getElementById('mBody').innerHTML = def.html;
+    document.getElementById('modalOverlay').classList.add('open');
+};
+
+window.closeM = function() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    modalType = null;
+};
+
+window.saveM = async function() {
+    const v = id => { const el=document.getElementById(id); return el?el.value.trim():''; };
+    let data = { createdAt:Date.now() };
+    let col = '';
+
+    if (modalType==='team') {
+        if (!v('m0')) { alert('Team name required.'); return; }
+        data = {...data, name:v('m0'), season:v('m1'), level:v('m2'), role:v('m3'), coach:v('m4'), stats:v('m5'), notes:v('m6')};
+        col = 'teams';
+    } else if (modalType==='highlight') {
+        if (!v('m0')||!v('m3')) { alert('Title and URL required.'); return; }
+        data = {...data, title:v('m0'), type:v('m1'), date:v('m2'), url:v('m3'), description:v('m4')};
+        col = 'highlights';
+    } else if (modalType==='working') {
+        if (!v('m0')) { alert('Please enter what you are working on.'); return; }
+        data = {...data, text:v('m0'), notes:v('m1')};
+        col = 'workingOn';
+    } else if (modalType==='camp') {
+        if (!v('m0')) { alert('Camp name required.'); return; }
+        data = {...data, name:v('m0'), year:v('m1'), location:v('m2'), notes:v('m3')};
+        col = 'camps';
+    } else if (modalType==='note') {
+        if (!v('m2')) { alert('Note content required.'); return; }
+        data = {...data, title:v('m0'), type:v('m1'), content:v('m2')};
+        col = 'notes';
+    }
+
+    try {
+        await addDoc(collection(db,'members',user.uid,col), data);
+        closeM();
+        await loadAll();
+    } catch(e) { alert('Error: '+e.message); }
+};
+
+window.delEntry = async function(col, id) {
+    if (!confirm('Delete this entry?')) return;
+    await deleteDoc(doc(db,'members',user.uid,col,id));
+    await loadAll();
+};
+
+// Section nav
+window.goTo = function(section, el) {
+    document.querySelectorAll('.d-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById(`s-${section}`).classList.add('active');
+    if (el) el.classList.add('active');
+};
+
+window.doLogout = async function() { await signOut(auth); window.location.href='/'; };
+
+window.changePw = async function() {
+    const cur = document.getElementById('s_curPw').value;
+    const nw = document.getElementById('s_newPw').value;
+    const cf = document.getElementById('s_confPw').value;
+    const msg = document.getElementById('pwMsg');
+    if (nw!==cf) { showPwMsg('Passwords do not match.',false); return; }
+    if (nw.length<6) { showPwMsg('Password must be at least 6 characters.',false); return; }
+    try {
+        const cred = EmailAuthProvider.credential(user.email, cur);
+        await reauthenticateWithCredential(user, cred);
+        await updatePassword(user, nw);
+        showPwMsg('Password updated!',true);
+        ['s_curPw','s_newPw','s_confPw'].forEach(id=>document.getElementById(id).value='');
+    } catch(e) {
+        showPwMsg(e.code==='auth/wrong-password'?'Current password is incorrect.':e.message,false);
+    }
+};
+
+function showPwMsg(text,ok) {
+    const el=document.getElementById('pwMsg');
+    el.textContent=text; el.style.background=ok?'#f0fdf4':'#ffebee'; el.style.color=ok?'#16a34a':'#c62828';
+    el.style.display='block'; setTimeout(()=>el.style.display='none',4000);
+}
+
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target===document.getElementById('modalOverlay')) closeM(); });
+
+function esc(s) { if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+</script>
 </body>
 </html>
