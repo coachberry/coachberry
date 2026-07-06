@@ -67,3 +67,9 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+.DS_Store
+.firebaserc
+firebase.json
+functions/
+cloud-functions/
+coach-berry-stat-tracker/
