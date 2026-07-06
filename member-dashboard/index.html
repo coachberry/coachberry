@@ -9,7 +9,7 @@
     <style>
         body { background:#f5f5f5; margin:0; font-family:system-ui,-apple-system,sans-serif; }
         .dash-wrap { display:grid; grid-template-columns:230px 1fr; min-height:100vh; max-width:1280px; margin:0 auto; padding:2rem 1.5rem; gap:2rem; align-items:start; }
-        .dash-sidebar { position:sticky; top:80px; }
+        .dash-sidebar { position:sticky; top:76px; }
         .profile-card { background:#000; border-radius:12px; padding:1.5rem; color:#fff; margin-bottom:1rem; text-align:center; }
         .profile-avatar { width:60px; height:60px; border-radius:50%; background:#FF2400; display:flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:800; margin:0 auto 0.8rem; color:#fff; }
         .profile-name { font-weight:800; font-size:0.95rem; margin:0 0 0.2rem; }
@@ -121,7 +121,28 @@
         .m-cancel { padding:0.55rem 1.1rem; background:#f8f9fa; border:1.5px solid #e0e0e0; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem; }
         .m-save { padding:0.55rem 1.2rem; background:#FF2400; color:#fff; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.85rem; }
         .m-save:hover { background:#FF3a1f; }
-        @media (max-width:800px) { .dash-wrap{grid-template-columns:1fr;} .dash-sidebar{position:static;} .pf-row{grid-template-columns:1fr;} }
+        @media (max-width:900px) {
+            .dash-wrap { grid-template-columns:1fr; padding:1rem; gap:1rem; }
+            .dash-sidebar { position:static; }
+            .pf-row { grid-template-columns:1fr; }
+            .dash-nav { display:flex; flex-wrap:nowrap; overflow-x:auto; border-radius:10px; }
+            .nav-section { display:none; }
+            .nav-item { flex-shrink:0; border-left:none; border-bottom:3px solid transparent; flex-direction:column; gap:0.2rem; padding:0.7rem 0.8rem; font-size:0.72rem; text-align:center; }
+            .nav-item.active { border-bottom-color:#FF2400; border-left:none; }
+            .nav-item .ni { font-size:1.3rem; }
+            .profile-card { display:flex; align-items:center; gap:1rem; text-align:left; padding:1rem 1.2rem; }
+            .profile-avatar { width:44px; height:44px; font-size:1rem; margin:0; flex-shrink:0; }
+            .profile-name { font-size:0.88rem; }
+            .profile-email { display:none; }
+            .logout-btn { margin-top:0.5rem; }
+            .stat-grid { grid-template-columns:repeat(3,1fr); }
+            .net-grid { grid-template-columns:repeat(3,60px); grid-template-rows:repeat(3,42px); }
+        }
+        @media (max-width:480px) {
+            .dash-wrap { padding:0.5rem; }
+            .d-card-body { padding:1rem; }
+            .pf-row { grid-template-columns:1fr; }
+        }
     </style>
 </head>
 <body>
