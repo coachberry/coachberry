@@ -357,14 +357,38 @@
 
     async function loadMembers() {
         try {
-            const membersQuery = query(collection(db, 'members'), orderBy('dateJoined', 'desc'));
-            const snapshot = await getDocs(membersQuery);
+            const [membersSnap, goaliesSnap] = await Promise.all([
+                getDocs(collection(db, 'members')),
+                getDocs(collection(db, 'goalies'))
+            ]);
             allMembersData = [];
+            const emailsSeen = new Set();
 
-            snapshot.forEach(doc => {
-                allMembersData.push({ id: doc.id, ...doc.data() });
+            membersSnap.forEach(d => {
+                const data = { id: d.id, ...d.data() };
+                data.dateJoined = data.dateJoined || data.createdAt || null;
+                if (data.email) emailsSeen.add(data.email);
+                allMembersData.push(data);
             });
 
+            goaliesSnap.forEach(d => {
+                const data = d.data();
+                if (data.email && !emailsSeen.has(data.email)) {
+                    allMembersData.push({
+                        id: d.id,
+                        firstName: data.firstName || '',
+                        lastName: data.lastName || '',
+                        email: data.email || '',
+                        phone: '',
+                        roles: ['member', '3d-goalie'],
+                        dateJoined: data.createdAt || null,
+                        source: 'goalies'
+                    });
+                    emailsSeen.add(data.email);
+                }
+            });
+
+            allMembersData.sort((a,b) => (b.dateJoined||0) - (a.dateJoined||0));
             updateMembersStats();
             displayMembersTable(allMembersData);
         } catch (error) {
