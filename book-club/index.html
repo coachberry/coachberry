@@ -302,7 +302,7 @@
 
     onAuthStateChanged(auth, user => {
         currentUser = user;
-        renderBooks();
+        if (allBooks.length) renderBooks(); else loadBooks();
     });
 
     async function loadBooks() {
@@ -392,7 +392,6 @@
         return d.innerHTML;
     }
 
-    loadBooks();
     </script>
 </body>
 </html>
