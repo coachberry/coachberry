@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard — Coach Berry</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css?v=3">
     <script src="/header.js"></script>
     <style>
         body { background:#f5f5f5; margin:0; font-family:system-ui,-apple-system,sans-serif; }
@@ -242,9 +242,11 @@
 
         <!-- TEAMS -->
         <div class="d-section" id="s-teams">
-            <h2 class="section-title">Teams & History</h2>
-            <p class="section-sub">Every team you've played for — your hockey resume.</p>
-            <div style="margin-bottom:1rem;"><button class="add-btn" onclick="openM('team')">＋ Add Team</button></div>
+            <h2 class="section-title" id="teamsTitle">Teams & History</h2>
+            <p class="section-sub" id="teamsSub">Every team you've played for — your hockey resume.</p>
+            <div style="margin-bottom:1rem;" id="teamsAddBtn">
+                <button class="add-btn" onclick="openM('team')">＋ Add Team</button>
+            </div>
             <div id="teamsList"><div class="empty-state"><span>🏒</span><p>No teams added yet.</p></div></div>
         </div>
 
@@ -258,11 +260,15 @@
 
         <!-- DEVELOPMENT -->
         <div class="d-section" id="s-development">
-            <h2 class="section-title">Development</h2>
-            <p class="section-sub">Track what you're working on and how you're improving.</p>
+            <h2 class="section-title" id="devTitle">Development</h2>
+            <p class="section-sub" id="devSub">Track what you're working on and how you're improving.</p>
             <div class="d-card">
-                <div class="d-card-head"><h3>📈 Currently Working On</h3><button class="add-btn add-btn-sm" onclick="openM('working')">＋ Add</button></div>
+                <div class="d-card-head"><h3 id="workingOnTitle">📈 Currently Working On</h3><button class="add-btn add-btn-sm" onclick="openM('working')">＋ Add</button></div>
                 <div class="d-card-body" id="workingList"><div class="empty-state"><span>📈</span><p>Add skills and focus areas.</p></div></div>
+            </div>
+            <div class="d-card" id="coachEventsCard" style="display:none;">
+                <div class="d-card-head"><h3>📋 Events & Clinics Coached</h3><button class="add-btn add-btn-sm" onclick="openM('event')">＋ Add</button></div>
+                <div class="d-card-body" id="eventsList"><div class="empty-state"><span>📋</span><p>No events added yet.</p></div></div>
             </div>
             <div class="d-card">
                 <div class="d-card-head"><h3>🏕️ Camps & Clinics</h3><button class="add-btn add-btn-sm" onclick="openM('camp')">＋ Add</button></div>
@@ -448,23 +454,49 @@ function renderSidebar() {
     if (isPlayer || isCoach) {
         document.querySelector('.role-player.role-coach') && (document.querySelector('.role-player.role-coach').style.display = 'flex');
     }
+
+    // Update section titles and content based on role
+    if (isCoach) {
+        const teamsTitle = document.getElementById('teamsTitle');
+        const teamsSub = document.getElementById('teamsSub');
+        const devTitle = document.getElementById('devTitle');
+        const devSub = document.getElementById('devSub');
+        const workingOnTitle = document.getElementById('workingOnTitle');
+        const coachEventsCard = document.getElementById('coachEventsCard');
+        if (teamsTitle) teamsTitle.textContent = 'Teams Coached';
+        if (teamsSub) teamsSub.textContent = 'Every team you have coached — your coaching resume.';
+        if (devTitle) devTitle.textContent = 'Coaching Portfolio';
+        if (devSub) devSub.textContent = 'Track what you are working on as a coach and your development activities.';
+        if (workingOnTitle) workingOnTitle.textContent = '📈 Current Focus Areas';
+        if (coachEventsCard) coachEventsCard.style.display = 'block';
+        // Update team modal for coach context
+        MODAL_DEFS.team = { title:'Add Team Coached', html:`
+            <div class="pf-row"><div class="pf-group"><label>Team Name *</label><input type="text" id="m0" placeholder="e.g. Franklin Admirals 16U"></div><div class="pf-group"><label>Season</label><input type="text" id="m1" placeholder="e.g. 2023-24"></div></div>
+            <div class="pf-row"><div class="pf-group"><label>Level</label><input type="text" id="m2" placeholder="e.g. AAA, HS Varsity"></div><div class="pf-group"><label>Your Role</label><select id="m3"><option value="">Select...</option><option>Head Coach</option><option>Assistant Coach</option><option>Goalie Coach</option><option>Skills Coach</option></select></div></div>
+            <div class="pf-group"><label>Location</label><input type="text" id="m4" placeholder="e.g. Nashville, TN"></div>
+            <div class="pf-group"><label>Record (optional)</label><input type="text" id="m5" placeholder="e.g. 28-12-4"></div>
+            <div class="pf-group"><label>Notes / Highlights</label><textarea id="m6" placeholder="Accomplishments, tournament results, player milestones..."></textarea></div>`
+        };
+    }
 }
 
 async function loadAll() {
-    const [tS,hS,wS,cS,nS] = await Promise.all([
+    const [tS,hS,wS,cS,nS,eS] = await Promise.all([
         getDocs(collection(db,'members',user.uid,'teams')),
         getDocs(collection(db,'members',user.uid,'highlights')),
         getDocs(collection(db,'members',user.uid,'workingOn')),
         getDocs(collection(db,'members',user.uid,'camps')),
-        getDocs(collection(db,'members',user.uid,'notes'))
+        getDocs(collection(db,'members',user.uid,'notes')),
+        getDocs(collection(db,'members',user.uid,'events'))
     ]);
-    const teams=[],hl=[],working=[],camps=[],notes=[];
+    const teams=[],hl=[],working=[],camps=[],notes=[],events=[];
     tS.forEach(d=>teams.push({id:d.id,...d.data()}));
     hS.forEach(d=>hl.push({id:d.id,...d.data()}));
     wS.forEach(d=>working.push({id:d.id,...d.data()}));
     cS.forEach(d=>camps.push({id:d.id,...d.data()}));
     nS.forEach(d=>notes.push({id:d.id,...d.data()}));
-    [teams,hl,working,camps,notes].forEach(a=>a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)));
+    eS.forEach(d=>events.push({id:d.id,...d.data()}));
+    [teams,hl,working,camps,notes,events].forEach(a=>a.sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)));
 
     renderProfile();
     renderTeams(teams);
@@ -472,6 +504,7 @@ async function loadAll() {
     renderWorking(working);
     renderCamps(camps);
     renderNotes(notes);
+    renderEvents(events);
     renderOverview(teams,hl,working);
 }
 
@@ -538,9 +571,24 @@ function renderNotes(notes) {
     </div>`).join('');
 }
 
+function renderEvents(events) {
+    const el = document.getElementById('eventsList');
+    if (!el) return;
+    if (!events.length) { el.innerHTML='<div class="empty-state"><span>📋</span><p>No events added yet.</p></div>'; return; }
+    el.innerHTML = events.map(e=>`<div class="entry-card">
+        <div class="entry-head"><div><p class="entry-title">${esc(e.name)}</p><p class="entry-meta">${esc(e.date||'')}${e.location?' · '+esc(e.location):''}${e.type?' · '+esc(e.type):''}</p></div>
+        <button class="del-btn" onclick="delEntry('events','${e.id}')">✕</button></div>
+        ${e.role?`<p class="entry-body" style="color:#6b7280;font-size:0.8rem;">Role: ${esc(e.role)}</p>`:''}
+        ${e.org?`<p class="entry-body" style="color:#6b7280;font-size:0.8rem;">Host: ${esc(e.org)}</p>`:''}
+        ${e.notes?`<p class="entry-body">${esc(e.notes)}</p>`:''}
+    </div>`).join('');
+}
+
 function renderOverview(teams,hl,working) {
+    const memberType = member.memberType || '';
+    const teamsLabel = memberType === 'coach' ? 'Teams Coached' : 'Teams';
     document.getElementById('ovStats').innerHTML = `
-        <div class="stat-box"><span class="stat-num">${teams.length}</span><span class="stat-label">Teams</span></div>
+        <div class="stat-box"><span class="stat-num">${teams.length}</span><span class="stat-label">${teamsLabel}</span></div>
         <div class="stat-box"><span class="stat-num">${hl.length}</span><span class="stat-label">Highlights</span></div>
         <div class="stat-box"><span class="stat-num">${working.length}</span><span class="stat-label">Focus Areas</span></div>`;
 }
@@ -807,6 +855,12 @@ const MODAL_DEFS = {
         <div class="pf-group"><label>Name *</label><input type="text" id="m0" placeholder="e.g. Nashville Predators Development Camp"></div>
         <div class="pf-row"><div class="pf-group"><label>Year</label><input type="text" id="m1" placeholder="e.g. Summer 2023"></div><div class="pf-group"><label>Location</label><input type="text" id="m2" placeholder="e.g. Nashville, TN"></div></div>
         <div class="pf-group"><label>Notes</label><textarea id="m3" placeholder="What you worked on, takeaways..."></textarea></div>` },
+    event: { title:'Add Event / Clinic', html:`
+        <div class="pf-group"><label>Event Name *</label><input type="text" id="m0" placeholder="e.g. Summer Power Skating Clinic"></div>
+        <div class="pf-row"><div class="pf-group"><label>Type</label><select id="m1"><option value="">Select...</option><option>Skills Camp</option><option>Goalie Camp</option><option>Power Skating Clinic</option><option>Shooting Clinic</option><option>Tournament</option><option>Development Camp</option><option>Showcase</option><option>Private Lessons</option><option>Group Sessions</option><option>Other</option></select></div><div class="pf-group"><label>Your Role</label><input type="text" id="m2" placeholder="e.g. Head Instructor, Goalie Coach"></div></div>
+        <div class="pf-row"><div class="pf-group"><label>Date / Season</label><input type="text" id="m3" placeholder="e.g. Summer 2023"></div><div class="pf-group"><label>Location</label><input type="text" id="m4" placeholder="e.g. Nashville, TN"></div></div>
+        <div class="pf-group"><label>Organization / Host</label><input type="text" id="m5" placeholder="e.g. Nashville Predators Foundation"></div>
+        <div class="pf-group"><label>Notes</label><textarea id="m6" placeholder="Describe the event, age groups, number of participants, highlights..."></textarea></div>` },
     note: { title:'Add Note', html:`
         <div class="pf-group"><label>Title</label><input type="text" id="m0" placeholder="e.g. Practice feedback, Game reflection..."></div>
         <div class="pf-group"><label>Type</label><select id="m1"><option value="">Select...</option><option>Practice Note</option><option>Game Reflection</option><option>Coaching Feedback</option><option>Goal Setting</option><option>Other</option></select></div>
@@ -843,6 +897,10 @@ window.saveM = async function() {
         if (!v('m0')) { alert('Please enter what you are working on.'); return; }
         data = {...data, text:v('m0'), notes:v('m1')};
         col = 'workingOn';
+    } else if (modalType==='event') {
+        if (!v('m0')) { alert('Event name required.'); return; }
+        data = {...data, name:v('m0'), type:v('m1'), role:v('m2'), date:v('m3'), location:v('m4'), org:v('m5'), notes:v('m6')};
+        col = 'events';
     } else if (modalType==='camp') {
         if (!v('m0')) { alert('Camp name required.'); return; }
         data = {...data, name:v('m0'), year:v('m1'), location:v('m2'), notes:v('m3')};

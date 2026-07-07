@@ -4,359 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Vault — Coach Berry</title>
-    <meta name="description" content="The Vault — Coach Berry's resource hub for players, parents, and coaches. Hockey development, mental game, physical training, and more.">
-    <link rel="stylesheet" href="/styles.css?v=2">
+    <meta name="description" content="The Vault — Coach Berry's resource hub for players, parents, and coaches. Development content, drills, mental game, and more.">
+    <link rel="stylesheet" href="/styles.css?v=3">
     <script src="/header.js"></script>
     <script src="/footer.js"></script>
     <style>
         .vault-hero {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 60%, #2d1a00 100%);
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 60%, #2d1a00 100%);
             color: white;
             padding: 5rem 2rem 4rem;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
+        .vault-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at center,rgba(255,36,0,0.15) 0%,transparent 70%); }
+        .vault-hero-content { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+        .vault-hero h1 { font-size:clamp(2.5rem,5vw,4rem); font-weight:900; letter-spacing:-1px; margin-bottom:0.5rem; }
+        .vault-hero h1 span { color:#FF2400; }
+        .vault-hero p { font-size:1.1rem; color:rgba(255,255,255,0.72); margin-bottom:2rem; line-height:1.6; }
+        .vault-hero-badges { display:flex; justify-content:center; gap:1rem; flex-wrap:wrap; }
+        .hero-badge { display:inline-flex; align-items:center; gap:0.4rem; padding:0.4rem 1rem; border-radius:20px; font-size:0.85rem; font-weight:600; }
+        .hero-badge-free { background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); }
+        .hero-badge-members { background:rgba(255,36,0,0.2); color:#ff6b50; border:1px solid rgba(255,36,0,0.3); }
 
-        .vault-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at center, rgba(255,36,0,0.15) 0%, transparent 70%);
-        }
+        .vault-layout { max-width:1200px; margin:0 auto; padding:3rem 2rem; display:grid; grid-template-columns:260px 1fr; gap:2.5rem; align-items:start; }
+        .vault-sidebar { position:sticky; top:80px; }
+        .vault-nav-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); overflow:hidden; }
+        .vault-nav-header { padding:1rem 1.2rem; background:#000; color:white; font-weight:700; font-size:0.85rem; letter-spacing:0.5px; text-transform:uppercase; }
+        .vault-nav-list { list-style:none; padding:0.5rem 0; }
+        .vault-nav-item a { display:flex; align-items:center; gap:0.6rem; padding:0.7rem 1.2rem; color:#374151; text-decoration:none; font-size:0.9rem; font-weight:500; transition:all 0.2s; border-left:3px solid transparent; }
+        .vault-nav-item a:hover { background:#f8f9fa; color:#FF2400; border-left-color:#FF2400; }
+        .vault-nav-item a.active { background:#fff5f5; color:#FF2400; border-left-color:#FF2400; font-weight:700; }
+        .vault-nav-sub { list-style:none; }
+        .vault-nav-sub a { padding-left:2.5rem; font-size:0.85rem; color:#6b7280; }
+        .lock-icon { font-size:0.75rem; color:#9333ea; margin-left:auto; }
 
-        .vault-hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+        .vault-member-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:1.2rem; margin-top:1.2rem; text-align:center; }
+        .vault-member-card h4 { font-size:0.9rem; margin-bottom:0.4rem; }
+        .vault-member-card p { font-size:0.8rem; color:#6b7280; margin-bottom:0.8rem; line-height:1.4; }
+        .vault-join-btn { display:block; padding:0.65rem 1rem; background:#FF2400; color:white; border-radius:6px; text-decoration:none; font-weight:700; font-size:0.85rem; transition:all 0.2s; }
+        .vault-join-btn:hover { background:#FF3a1f; transform:translateY(-1px); }
+        .vault-login-link { display:block; margin-top:0.5rem; font-size:0.78rem; color:#6b7280; text-decoration:none; }
+        .vault-login-link:hover { color:#FF2400; }
 
-        .vault-hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin-bottom: 0.5rem;
-        }
+        .vault-submit-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:1.2rem; margin-top:1.2rem; text-align:center; }
+        .vault-submit-btn { display:block; padding:0.6rem 1rem; background:#000; color:white; border-radius:6px; text-decoration:none; font-weight:700; font-size:0.85rem; transition:all 0.2s; cursor:pointer; border:none; width:100%; }
+        .vault-submit-btn:hover { background:#FF2400; }
 
-        .vault-hero h1 span { color: var(--accent); }
+        .vault-main { min-height:60vh; }
 
-        .vault-hero p {
-            font-size: 1.15rem;
-            color: rgba(255,255,255,0.75);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
+        .vault-home-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
+        .vault-cat-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:1.8rem; cursor:pointer; transition:all 0.2s; border-top:4px solid transparent; text-decoration:none; display:block; color:#1a1a1a; }
+        .vault-cat-card:hover { box-shadow:0 8px 24px rgba(0,0,0,0.12); transform:translateY(-3px); border-top-color:#FF2400; }
+        .vault-cat-icon { font-size:2.2rem; margin-bottom:0.8rem; display:block; }
+        .vault-cat-name { font-size:1.1rem; font-weight:800; margin-bottom:0.3rem; }
+        .vault-cat-desc { font-size:0.88rem; color:#6b7280; line-height:1.5; margin-bottom:0.8rem; }
+        .vault-cat-meta { font-size:0.78rem; color:#6b7280; display:flex; gap:0.8rem; }
 
-        .vault-hero-badges {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .vault-page-content { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); padding:2.5rem; }
+        .vault-page-content h1 { font-size:2rem; margin-bottom:0.5rem; }
+        .page-meta { font-size:0.85rem; color:#6b7280; margin-bottom:2rem; display:flex; gap:1rem; flex-wrap:wrap; }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
+        .vault-breadcrumb { font-size:0.85rem; color:#6b7280; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+        .vault-breadcrumb a { color:#FF2400; text-decoration:none; }
+        .vault-breadcrumb a:hover { text-decoration:underline; }
 
-        .hero-badge-free { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .hero-badge-members { background: rgba(255,36,0,0.2); color: #ff6b50; border: 1px solid rgba(255,36,0,0.3); }
+        .vault-locked { text-align:center; padding:4rem 2rem; background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); }
+        .vault-locked-icon { font-size:3rem; margin-bottom:1rem; display:block; }
+        .vault-locked h3 { font-size:1.4rem; margin-bottom:0.5rem; }
+        .vault-locked p { color:#6b7280; margin-bottom:1.5rem; max-width:400px; margin-left:auto; margin-right:auto; }
+        .vault-locked-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+        .vault-locked-btns a { padding:0.75rem 1.8rem; border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; }
+        .btn-join { background:#FF2400; color:white; }
+        .btn-join:hover { background:#FF3a1f; transform:translateY(-1px); }
+        .btn-login { background:#f8f9fa; color:#1a1a1a; border:1.5px solid #e0e0e0; }
+        .btn-login:hover { background:#e0e0e0; }
 
-        .vault-layout {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 2.5rem;
-            align-items: start;
-        }
+        .article-body { line-height:1.8; font-size:0.97rem; color:#1a1a1a; }
+        .article-body h2 { font-size:1.4rem; margin:2rem 0 0.8rem; color:#000; }
+        .article-body h3 { font-size:1.1rem; margin:1.5rem 0 0.6rem; }
+        .article-body p { margin-bottom:1rem; }
+        .article-body ul, .article-body ol { margin:0.8rem 0 1rem 1.5rem; }
+        .article-body li { margin-bottom:0.4rem; }
+        .article-body hr { border:none; border-top:1px solid #e0e0e0; margin:2rem 0; }
 
-        .vault-sidebar {
-            position: sticky;
-            top: 80px;
-        }
+        .page-list-item { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; border:1.5px solid #e0e0e0; border-radius:8px; margin-bottom:0.6rem; cursor:pointer; background:#fafafa; transition:all 0.2s; }
+        .page-list-item:hover { box-shadow:0 2px 8px rgba(0,0,0,0.08); border-color:#FF2400; }
+        .page-list-title { font-weight:700; font-size:0.95rem; }
+        .page-list-excerpt { font-size:0.82rem; color:#6b7280; margin-top:0.2rem; }
 
-        .vault-nav-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            overflow: hidden;
-        }
+        .submit-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:flex-start; padding:2rem 1rem; overflow-y:auto; }
+        .submit-modal.open { display:flex; }
+        .submit-box { background:white; border-radius:12px; width:100%; max-width:580px; box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+        .submit-head { display:flex; justify-content:space-between; align-items:center; padding:1.3rem 1.8rem; border-bottom:1px solid #e0e0e0; }
+        .submit-head h3 { margin:0; font-size:1.1rem; }
+        .submit-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:#6b7280; }
+        .submit-close:hover { color:#FF2400; }
+        .submit-body { padding:1.8rem; }
+        .sf-group { margin-bottom:1.1rem; }
+        .sf-group label { display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.35rem; }
+        .sf-group input, .sf-group textarea { width:100%; padding:0.7rem 0.9rem; border:1.5px solid #e0e0e0; border-radius:6px; font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; }
+        .sf-group input:focus, .sf-group textarea:focus { outline:none; border-color:#FF2400; }
+        .sf-group textarea { resize:vertical; min-height:120px; }
+        .submit-footer { display:flex; justify-content:flex-end; gap:0.8rem; padding:1.2rem 1.8rem; border-top:1px solid #e0e0e0; }
+        .sf-cancel { padding:0.65rem 1.4rem; background:#f8f9fa; border:1.5px solid #e0e0e0; border-radius:6px; font-weight:600; cursor:pointer; }
+        .sf-submit { padding:0.65rem 1.6rem; background:#FF2400; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; }
+        .sf-submit:hover { background:#FF3a1f; }
+        .sf-msg { padding:0.8rem; border-radius:6px; margin-bottom:1rem; font-size:0.88rem; font-weight:600; display:none; }
 
-        .vault-nav-header {
-            padding: 1rem 1.2rem;
-            background: var(--primary-dark);
-            color: white;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
+        .loading-vault { text-align:center; padding:4rem; color:#6b7280; font-size:1rem; }
 
-        .vault-nav-list { list-style: none; padding: 0.5rem 0; }
-
-        .vault-nav-item a {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.7rem 1.2rem;
-            color: var(--text);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-
-        .vault-nav-item a:hover {
-            background: var(--light-gray);
-            color: var(--accent);
-            border-left-color: var(--accent);
-        }
-
-        .vault-nav-item a.active {
-            background: #fff5f5;
-            color: var(--accent);
-            border-left-color: var(--accent);
-            font-weight: 700;
-        }
-
-        .vault-nav-sub { list-style: none; }
-
-        .vault-nav-sub a {
-            padding-left: 2.5rem;
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        .lock-icon { font-size: 0.75rem; color: #9333ea; margin-left: auto; }
-
-        .vault-submit-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 1.2rem;
-            margin-top: 1.2rem;
-            text-align: center;
-        }
-
-        .vault-submit-card h4 { font-size: 0.9rem; margin-bottom: 0.4rem; }
-        .vault-submit-card p { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.8rem; line-height: 1.4; }
-
-        .vault-submit-btn {
-            display: block;
-            padding: 0.6rem 1rem;
-            background: var(--accent);
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .vault-submit-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
-
-        .vault-main { min-height: 60vh; }
-
-        .vault-home-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .vault-cat-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 1.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-top: 4px solid transparent;
-            text-decoration: none;
-            display: block;
-            color: var(--text);
-        }
-
-        .vault-cat-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            transform: translateY(-3px);
-            border-top-color: var(--accent);
-        }
-
-        .vault-cat-icon { font-size: 2.2rem; margin-bottom: 0.8rem; display: block; }
-        .vault-cat-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem; }
-        .vault-cat-desc { font-size: 0.88rem; color: var(--text-light); line-height: 1.5; margin-bottom: 0.8rem; }
-        .vault-cat-meta { font-size: 0.78rem; color: var(--text-light); display: flex; gap: 0.8rem; }
-
-        .vault-page-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-            padding: 2.5rem;
-        }
-
-        .vault-page-content h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-        .vault-page-content .page-meta { font-size: 0.85rem; color: var(--text-light); margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-
-        .vault-breadcrumb {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            flex-wrap: wrap;
-        }
-
-        .vault-breadcrumb a { color: var(--accent); text-decoration: none; }
-        .vault-breadcrumb a:hover { text-decoration: underline; }
-
-        .vault-locked {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-        }
-
-        .vault-locked-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
-        .vault-locked h3 { font-size: 1.4rem; margin-bottom: 0.5rem; }
-        .vault-locked p { color: var(--text-light); margin-bottom: 1.5rem; max-width: 400px; margin-left: auto; margin-right: auto; }
-
-        .vault-locked-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-        .vault-locked-btns a {
-            padding: 0.75rem 1.8rem;
-            border-radius: 8px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-
-        .btn-join { background: var(--accent); color: white; }
-        .btn-join:hover { background: var(--accent-light); transform: translateY(-1px); }
-        .btn-login { background: var(--light-gray); color: var(--text); border: 1.5px solid var(--border); }
-        .btn-login:hover { background: var(--border); }
-
-        .book-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.8rem;
-            margin-top: 1.5rem;
-        }
-
-        .book-card {
-            background: var(--light-gray);
-            border-radius: 10px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .book-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
-
-        .book-cover {
-            width: 100%;
-            max-width: 120px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            margin: 0 auto;
-            display: block;
-        }
-
-        .book-cover-placeholder {
-            width: 100%;
-            max-width: 120px;
-            height: 160px;
-            background: var(--border);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            margin: 0 auto;
-        }
-
-        .book-tag {
-            display: inline-block;
-            padding: 0.2rem 0.6rem;
-            background: rgba(255,36,0,0.1);
-            color: var(--accent);
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .book-title { font-weight: 800; font-size: 0.95rem; line-height: 1.3; }
-        .book-author { font-size: 0.82rem; color: var(--text-light); }
-        .book-why { font-size: 0.85rem; color: var(--text); line-height: 1.5; }
-
-        .book-buy-btn {
-            display: block;
-            padding: 0.6rem 1rem;
-            background: var(--accent);
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.82rem;
-            text-align: center;
-            transition: all 0.2s;
-            margin-top: auto;
-        }
-
-        .book-buy-btn:hover { background: var(--accent-light); }
-
-        .book-filter-bar {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .book-filter-btn {
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            border: 1.5px solid var(--border);
-            background: white;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .book-filter-btn:hover, .book-filter-btn.active {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-
-        .article-body { line-height: 1.8; font-size: 0.97rem; color: var(--text); }
-        .article-body h2 { font-size: 1.4rem; margin: 2rem 0 0.8rem; color: var(--primary-dark); }
-        .article-body h3 { font-size: 1.1rem; margin: 1.5rem 0 0.6rem; }
-        .article-body p { margin-bottom: 1rem; }
-        .article-body ul, .article-body ol { margin: 0.8rem 0 1rem 1.5rem; }
-        .article-body li { margin-bottom: 0.4rem; }
-        .article-body hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
-
-        .loading-vault { text-align: center; padding: 4rem; color: var(--text-light); font-size: 1rem; }
-
-        @media (max-width: 900px) {
-            .vault-layout { grid-template-columns: 1fr; }
-            .vault-sidebar { position: static; }
-        }
-
-        @media (max-width: 600px) {
-            .vault-hero { padding: 3rem 1.5rem 2.5rem; }
-            .vault-layout { padding: 1.5rem 1rem; }
-            .vault-page-content { padding: 1.5rem; }
-        }
+        @media (max-width:900px) { .vault-layout { grid-template-columns:1fr; } .vault-sidebar { position:static; } }
+        @media (max-width:600px) { .vault-hero { padding:3rem 1.5rem 2.5rem; } .vault-layout { padding:1.5rem 1rem; } .vault-page-content { padding:1.5rem; } }
     </style>
 </head>
 <body>
@@ -376,13 +135,21 @@
             <div class="vault-nav-card">
                 <div class="vault-nav-header">📂 Browse The Vault</div>
                 <ul class="vault-nav-list" id="vaultNav">
-                    <li class="vault-nav-item"><a href="#" onclick="showVaultHome()" class="active">🏠 All Categories</a></li>
+                    <li class="vault-nav-item"><a href="#" onclick="showVaultHome();return false;" id="navHome" class="active">🏠 All Categories</a></li>
                 </ul>
             </div>
+
+            <div class="vault-member-card" id="memberPrompt" style="display:none;">
+                <h4>🔒 Unlock More Content</h4>
+                <p>Join for free to access members-only resources in The Vault.</p>
+                <a href="/member-signup/" class="vault-join-btn">Join for Free</a>
+                <a href="/member-login/" class="vault-login-link">Already a member? Sign in</a>
+            </div>
+
             <div class="vault-submit-card">
-                <h4>💡 Have something to share?</h4>
-                <p>Coaches and players can submit content for review to be featured in The Vault.</p>
-                <a href="#" onclick="showSubmitForm()" class="vault-submit-btn">Submit Content</a>
+                <h4 style="font-size:0.9rem;margin-bottom:0.4rem;">💡 Have something to share?</h4>
+                <p style="font-size:0.8rem;color:#6b7280;margin-bottom:0.8rem;line-height:1.4;">Coaches and players can submit content for review.</p>
+                <button class="vault-submit-btn" onclick="document.getElementById('submitModal').classList.add('open')">Submit Content</button>
             </div>
         </aside>
 
@@ -391,40 +158,25 @@
         </main>
     </div>
 
-    <!-- Submit Form Modal -->
-    <div style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; justify-content:center; align-items:flex-start; padding:2rem 1rem; overflow-y:auto;" id="submitModal">
-        <div style="background:white; border-radius:12px; width:100%; max-width:580px; box-shadow:0 20px 60px rgba(0,0,0,0.25);">
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:1.3rem 1.8rem; border-bottom:1px solid var(--border);">
-                <h3 style="margin:0;">💡 Submit Content to The Vault</h3>
-                <button onclick="document.getElementById('submitModal').style.display='none'" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-light);">✕</button>
+    <!-- Submit Modal -->
+    <div class="submit-modal" id="submitModal">
+        <div class="submit-box">
+            <div class="submit-head">
+                <h3>💡 Submit Content to The Vault</h3>
+                <button class="submit-close" onclick="document.getElementById('submitModal').classList.remove('open')">✕</button>
             </div>
-            <div style="padding:1.8rem;">
-                <p style="color:var(--text-light); font-size:0.9rem; margin-bottom:1.5rem;">Share your knowledge with the Coach Berry community. All submissions are reviewed before publishing.</p>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">Your Name *</label>
-                    <input type="text" id="sub_name" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:6px; font-size:0.92rem; font-family:inherit;" placeholder="First and last name">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">Email *</label>
-                    <input type="email" id="sub_email" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:6px; font-size:0.92rem; font-family:inherit;" placeholder="your@email.com">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">Content Title *</label>
-                    <input type="text" id="sub_title" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:6px; font-size:0.92rem; font-family:inherit;" placeholder="e.g. 5 Drills for Better Edge Work">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">Suggested Category</label>
-                    <input type="text" id="sub_category" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:6px; font-size:0.92rem; font-family:inherit;" placeholder="e.g. Drills, Mental Game, Nutrition...">
-                </div>
-                <div style="margin-bottom:1rem;">
-                    <label style="display:block; font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">Content *</label>
-                    <textarea id="sub_content" style="width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:6px; font-size:0.92rem; font-family:inherit; min-height:150px; resize:vertical;" placeholder="Write your content here..."></textarea>
-                </div>
-                <div id="sub_msg" style="display:none; padding:0.8rem; border-radius:6px; margin-bottom:1rem;"></div>
+            <div class="submit-body">
+                <p style="color:#6b7280;font-size:0.88rem;margin-bottom:1.2rem;">Share your knowledge with the Coach Berry community. All submissions are reviewed before publishing.</p>
+                <div class="sf-msg" id="sfMsg"></div>
+                <div class="sf-group"><label>Your Name *</label><input type="text" id="sf_name" placeholder="First and last name"></div>
+                <div class="sf-group"><label>Email *</label><input type="email" id="sf_email" placeholder="your@email.com"></div>
+                <div class="sf-group"><label>Content Title *</label><input type="text" id="sf_title" placeholder="e.g. 5 Drills for Better Edge Work"></div>
+                <div class="sf-group"><label>Suggested Category</label><input type="text" id="sf_cat" placeholder="e.g. Drills, Mental Game, Nutrition..."></div>
+                <div class="sf-group"><label>Content *</label><textarea id="sf_content" placeholder="Write your content here..."></textarea></div>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:0.8rem; padding:1.2rem 1.8rem; border-top:1px solid var(--border);">
-                <button onclick="document.getElementById('submitModal').style.display='none'" style="padding:0.65rem 1.4rem; background:var(--light-gray); border:1.5px solid var(--border); border-radius:6px; font-weight:600; cursor:pointer;">Cancel</button>
-                <button onclick="submitVaultContent()" style="padding:0.65rem 1.6rem; background:var(--accent); color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer;">Submit for Review</button>
+            <div class="submit-footer">
+                <button class="sf-cancel" onclick="document.getElementById('submitModal').classList.remove('open')">Cancel</button>
+                <button class="sf-submit" onclick="submitContent()">Submit for Review</button>
             </div>
         </div>
     </div>
@@ -432,7 +184,7 @@
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
@@ -450,30 +202,27 @@
     let currentUser = null;
     let allCategories = [];
     let allPages = [];
-    let allBooks = [];
-    let activeFilter = 'All';
 
     onAuthStateChanged(auth, user => {
         currentUser = user;
+        if (!user) document.getElementById('memberPrompt').style.display = 'block';
+        else document.getElementById('memberPrompt').style.display = 'none';
+        renderCurrentView();
     });
 
-    async function loadVault() {
-        const [catSnap, pageSnap, bookSnap] = await Promise.all([
-            getDocs(collection(db, 'vault_categories')),
-            getDocs(collection(db, 'vault_pages')),
-            getDocs(collection(db, 'vault_books'))
-        ]);
+    let currentCatId = null;
+    let currentPageId = null;
 
+    async function loadVault() {
+        const [catSnap, pageSnap] = await Promise.all([
+            getDocs(collection(db, 'vault_categories')),
+            getDocs(collection(db, 'vault_pages'))
+        ]);
         allCategories = [];
         catSnap.forEach(d => allCategories.push({ id: d.id, ...d.data() }));
         allCategories.sort((a,b) => (a.order||0) - (b.order||0));
-
         allPages = [];
         pageSnap.forEach(d => allPages.push({ id: d.id, ...d.data() }));
-
-        allBooks = [];
-        bookSnap.forEach(d => allBooks.push({ id: d.id, ...d.data() }));
-
         buildNav();
         showVaultHome();
     }
@@ -481,16 +230,16 @@
     function buildNav() {
         const nav = document.getElementById('vaultNav');
         const topLevel = allCategories.filter(c => !c.parentId);
-        let html = '<li class="vault-nav-item"><a href="#" onclick="showVaultHome()" id="navHome">🏠 All Categories</a></li>';
+        let html = '<li class="vault-nav-item"><a href="#" onclick="showVaultHome();return false;" id="navHome" class="active">🏠 All Categories</a></li>';
         topLevel.forEach(cat => {
             const subs = allCategories.filter(c => c.parentId === cat.id);
             const lock = cat.visibility === 'members' ? '<span class="lock-icon">🔒</span>' : '';
-            html += `<li class="vault-nav-item"><a href="#" onclick="showCategory('${cat.id}')" id="nav_${cat.id}">${cat.icon||'📂'} ${esc(cat.name)}${lock}</a>`;
+            html += `<li class="vault-nav-item"><a href="#" onclick="showCategory('${cat.id}');return false;" id="nav_${cat.id}">${cat.icon||'📂'} ${esc(cat.name)}${lock}</a>`;
             if (subs.length) {
                 html += `<ul class="vault-nav-sub">`;
                 subs.forEach(sub => {
                     const subLock = sub.visibility === 'members' ? '<span class="lock-icon">🔒</span>' : '';
-                    html += `<li class="vault-nav-item"><a href="#" onclick="showCategory('${sub.id}')" id="nav_${sub.id}">${sub.icon||'📁'} ${esc(sub.name)}${subLock}</a></li>`;
+                    html += `<li class="vault-nav-item"><a href="#" onclick="showCategory('${sub.id}');return false;" id="nav_${sub.id}">${sub.icon||'📁'} ${esc(sub.name)}${subLock}</a></li>`;
                 });
                 html += `</ul>`;
             }
@@ -499,7 +248,14 @@
         nav.innerHTML = html;
     }
 
+    function renderCurrentView() {
+        if (currentPageId) showPage(currentPageId);
+        else if (currentCatId) showCategory(currentCatId);
+        else showVaultHome();
+    }
+
     window.showVaultHome = function() {
+        currentCatId = null; currentPageId = null;
         setActiveNav('navHome');
         const topLevel = allCategories.filter(c => !c.parentId);
         if (!topLevel.length) {
@@ -511,16 +267,12 @@
             const subs = allCategories.filter(c => c.parentId === cat.id);
             const pages = allPages.filter(p => p.categoryId === cat.id);
             const total = subs.length + pages.length;
-            const lock = cat.visibility === 'members' ? '🔒 Members Only' : '🌐 Free';
-            html += `
-            <a class="vault-cat-card" href="#" onclick="showCategory('${cat.id}'); return false;">
+            const lockLabel = cat.visibility === 'members' ? '🔒 Members Only' : '🌐 Free';
+            html += `<a class="vault-cat-card" href="#" onclick="showCategory('${cat.id}');return false;">
                 <span class="vault-cat-icon">${cat.icon||'📂'}</span>
                 <div class="vault-cat-name">${esc(cat.name)}</div>
                 <div class="vault-cat-desc">${esc(cat.description||'')}</div>
-                <div class="vault-cat-meta">
-                    <span>${total} item${total!==1?'s':''}</span>
-                    <span>${lock}</span>
-                </div>
+                <div class="vault-cat-meta"><span>${total} item${total!==1?'s':''}</span><span>${lockLabel}</span></div>
             </a>`;
         });
         html += '</div>';
@@ -528,34 +280,31 @@
     };
 
     window.showCategory = function(catId) {
+        currentCatId = catId; currentPageId = null;
         const cat = allCategories.find(c => c.id === catId);
         if (!cat) return;
         setActiveNav(`nav_${catId}`);
 
-        if (cat.visibility === 'members' && !currentUser) {
-            showLockedState(cat.name);
-            return;
-        }
+        if (cat.visibility === 'members' && !currentUser) { showLocked(cat.name); return; }
 
         const parent = cat.parentId ? allCategories.find(c => c.id === cat.parentId) : null;
         const subs = allCategories.filter(c => c.parentId === catId);
         const pages = allPages.filter(p => p.categoryId === catId);
 
-        let breadcrumb = `<div class="vault-breadcrumb"><a href="#" onclick="showVaultHome()">The Vault</a> ›`;
-        if (parent) breadcrumb += ` <a href="#" onclick="showCategory('${parent.id}')">${esc(parent.name)}</a> ›`;
+        let breadcrumb = `<div class="vault-breadcrumb"><a href="#" onclick="showVaultHome();return false;">The Vault</a> ›`;
+        if (parent) breadcrumb += ` <a href="#" onclick="showCategory('${parent.id}');return false;">${esc(parent.name)}</a> ›`;
         breadcrumb += ` ${esc(cat.name)}</div>`;
 
-        let html = breadcrumb;
-        html += `<div class="vault-page-content">`;
+        let html = breadcrumb + `<div class="vault-page-content">`;
         html += `<h1>${cat.icon||''} ${esc(cat.name)}</h1>`;
-        if (cat.description) html += `<p style="color:var(--text-light); margin-bottom:2rem;">${esc(cat.description)}</p>`;
+        if (cat.description) html += `<p style="color:#6b7280;margin-bottom:2rem;">${esc(cat.description)}</p>`;
 
         if (subs.length) {
-            html += `<div style="margin-bottom:2rem;"><h3 style="margin-bottom:1rem; color:var(--text-light); font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">Sub-Categories</h3><div class="vault-home-grid">`;
+            html += `<div style="margin-bottom:2rem;"><h3 style="margin-bottom:1rem;color:#6b7280;font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;">Sub-Categories</h3><div class="vault-home-grid">`;
             subs.forEach(sub => {
                 const subPages = allPages.filter(p => p.categoryId === sub.id);
                 const lock = sub.visibility === 'members' ? '🔒' : '🌐';
-                html += `<a class="vault-cat-card" href="#" onclick="showCategory('${sub.id}'); return false;" style="padding:1.2rem;">
+                html += `<a class="vault-cat-card" href="#" onclick="showCategory('${sub.id}');return false;" style="padding:1.2rem;">
                     <span class="vault-cat-icon" style="font-size:1.5rem;">${sub.icon||'📁'}</span>
                     <div class="vault-cat-name" style="font-size:0.95rem;">${esc(sub.name)}</div>
                     <div class="vault-cat-meta"><span>${subPages.length} page${subPages.length!==1?'s':''}</span><span>${lock}</span></div>
@@ -565,52 +314,41 @@
         }
 
         if (pages.length) {
-            html += `<div><h3 style="margin-bottom:1rem; color:var(--text-light); font-size:0.85rem; text-transform:uppercase; letter-spacing:1px;">Pages</h3>`;
+            html += `<div><h3 style="margin-bottom:1rem;color:#6b7280;font-size:0.82rem;text-transform:uppercase;letter-spacing:1px;">Pages</h3>`;
             pages.forEach(page => {
-                const typeIcon = { article:'📄', booklist:'📚', links:'🔗', video:'🎥' }[page.type] || '📄';
-                const lock = page.visibility === 'members' ? '<span style="font-size:0.78rem; color:#9333ea; font-weight:600;">🔒 Members Only</span>' : '<span style="font-size:0.78rem; color:#16a34a; font-weight:600;">🌐 Free</span>';
-                html += `<div onclick="showPage('${page.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; border:1.5px solid var(--border); border-radius:8px; margin-bottom:0.6rem; cursor:pointer; background:#fafafa; transition:all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+                const typeIcon = {article:'📄',links:'🔗',video:'🎥'}[page.type]||'📄';
+                const lock = page.visibility === 'members'
+                    ? '<span style="font-size:0.78rem;color:#9333ea;font-weight:600;">🔒 Members Only</span>'
+                    : '<span style="font-size:0.78rem;color:#16a34a;font-weight:600;">🌐 Free</span>';
+                html += `<div class="page-list-item" onclick="showPage('${page.id}')">
                     <div>
-                        <div style="font-weight:700; font-size:0.95rem;">${typeIcon} ${esc(page.title)}</div>
-                        ${page.excerpt ? `<div style="font-size:0.82rem; color:var(--text-light); margin-top:0.2rem;">${esc(page.excerpt)}</div>` : ''}
+                        <div class="page-list-title">${typeIcon} ${esc(page.title)}</div>
+                        ${page.excerpt?`<div class="page-list-excerpt">${esc(page.excerpt)}</div>`:''}
                     </div>
-                    <div style="display:flex; align-items:center; gap:0.8rem; flex-shrink:0; margin-left:1rem;">${lock} <span style="color:var(--text-light);">›</span></div>
+                    <div style="display:flex;align-items:center;gap:0.8rem;flex-shrink:0;">${lock} <span style="color:#6b7280;">›</span></div>
                 </div>`;
             });
             html += `</div>`;
         }
 
-        if (!subs.length && !pages.length) {
-            html += `<div style="text-align:center; padding:3rem; color:var(--text-light);">No content in this category yet. Check back soon!</div>`;
-        }
-
+        if (!subs.length && !pages.length) html += `<div style="text-align:center;padding:3rem;color:#6b7280;">No content in this category yet. Check back soon!</div>`;
         html += `</div>`;
         document.getElementById('vaultMain').innerHTML = html;
     };
 
     window.showPage = function(pageId) {
+        currentPageId = pageId;
         const page = allPages.find(p => p.id === pageId);
         if (!page) return;
-
-        if (page.visibility === 'members' && !currentUser) {
-            showLockedState(page.title);
-            return;
-        }
+        if (page.visibility === 'members' && !currentUser) { showLocked(page.title); return; }
 
         const cat = allCategories.find(c => c.id === page.categoryId);
         const parent = cat?.parentId ? allCategories.find(c => c.id === cat.parentId) : null;
 
-        let breadcrumb = `<div class="vault-breadcrumb"><a href="#" onclick="showVaultHome()">The Vault</a> ›`;
-        if (parent) breadcrumb += ` <a href="#" onclick="showCategory('${parent.id}')">${esc(parent.name)}</a> ›`;
-        if (cat) breadcrumb += ` <a href="#" onclick="showCategory('${cat.id}')">${esc(cat.name)}</a> ›`;
+        let breadcrumb = `<div class="vault-breadcrumb"><a href="#" onclick="showVaultHome();return false;">The Vault</a> ›`;
+        if (parent) breadcrumb += ` <a href="#" onclick="showCategory('${parent.id}');return false;">${esc(parent.name)}</a> ›`;
+        if (cat) breadcrumb += ` <a href="#" onclick="showCategory('${cat.id}');return false;">${esc(cat.name)}</a> ›`;
         breadcrumb += ` ${esc(page.title)}</div>`;
-
-        let content = '';
-        if (page.type === 'booklist') {
-            content = renderBookList();
-        } else {
-            content = `<div class="article-body">${page.content || '<p>Content coming soon.</p>'}</div>`;
-        }
 
         document.getElementById('vaultMain').innerHTML = `
             ${breadcrumb}
@@ -618,125 +356,61 @@
                 <h1>${esc(page.title)}</h1>
                 <div class="page-meta">
                     <span>Updated ${page.updatedAt ? new Date(page.updatedAt).toLocaleDateString() : ''}</span>
-                    ${page.visibility === 'members' ? '<span style="color:#9333ea; font-weight:600;">🔒 Members Only</span>' : '<span style="color:#16a34a; font-weight:600;">🌐 Free</span>'}
+                    ${page.visibility==='members'?'<span style="color:#9333ea;font-weight:600;">🔒 Members Only</span>':'<span style="color:#16a34a;font-weight:600;">🌐 Free</span>'}
                 </div>
-                ${content}
+                <div class="article-body">${page.content||'<p>Content coming soon.</p>'}</div>
             </div>`;
+        if (cat) setActiveNav(`nav_${cat.id}`);
     };
 
-    function renderBookList() {
-        if (!allBooks.length) return '<p style="color:var(--text-light);">No books added yet. Check back soon!</p>';
-
-        const tags = ['All', ...new Set(allBooks.map(b => b.tag).filter(Boolean))];
-        let html = `<div class="book-filter-bar">`;
-        tags.forEach(tag => {
-            html += `<button class="book-filter-btn ${tag === activeFilter ? 'active' : ''}" onclick="filterBooks('${tag}')">${tag}</button>`;
-        });
-        html += `</div><div class="book-grid" id="bookGrid">`;
-
-        const filtered = activeFilter === 'All' ? allBooks : allBooks.filter(b => b.tag === activeFilter);
-        filtered.forEach(book => {
-            if (book.visibility === 'members' && !currentUser) {
-                html += `<div class="book-card" style="opacity:0.7;">
-                    <div class="book-cover-placeholder">📖</div>
-                    <span class="book-tag">🔒 Members Only</span>
-                    <div class="book-title">${esc(book.title)}</div>
-                    <div class="book-author">by ${esc(book.author)}</div>
-                    <a href="/#membership" class="book-buy-btn">Join to Unlock</a>
-                </div>`;
-            } else {
-                html += `<div class="book-card">
-                    ${book.cover ? `<img src="${esc(book.cover)}" class="book-cover" alt="${esc(book.title)} cover" onerror="this.style.display='none'">` : '<div class="book-cover-placeholder">📖</div>'}
-                    ${book.tag ? `<span class="book-tag">${esc(book.tag)}</span>` : ''}
-                    <div class="book-title">${esc(book.title)}</div>
-                    <div class="book-author">by ${esc(book.author)}</div>
-                    <div class="book-why">${esc(book.why)}</div>
-                    ${book.link ? `<a href="${esc(book.link)}" target="_blank" rel="noopener" class="book-buy-btn">📦 Buy on Amazon</a>` : ''}
-                </div>`;
-            }
-        });
-        html += `</div>`;
-        return html;
-    }
-
-    window.filterBooks = function(tag) {
-        activeFilter = tag;
-        const main = document.getElementById('vaultMain');
-        const bookGrid = main.querySelector('.book-grid');
-        const filterBtns = main.querySelectorAll('.book-filter-btn');
-        filterBtns.forEach(b => b.classList.toggle('active', b.textContent === tag));
-        if (bookGrid) bookGrid.outerHTML = renderBookList().match(/<div class="book-grid"[\s\S]*<\/div>/)?.[0] || '';
-        const page = allPages.find(p => p.type === 'booklist');
-        if (page) showPage(page.id);
-    };
-
-    function showLockedState(name) {
+    function showLocked(name) {
         document.getElementById('vaultMain').innerHTML = `
         <div class="vault-locked">
             <span class="vault-locked-icon">🔒</span>
             <h3>Members Only Content</h3>
-            <p>"${esc(name)}" is exclusive to Coach Berry members. Join to unlock this and all other members-only content in The Vault.</p>
+            <p>"${esc(name)}" is exclusive to Coach Berry members. Join free to unlock this and all other members-only content.</p>
             <div class="vault-locked-btns">
-                <a href="/#membership" class="btn-join">Join Now</a>
-                <a href="/member-login/" class="btn-login">Already a Member? Login</a>
+                <a href="/member-signup/" class="btn-join">Join for Free</a>
+                <a href="/member-login/" class="btn-login">Already a Member? Sign in</a>
             </div>
         </div>`;
     }
 
-    window.showSubmitForm = function() {
-        document.getElementById('submitModal').style.display = 'flex';
-    };
-
-    window.submitVaultContent = async function() {
-        const name = document.getElementById('sub_name').value.trim();
-        const email = document.getElementById('sub_email').value.trim();
-        const title = document.getElementById('sub_title').value.trim();
-        const content = document.getElementById('sub_content').value.trim();
-        const msg = document.getElementById('sub_msg');
-
+    window.submitContent = async function() {
+        const name = document.getElementById('sf_name').value.trim();
+        const email = document.getElementById('sf_email').value.trim();
+        const title = document.getElementById('sf_title').value.trim();
+        const content = document.getElementById('sf_content').value.trim();
+        const msg = document.getElementById('sfMsg');
         if (!name || !email || !title || !content) {
-            msg.style.display = 'block';
-            msg.style.background = '#ffebee';
-            msg.style.color = '#c62828';
-            msg.textContent = 'Please fill in all required fields.';
-            return;
+            msg.style.display='block'; msg.style.background='#ffebee'; msg.style.color='#c62828';
+            msg.textContent='Please fill in all required fields.'; return;
         }
-
         try {
             await addDoc(collection(db, 'vault_submissions'), {
-                submitterName: name,
-                submitterEmail: email,
-                title,
-                content,
-                suggestedCategory: document.getElementById('sub_category').value.trim(),
-                status: 'pending',
-                createdAt: Date.now()
+                submitterName:name, submitterEmail:email, title,
+                content, suggestedCategory:document.getElementById('sf_cat').value.trim(),
+                status:'pending', createdAt:Date.now()
             });
-            msg.style.display = 'block';
-            msg.style.background = '#f0fdf4';
-            msg.style.color = '#16a34a';
-            msg.textContent = '✓ Submitted! Thank you — your content will be reviewed before publishing.';
-            ['sub_name','sub_email','sub_title','sub_content','sub_category'].forEach(id => document.getElementById(id).value = '');
+            msg.style.display='block'; msg.style.background='#f0fdf4'; msg.style.color='#16a34a';
+            msg.textContent='Submitted! Your content will be reviewed before publishing.';
+            ['sf_name','sf_email','sf_title','sf_cat','sf_content'].forEach(id=>document.getElementById(id).value='');
         } catch(e) {
-            msg.style.display = 'block';
-            msg.style.background = '#ffebee';
-            msg.style.color = '#c62828';
-            msg.textContent = 'Error submitting. Please try again.';
+            msg.style.display='block'; msg.style.background='#ffebee'; msg.style.color='#c62828';
+            msg.textContent='Error submitting. Please try again.';
         }
     };
 
     function setActiveNav(id) {
-        document.querySelectorAll('.vault-nav-item a').forEach(a => a.classList.remove('active'));
-        const el = document.getElementById(id);
-        if (el) el.classList.add('active');
+        document.querySelectorAll('.vault-nav-item a').forEach(a=>a.classList.remove('active'));
+        const el=document.getElementById(id); if(el) el.classList.add('active');
     }
 
-    function esc(str) {
-        if (!str) return '';
-        const d = document.createElement('div');
-        d.textContent = str;
-        return d.innerHTML;
-    }
+    document.getElementById('submitModal').addEventListener('click', e => {
+        if (e.target===document.getElementById('submitModal')) document.getElementById('submitModal').classList.remove('open');
+    });
+
+    function esc(str) { if(!str) return ''; const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
 
     loadVault();
     </script>

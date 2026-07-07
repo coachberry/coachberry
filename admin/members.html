@@ -334,7 +334,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
     const app = initializeApp(config);
@@ -484,6 +484,22 @@
             html += `</p></div>`;
         }
 
+        // Role assignment section
+        const currentRoles = member.roles || ['member'];
+        const allRoles = ['member','player','coach','parent','3d-goalie','3d-player','3d-hockey'];
+        const roleLabels = {'member':'Member','player':'Player','coach':'Coach','parent':'Parent','3d-goalie':'3D Goalie','3d-player':'3D Player','3d-hockey':'3D Hockey'};
+        
+        const roleHTML = `<div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #e0e0e0;">
+            <h4 style="margin-bottom:0.8rem;font-size:0.9rem;font-weight:700;">Assign Roles</h4>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;" id="roleCheckboxes_${member.id}">
+                ${allRoles.map(r => `<label style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.8rem;border:1.5px solid ${currentRoles.includes(r)?'#FF2400':'#e0e0e0'};border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;background:${currentRoles.includes(r)?'#fff5f5':'white'};">
+                    <input type="checkbox" value="${r}" ${currentRoles.includes(r)?'checked':''} onchange="updateRoleStyle(this)"> ${roleLabels[r]}
+                </label>`).join('')}
+            </div>
+            <button onclick="saveRoles('${member.id}', '${member.source||'members'}')" style="margin-top:0.8rem;padding:0.5rem 1.2rem;background:#FF2400;color:white;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:0.85rem;">Save Roles</button>
+            <span id="roleSaveMsg_${member.id}" style="display:none;margin-left:0.8rem;font-size:0.82rem;font-weight:600;color:#16a34a;">Saved!</span>
+        </div>`;
+
         if (member.roles && member.roles.includes('coach')) {
             html += `
                 <div class="member-info">
@@ -599,5 +615,33 @@
     };
 
     // Expose to window so it can be called after tab loads
+    window.updateRoleStyle = function(checkbox) {
+        const label = checkbox.parentElement;
+        if (checkbox.checked) {
+            label.style.borderColor = '#FF2400';
+            label.style.background = '#fff5f5';
+        } else {
+            label.style.borderColor = '#e0e0e0';
+            label.style.background = 'white';
+        }
+    };
+
+    window.saveRoles = async function(memberId, source) {
+        const checkboxes = document.querySelectorAll(`#roleCheckboxes_${memberId} input[type=checkbox]`);
+        const roles = [...checkboxes].filter(c => c.checked).map(c => c.value);
+        if (!roles.includes('member')) roles.unshift('member');
+        try {
+            if (source === 'goalies') {
+                await updateDoc(doc(db, 'goalies', memberId), { roles });
+            } else {
+                await updateDoc(doc(db, 'members', memberId), { roles, updatedAt: Date.now() });
+            }
+            const msg = document.getElementById(`roleSaveMsg_${memberId}`);
+            msg.style.display = 'inline';
+            setTimeout(() => msg.style.display = 'none', 2000);
+            loadMembers();
+        } catch(e) { alert('Error saving roles: ' + e.message); }
+    };
+
     window.loadMembers = loadMembers;
 </script>
