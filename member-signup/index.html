@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Coach Berry — Create Your Account</title>
-    <meta name="description" content="Create your free Coach Berry member account to access The Vault, track your hockey development, and connect with Coach Berry.">
-    <link rel="stylesheet" href="/styles.css?v=2">
+    <meta name="description" content="Create your free Coach Berry member account to access The Vault, track your development, and connect with Coach Berry.">
+    <link rel="stylesheet" href="/styles.css?v=3">
     <script src="/header.js"></script>
     <style>
         body { background:linear-gradient(135deg,#000 0%,#1a1a1a 100%); min-height:100vh; }
         .signup-wrap { display:flex; justify-content:center; align-items:flex-start; min-height:80vh; padding:2rem 1rem; }
-        .signup-box { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.4); width:100%; max-width:480px; overflow:hidden; }
+        .signup-box { background:#fff; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,0.4); width:100%; max-width:500px; overflow:hidden; }
         .signup-hero { background:#000; color:#fff; padding:2rem; text-align:center; }
         .signup-hero img { max-width:130px; margin:0 auto 1rem; display:block; }
         .signup-hero h1 { font-size:1.3rem; font-weight:800; margin:0 0 0.3rem; }
@@ -21,13 +21,9 @@
         .signup-body { padding:1.8rem; }
         .sg-group { margin-bottom:1rem; }
         .sg-group label { display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.35rem; color:#374151; }
-        .sg-group input, .sg-group select { width:100%; padding:0.75rem 0.9rem; border:1.5px solid #e0e0e0; border-radius:8px; font-size:0.92rem; font-family:inherit; transition:border-color 0.2s; }
-        .sg-group input:focus, .sg-group select:focus { outline:none; border-color:#FF2400; box-shadow:0 0 0 3px rgba(255,36,0,0.08); }
+        .sg-group input { width:100%; padding:0.75rem 0.9rem; border:1.5px solid #e0e0e0; border-radius:8px; font-size:0.92rem; font-family:inherit; transition:border-color 0.2s; }
+        .sg-group input:focus { outline:none; border-color:#FF2400; box-shadow:0 0 0 3px rgba(255,36,0,0.08); }
         .sg-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-        .sg-hint { font-size:0.75rem; color:#9ca3af; margin-top:0.25rem; }
-        .pill-group { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.35rem; }
-        .pill { padding:0.3rem 0.75rem; border-radius:20px; border:1.5px solid #e0e0e0; background:#fff; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.15s; color:#374151; }
-        .pill.selected { background:#FF2400; color:#fff; border-color:#FF2400; }
         .sg-btn { width:100%; padding:0.9rem; background:#FF2400; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:1rem; cursor:pointer; transition:all 0.2s; margin-top:0.5rem; }
         .sg-btn:hover { background:#FF3a1f; transform:translateY(-1px); }
         .sg-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
@@ -42,7 +38,21 @@
         .verify-email { background:#f0f4ff; border-radius:8px; padding:0.5rem 1rem; font-weight:700; color:#3730a3; margin-bottom:1.2rem; display:inline-block; }
         .resend-btn { background:none; border:1.5px solid #e0e0e0; border-radius:8px; padding:0.6rem 1.2rem; font-weight:600; font-size:0.85rem; cursor:pointer; color:#374151; transition:all 0.2s; }
         .resend-btn:hover { background:#f8f9fa; }
-        @media (max-width:500px) { .sg-row { grid-template-columns:1fr; } }
+
+        .role-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem; margin-top:0.4rem; }
+        .role-card { border:2px solid #e0e0e0; border-radius:10px; padding:1rem 0.5rem; text-align:center; cursor:pointer; transition:all 0.2s; background:#fff; }
+        .role-card:hover { border-color:#FF2400; background:#fff5f5; }
+        .role-card.selected { border-color:#FF2400; background:#FF2400; color:#fff; }
+        .role-card .rc-icon { font-size:1.8rem; display:block; margin-bottom:0.4rem; }
+        .role-card .rc-label { font-size:0.82rem; font-weight:700; display:block; }
+        .role-card .rc-desc { font-size:0.7rem; color:#9ca3af; display:block; margin-top:0.2rem; line-height:1.3; }
+        .role-card.selected .rc-desc { color:rgba(255,255,255,0.75); }
+        .role-card.selected .rc-label { color:#fff; }
+        .role-none { border:1.5px dashed #e0e0e0; border-radius:8px; padding:0.5rem; text-align:center; font-size:0.75rem; color:#9ca3af; cursor:pointer; margin-top:0.4rem; transition:all 0.2s; }
+        .role-none:hover { border-color:#6b7280; color:#6b7280; }
+        .role-none.selected { border-color:#374151; color:#374151; background:#f8f9fa; }
+
+        @media (max-width:500px) { .sg-row { grid-template-columns:1fr; } .role-cards { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
@@ -54,14 +64,14 @@
                 <p>Track your development, access The Vault, connect with Coach Berry</p>
             </div>
             <div class="signup-benefits">
-                <div class="benefit"><span>✓</span> The Vault access</div>
-                <div class="benefit"><span>✓</span> Player profile</div>
+                <div class="benefit"><span>✓</span> The Vault</div>
                 <div class="benefit"><span>✓</span> Development tracking</div>
                 <div class="benefit"><span>✓</span> Free to join</div>
             </div>
 
             <div class="signup-body" id="signupBody">
                 <div class="sg-error" id="sgError"></div>
+
                 <div class="sg-row">
                     <div class="sg-group"><label>First Name *</label><input type="text" id="sg_first" placeholder="First name"></div>
                     <div class="sg-group"><label>Last Name *</label><input type="text" id="sg_last" placeholder="Last name"></div>
@@ -69,18 +79,29 @@
                 <div class="sg-group"><label>Email Address *</label><input type="email" id="sg_email" placeholder="your@email.com"></div>
                 <div class="sg-group"><label>Password *</label><input type="password" id="sg_pw" placeholder="At least 6 characters"></div>
                 <div class="sg-group"><label>Confirm Password *</label><input type="password" id="sg_pw2" placeholder="Repeat your password"></div>
+
                 <div class="sg-group">
-                    <label>Position <span style="font-weight:400;color:#9ca3af;">(optional)</span></label>
-                    <div class="pill-group" id="posPills">
-                        <span class="pill" onclick="selectPos(this)">Goalie</span>
-                        <span class="pill" onclick="selectPos(this)">Defense</span>
-                        <span class="pill" onclick="selectPos(this)">Forward</span>
-                        <span class="pill" onclick="selectPos(this)">Center</span>
-                        <span class="pill" onclick="selectPos(this)">Wing</span>
-                        <span class="pill" onclick="selectPos(this)">Parent / Fan</span>
-                        <span class="pill" onclick="selectPos(this)">Coach</span>
+                    <label>I am a... <span style="font-weight:400;color:#9ca3af;">(optional — you can update this later)</span></label>
+                    <div class="role-cards">
+                        <div class="role-card" onclick="selectRole('player', this)">
+                            <span class="rc-icon">🏒</span>
+                            <span class="rc-label">Player</span>
+                            <span class="rc-desc">Track your playing career and development</span>
+                        </div>
+                        <div class="role-card" onclick="selectRole('coach', this)">
+                            <span class="rc-icon">🎯</span>
+                            <span class="rc-label">Coach</span>
+                            <span class="rc-desc">Build your coaching portfolio and resume</span>
+                        </div>
+                        <div class="role-card" onclick="selectRole('parent', this)">
+                            <span class="rc-icon">👨‍👧</span>
+                            <span class="rc-label">Parent</span>
+                            <span class="rc-desc">Stay connected to your player's journey</span>
+                        </div>
                     </div>
+                    <div class="role-none" id="roleNone" onclick="selectRole('', this)">Skip — just sign me up as a member</div>
                 </div>
+
                 <button class="sg-btn" onclick="createAccount()" id="sgBtn">Create My Account</button>
                 <div class="terms">By creating an account you agree to our terms. Your login info is private and never shared.</div>
             </div>
@@ -90,7 +111,7 @@
                 <h2>Check Your Email</h2>
                 <p>We sent a verification link to:</p>
                 <div class="verify-email" id="verifyEmail"></div>
-                <p>Click the link in that email to activate your account. Once verified you can sign in and access your dashboard.</p>
+                <p>Click the link in that email to activate your account. Check your spam folder if you don't see it within a few minutes.</p>
                 <button class="resend-btn" onclick="resendVerify()">Resend Verification Email</button>
                 <div style="margin-top:1.2rem;"><a href="/member-login/" style="color:#FF2400;font-weight:700;text-decoration:none;font-size:0.88rem;">Already verified? Sign in →</a></div>
             </div>
@@ -117,13 +138,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let selectedPosition = '';
+    let selectedRole = '';
     let currentUserRef = null;
 
-    window.selectPos = function(el) {
-        document.querySelectorAll('#posPills .pill').forEach(p => p.classList.remove('selected'));
+    window.selectRole = function(role, el) {
+        document.querySelectorAll('.role-card, .role-none').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
-        selectedPosition = el.textContent;
+        selectedRole = role;
     };
 
     window.createAccount = async function() {
@@ -148,12 +169,15 @@
             const cred = await createUserWithEmailAndPassword(auth, email, pw);
             const user = cred.user;
 
+            const roles = ['member'];
+            if (selectedRole) roles.push(selectedRole);
+
             await setDoc(doc(db, 'members', user.uid), {
                 firstName: first,
                 lastName: last,
                 email,
-                position: selectedPosition,
-                roles: ['member'],
+                roles,
+                memberType: selectedRole || 'member',
                 emailVerified: false,
                 createdAt: Date.now(),
                 updatedAt: Date.now()
@@ -179,7 +203,7 @@
         if (!currentUserRef) return;
         try {
             await sendEmailVerification(currentUserRef);
-            alert('Verification email resent!');
+            alert('Verification email resent! Also check your spam folder.');
         } catch(e) { alert('Error: ' + e.message); }
     };
 
