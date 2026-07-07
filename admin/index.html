@@ -310,6 +310,7 @@
                 <div class="sidebar-section-label">Site Management</div>
                 <li><a onclick="switchTab('overview')" class="menu-item active" data-tab="overview">📊 Overview</a></li>
                 <li><a onclick="switchTab('members')" class="menu-item" data-tab="members">👥 Members</a></li>
+                <li><a onclick="switchTab('notifications')" class="menu-item" data-tab="notifications">🔔 Notifications <span id="notifBadge" style="display:none;background:#FF2400;color:white;border-radius:50%;width:20px;height:20px;font-size:0.7rem;font-weight:bold;display:inline-flex;align-items:center;justify-content:center;margin-left:0.5rem;">0</span></a></li>
                 <li><a onclick="switchTab('blog')" class="menu-item" data-tab="blog">📝 Blog Posts</a></li>
                 <li><a onclick="switchTab('updates')" class="menu-item" data-tab="updates">📢 Updates</a></li>
                 <li><a onclick="switchTab('inbox')" class="menu-item" data-tab="inbox">📧 Inbox <span id="adminInboxUnreadBadge" style="display: none; background: #FF2400; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; margin-left: 0.5rem;">0</span></a></li>
@@ -335,6 +336,7 @@
 
             <div id="overview" class="tab-content active"></div>
             <div id="members" class="tab-content"></div>
+            <div id="notifications" class="tab-content"></div>
             <div id="blog" class="tab-content"></div>
             <div id="updates" class="tab-content"></div>
             <div id="inbox" class="tab-content"></div>
@@ -404,6 +406,7 @@
                         document.getElementById('loginPage').classList.add('hidden');
                         document.getElementById('dashboard').classList.remove('hidden');
                         switchTab('overview');
+                        loadNotificationCount();
                     } else {
                         await signOut(auth);
                         document.getElementById('loginError').textContent = 'Access denied. You do not have admin privileges.';
@@ -425,6 +428,20 @@
 
         window.getCurrentUser = () => currentUser;
         window.getFirebaseConfig = () => firebaseConfig;
+
+        // Load notification count
+        async function loadNotificationCount() {
+            try {
+                const { collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js');
+                const snap = await getDocs(query(collection(db, 'notifications'), where('read', '==', false)));
+                const count = snap.size;
+                const badge = document.getElementById('notifBadge');
+                if (badge) {
+                    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-flex'; }
+                    else badge.style.display = 'none';
+                }
+            } catch(e) { console.error('Notification count error:', e); }
+        }
 
         window.switchTab = async function(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => {
@@ -448,7 +465,8 @@
                 resume: 'Coaching Resume',
                 'book-club': 'Book Club',
                 vault: 'The Vault',
-                content: 'Edit Website'
+                content: 'Edit Website',
+                notifications: 'Notifications'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 

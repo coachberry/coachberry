@@ -1,0 +1,193 @@
+<!-- Coach Berry - Notifications Tab -->
+<style>
+    .notif-wrap { max-width:900px; }
+    .notif-toolbar { display:flex; gap:1rem; margin-bottom:1.5rem; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+    .notif-count { font-size:0.88rem; color:var(--text-light); }
+    .mark-all-btn { padding:0.5rem 1.2rem; background:var(--primary-dark); color:white; border:none; border-radius:6px; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+    .mark-all-btn:hover { background:var(--accent); }
+    .notif-card { background:white; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); margin-bottom:0.8rem; overflow:hidden; transition:all 0.2s; border-left:4px solid transparent; }
+    .notif-card.unread { border-left-color:var(--accent); background:#fffafa; }
+    .notif-card.read { opacity:0.7; }
+    .notif-card-body { padding:1.2rem 1.5rem; display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+    .notif-icon { font-size:1.5rem; flex-shrink:0; margin-top:0.1rem; }
+    .notif-info { flex:1; }
+    .notif-title { font-weight:700; font-size:0.95rem; margin-bottom:0.2rem; color:var(--primary-dark); }
+    .notif-meta { font-size:0.8rem; color:var(--text-light); margin-bottom:0.4rem; }
+    .notif-preview { font-size:0.85rem; color:var(--text); line-height:1.5; background:var(--light-gray); padding:0.5rem 0.8rem; border-radius:6px; margin-top:0.5rem; }
+    .notif-actions { display:flex; gap:0.5rem; flex-shrink:0; }
+    .notif-btn { padding:0.32rem 0.75rem; border:none; border-radius:5px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+    .notif-btn-view { background:#e8f4fd; color:#0369a1; }
+    .notif-btn-view:hover { background:#bfdbfe; }
+    .notif-btn-read { background:#f0fdf4; color:#16a34a; }
+    .notif-btn-read:hover { background:#bbf7d0; }
+    .notif-btn-delete { background:#fff0f0; color:#c62828; }
+    .notif-btn-delete:hover { background:#fecaca; }
+    .notif-empty { text-align:center; padding:4rem 2rem; color:var(--text-light); background:white; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.07); }
+    .notif-empty span { display:block; font-size:3rem; margin-bottom:1rem; }
+    .notif-filter-bar { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .notif-filter { padding:0.4rem 0.9rem; border-radius:20px; border:1.5px solid var(--border); background:white; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .notif-filter:hover { border-color:var(--accent); color:var(--accent); }
+    .notif-filter.active { background:var(--accent); color:white; border-color:var(--accent); }
+    .confidence-badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:12px; font-size:0.72rem; font-weight:700; margin-left:0.4rem; }
+    .conf-low { background:#ffebee; color:#c62828; }
+    .conf-avg { background:#fff8e1; color:#f57f17; }
+    .conf-good { background:#f0fdf4; color:#16a34a; }
+</style>
+
+<div class="notif-wrap">
+    <div class="notif-toolbar">
+        <div class="notif-count" id="notifCountLabel">Loading notifications...</div>
+        <button class="mark-all-btn" onclick="markAllRead()">✓ Mark All Read</button>
+    </div>
+
+    <div class="notif-filter-bar">
+        <button class="notif-filter active" onclick="filterNotifs('all',this)">All</button>
+        <button class="notif-filter" onclick="filterNotifs('intake_submitted',this)">📋 Intake Forms</button>
+        <button class="notif-filter" onclick="filterNotifs('goal_logged',this)">🥅 Goals Logged</button>
+        <button class="notif-filter" onclick="filterNotifs('unread',this)">🔴 Unread Only</button>
+    </div>
+
+    <div id="notifList">
+        <div class="notif-empty"><span>🔔</span>Loading...</div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let allNotifs = [];
+let activeFilter = 'all';
+
+async function loadNotifications() {
+    const snap = await getDocs(query(collection(db, 'notifications'), orderBy('createdAt', 'desc')));
+    allNotifs = [];
+    snap.forEach(d => allNotifs.push({ id: d.id, ...d.data() }));
+    renderNotifs();
+    updateBadge();
+}
+
+function renderNotifs() {
+    const container = document.getElementById('notifList');
+    let filtered = allNotifs;
+
+    if (activeFilter === 'unread') filtered = allNotifs.filter(n => !n.read);
+    else if (activeFilter !== 'all') filtered = allNotifs.filter(n => n.type === activeFilter);
+
+    const unreadCount = allNotifs.filter(n => !n.read).length;
+    document.getElementById('notifCountLabel').textContent =
+        `${filtered.length} notification${filtered.length!==1?'s':''} · ${unreadCount} unread`;
+
+    if (!filtered.length) {
+        container.innerHTML = '<div class="notif-empty"><span>🔔</span><p>No notifications here.</p></div>';
+        return;
+    }
+
+    container.innerHTML = filtered.map(n => {
+        const icon = n.type === 'intake_submitted' ? '📋' : n.type === 'goal_logged' ? '🥅' : '🔔';
+        const title = n.type === 'intake_submitted'
+            ? `${n.goalieName} submitted a pre-session intake form`
+            : n.type === 'goal_logged'
+            ? `${n.goalieName} logged a goal — Zone: ${n.netZone||'unknown'}`
+            : 'New notification';
+
+        const confBadge = n.confidence ? (() => {
+            const cls = ['Low','Inconsistent'].includes(n.confidence) ? 'conf-low'
+                : n.confidence === 'Average' ? 'conf-avg' : 'conf-good';
+            return `<span class="confidence-badge ${cls}">${n.confidence} confidence</span>`;
+        })() : '';
+
+        const time = n.createdAt ? new Date(n.createdAt).toLocaleString() : '';
+
+        return `<div class="notif-card ${n.read?'read':'unread'}" id="notif_${n.id}">
+            <div class="notif-card-body">
+                <div class="notif-icon">${icon}</div>
+                <div class="notif-info">
+                    <div class="notif-title">${esc(title)}${confBadge}</div>
+                    <div class="notif-meta">${esc(n.goalieEmail||'')} · ${time}</div>
+                    ${n.preview ? `<div class="notif-preview">${esc(n.preview)}</div>` : ''}
+                    ${n.situation ? `<div class="notif-meta" style="margin-top:0.3rem;">Situation: ${esc(n.situation)}</div>` : ''}
+                </div>
+                <div class="notif-actions">
+                    <button class="notif-btn notif-btn-view" onclick="viewGoalie('${n.goalieId}')">View Goalie</button>
+                    ${!n.read ? `<button class="notif-btn notif-btn-read" onclick="markRead('${n.id}')">Mark Read</button>` : ''}
+                    <button class="notif-btn notif-btn-delete" onclick="deleteNotif('${n.id}')">Delete</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateBadge() {
+    const unread = allNotifs.filter(n => !n.read).length;
+    const badge = document.getElementById('notifBadge');
+    if (badge) {
+        if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline-flex'; }
+        else badge.style.display = 'none';
+    }
+}
+
+window.markRead = async function(id) {
+    await updateDoc(doc(db, 'notifications', id), { read: true });
+    const notif = allNotifs.find(n => n.id === id);
+    if (notif) notif.read = true;
+    renderNotifs();
+    updateBadge();
+};
+
+window.markAllRead = async function() {
+    const promises = allNotifs.filter(n => !n.read).map(n =>
+        updateDoc(doc(db, 'notifications', n.id), { read: true })
+    );
+    await Promise.all(promises);
+    allNotifs.forEach(n => n.read = true);
+    renderNotifs();
+    updateBadge();
+};
+
+window.deleteNotif = async function(id) {
+    if (!confirm('Delete this notification?')) return;
+    await deleteDoc(doc(db, 'notifications', id));
+    allNotifs = allNotifs.filter(n => n.id !== id);
+    renderNotifs();
+    updateBadge();
+};
+
+window.viewGoalie = function(goalieId) {
+    if (goalieId && window.switchTab) {
+        window.switchTab('goalies');
+        setTimeout(() => {
+            if (window.viewGoalie) window.viewGoalie(goalieId);
+        }, 500);
+    }
+};
+
+window.filterNotifs = function(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.notif-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderNotifs();
+};
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+window.loadNotifications = loadNotifications;
+loadNotifications();
+</script>
