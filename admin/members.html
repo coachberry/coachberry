@@ -334,7 +334,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, deleteDoc, doc, updateDoc, setDoc, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const config = window.getFirebaseConfig();
     const app = initializeApp(config);
@@ -636,9 +636,37 @@
             } else {
                 await updateDoc(doc(db, 'members', memberId), { roles, updatedAt: Date.now() });
             }
+
+            // If 3d-goalie role assigned, auto-create goalie profile if it doesn't exist
+            if (roles.includes('3d-goalie') && source !== 'goalies') {
+                const memberSnap = await getDoc(doc(db, 'members', memberId));
+                if (memberSnap.exists()) {
+                    const m = memberSnap.data();
+                    // Check if goalie doc already exists for this email
+                    const goaliesSnap = await getDocs(collection(db, 'goalies'));
+                    let existingGoalie = null;
+                    goaliesSnap.forEach(d => { if (d.data().email === m.email) existingGoalie = d.id; });
+                    if (!existingGoalie) {
+                        await addDoc(collection(db, 'goalies'), {
+                            firstName: m.firstName || '',
+                            lastName: m.lastName || '',
+                            email: m.email || '',
+                            team: m.currentTeam || '',
+                            level: '',
+                            gloveSide: 'left',
+                            style: '',
+                            accountLinked: true,
+                            memberId: memberId,
+                            createdAt: Date.now(),
+                            updatedAt: Date.now()
+                        });
+                        console.log('Auto-created goalie profile for', m.email);
+                    }
+                }
+            }
+
             const msg = document.getElementById(`roleSaveMsg_${memberId}`);
-            msg.style.display = 'inline';
-            setTimeout(() => msg.style.display = 'none', 2000);
+            if (msg) { msg.style.display = 'inline'; setTimeout(() => msg.style.display = 'none', 2000); }
             loadMembers();
         } catch(e) { alert('Error saving roles: ' + e.message); }
     };

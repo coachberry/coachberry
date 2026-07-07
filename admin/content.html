@@ -1,0 +1,430 @@
+<!-- Coach Berry - Edit Website Content Tab -->
+<style>
+    .cms-wrap { max-width:960px; }
+    .cms-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:2rem; overflow-x:auto; }
+    .cms-tab { padding:0.85rem 1.4rem; background:none; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text-light); white-space:nowrap; transition:all 0.2s; }
+    .cms-tab:hover { color:var(--text); }
+    .cms-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+    .cms-panel { display:none; }
+    .cms-panel.active { display:block; }
+    .cms-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); margin-bottom:1.5rem; overflow:hidden; }
+    .cms-card-head { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.5rem; background:var(--primary-dark); color:white; }
+    .cms-card-head h3 { margin:0; font-size:1rem; font-weight:700; }
+    .cms-card-body { padding:1.5rem; }
+    .cms-field { margin-bottom:1.2rem; }
+    .cms-field label { display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:var(--text); }
+    .cms-field input, .cms-field textarea, .cms-field select {
+        width:100%; padding:0.75rem 0.9rem; border:1.5px solid var(--border); border-radius:8px;
+        font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; background:white;
+    }
+    .cms-field input:focus, .cms-field textarea:focus, .cms-field select:focus {
+        outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,36,0,0.08);
+    }
+    .cms-field textarea { resize:vertical; min-height:90px; }
+    .cms-field-hint { font-size:0.75rem; color:var(--text-light); margin-top:0.3rem; }
+    .cms-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .cms-save-btn {
+        padding:0.7rem 1.8rem; background:var(--accent); color:white; border:none;
+        border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s;
+    }
+    .cms-save-btn:hover { background:var(--accent-light); transform:translateY(-1px); }
+    .cms-save-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+    .cms-saved { color:#16a34a; font-weight:600; font-size:0.85rem; margin-left:1rem; opacity:0; transition:opacity 0.3s; }
+    .cms-saved.show { opacity:1; }
+    .cms-preview-link { font-size:0.8rem; color:var(--accent); text-decoration:none; margin-left:1rem; font-weight:600; }
+    .cms-preview-link:hover { text-decoration:underline; }
+    .service-card-entry { border:1.5px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:0.8rem; background:#fafafa; }
+    .service-card-entry-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; }
+    .service-card-entry-head strong { font-size:0.9rem; }
+    .del-service-btn { background:none; border:none; color:#d1d5db; cursor:pointer; font-size:1rem; }
+    .del-service-btn:hover { color:var(--accent); }
+    .add-service-btn { padding:0.5rem 1.1rem; background:var(--primary-dark); color:white; border:none; border-radius:6px; font-weight:700; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
+    .add-service-btn:hover { background:var(--accent); }
+    .cms-img-preview { width:100%; max-height:160px; object-fit:cover; border-radius:6px; margin-top:0.5rem; display:none; }
+    @media (max-width:600px) { .cms-row { grid-template-columns:1fr; } }
+</style>
+
+<div class="cms-wrap">
+    <div class="cms-tabs">
+        <button class="cms-tab active" onclick="cmsTab('hero')">🏠 Hero</button>
+        <button class="cms-tab" onclick="cmsTab('about')">👤 About</button>
+        <button class="cms-tab" onclick="cmsTab('services')">🎯 Services</button>
+        <button class="cms-tab" onclick="cmsTab('membership')">🏒 Membership</button>
+        <button class="cms-tab" onclick="cmsTab('nav')">🔗 Navigation</button>
+        <button class="cms-tab" onclick="cmsTab('seo')">🔍 SEO</button>
+    </div>
+
+    <!-- HERO -->
+    <div class="cms-panel active" id="cms-hero">
+        <div class="cms-card">
+            <div class="cms-card-head">
+                <h3>🏠 Hero Section</h3>
+                <a href="https://coach-berry.com" target="_blank" class="cms-preview-link">Preview Site ↗</a>
+            </div>
+            <div class="cms-card-body">
+                <div class="cms-field">
+                    <label>Main Headline</label>
+                    <input type="text" id="hero_headline" placeholder="e.g. Develop Your Game. Build Your Future.">
+                    <div class="cms-field-hint">The big text visitors see first</div>
+                </div>
+                <div class="cms-field">
+                    <label>Sub-headline</label>
+                    <textarea id="hero_sub" placeholder="Supporting text below the headline..."></textarea>
+                </div>
+                <div class="cms-row">
+                    <div class="cms-field">
+                        <label>Primary Button Text</label>
+                        <input type="text" id="hero_btn1_text" placeholder="e.g. Join Now">
+                    </div>
+                    <div class="cms-field">
+                        <label>Primary Button Link</label>
+                        <input type="text" id="hero_btn1_link" placeholder="e.g. /#membership">
+                    </div>
+                </div>
+                <div class="cms-row">
+                    <div class="cms-field">
+                        <label>Secondary Button Text</label>
+                        <input type="text" id="hero_btn2_text" placeholder="e.g. Learn More">
+                    </div>
+                    <div class="cms-field">
+                        <label>Secondary Button Link</label>
+                        <input type="text" id="hero_btn2_link" placeholder="e.g. /#about">
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('hero')">💾 Save Hero</button>
+                    <span class="cms-saved" id="hero_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="cms-panel" id="cms-about">
+        <div class="cms-card">
+            <div class="cms-card-head"><h3>👤 About Section</h3></div>
+            <div class="cms-card-body">
+                <div class="cms-field">
+                    <label>Section Heading</label>
+                    <input type="text" id="about_heading" placeholder="e.g. About Coach Berry">
+                </div>
+                <div class="cms-field">
+                    <label>Bio / Description</label>
+                    <textarea id="about_bio" style="min-height:140px;" placeholder="Write your coaching bio here..."></textarea>
+                </div>
+                <div class="cms-field">
+                    <label>Credentials / Highlights</label>
+                    <textarea id="about_creds" placeholder="e.g. USA Hockey Level 4 Certified&#10;10+ years coaching experience&#10;Nashville Predators Development Staff"></textarea>
+                    <div class="cms-field-hint">One per line — will display as a list</div>
+                </div>
+                <div class="cms-field">
+                    <label>Photo URL</label>
+                    <input type="text" id="about_photo" placeholder="https://..." oninput="cmsPreviewImg('about_photo','about_photo_preview')">
+                    <img id="about_photo_preview" class="cms-img-preview" alt="Photo preview">
+                </div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('about')">💾 Save About</button>
+                    <span class="cms-saved" id="about_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="cms-panel" id="cms-services">
+        <div class="cms-card">
+            <div class="cms-card-head">
+                <h3>🎯 Services Section</h3>
+                <button class="add-service-btn" onclick="cmsAddService()">＋ Add Service</button>
+            </div>
+            <div class="cms-card-body">
+                <div class="cms-field">
+                    <label>Section Heading</label>
+                    <input type="text" id="services_heading" placeholder="e.g. Coaching Services">
+                </div>
+                <div class="cms-field">
+                    <label>Section Description</label>
+                    <textarea id="services_desc" placeholder="Brief description of your services..."></textarea>
+                </div>
+                <div id="servicesList" style="margin-top:1rem;"></div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('services')">💾 Save Services</button>
+                    <span class="cms-saved" id="services_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEMBERSHIP -->
+    <div class="cms-panel" id="cms-membership">
+        <div class="cms-card">
+            <div class="cms-card-head"><h3>🏒 Membership Section</h3></div>
+            <div class="cms-card-body">
+                <div class="cms-field">
+                    <label>Section Heading</label>
+                    <input type="text" id="mem_heading" placeholder="e.g. Join the Coach Berry Community">
+                </div>
+                <div class="cms-field">
+                    <label>Section Description</label>
+                    <textarea id="mem_desc" placeholder="Describe the benefits of joining..."></textarea>
+                </div>
+                <div class="cms-field">
+                    <label>Member Benefits</label>
+                    <textarea id="mem_benefits" placeholder="e.g. Access to The Vault&#10;Development tracking tools&#10;Direct connection with Coach Berry&#10;Exclusive content and resources"></textarea>
+                    <div class="cms-field-hint">One per line</div>
+                </div>
+                <div class="cms-row">
+                    <div class="cms-field">
+                        <label>CTA Button Text</label>
+                        <input type="text" id="mem_btn_text" placeholder="e.g. Join for Free">
+                    </div>
+                    <div class="cms-field">
+                        <label>CTA Button Link</label>
+                        <input type="text" id="mem_btn_link" placeholder="e.g. /member-signup/">
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('membership')">💾 Save Membership</button>
+                    <span class="cms-saved" id="membership_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="cms-panel" id="cms-nav">
+        <div class="cms-card">
+            <div class="cms-card-head"><h3>🔗 Navigation Links</h3></div>
+            <div class="cms-card-body">
+                <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:1.2rem;">Current nav order: Home · About · Services · Blog · Book Club · The Vault · Login · Join Now</p>
+                <div class="cms-field">
+                    <label>Primary CTA Button Text</label>
+                    <input type="text" id="nav_cta_text" placeholder="e.g. Join Now">
+                </div>
+                <div class="cms-field">
+                    <label>Primary CTA Button Link</label>
+                    <input type="text" id="nav_cta_link" placeholder="e.g. /#membership">
+                </div>
+                <div class="cms-field">
+                    <label>Show Blog in Nav?</label>
+                    <select id="nav_show_blog">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="cms-field">
+                    <label>Show Book Club in Nav?</label>
+                    <select id="nav_show_bookclub">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('nav')">💾 Save Nav Settings</button>
+                    <span class="cms-saved" id="nav_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEO -->
+    <div class="cms-panel" id="cms-seo">
+        <div class="cms-card">
+            <div class="cms-card-head"><h3>🔍 SEO & Meta Tags</h3></div>
+            <div class="cms-card-body">
+                <div class="cms-field">
+                    <label>Site Title</label>
+                    <input type="text" id="seo_title" placeholder="e.g. Coach Berry — Hockey Development">
+                    <div class="cms-field-hint">Shown in browser tabs and Google results</div>
+                </div>
+                <div class="cms-field">
+                    <label>Meta Description</label>
+                    <textarea id="seo_desc" style="min-height:80px;" placeholder="Brief description of your site for Google..."></textarea>
+                    <div class="cms-field-hint">Keep under 160 characters for best SEO</div>
+                </div>
+                <div class="cms-field">
+                    <label>Keywords</label>
+                    <input type="text" id="seo_keywords" placeholder="e.g. hockey coaching, goalie development, Nashville hockey">
+                    <div class="cms-field-hint">Comma separated</div>
+                </div>
+                <div class="cms-field">
+                    <label>Social Share Image URL</label>
+                    <input type="text" id="seo_og_image" placeholder="https://... (image shown when shared on social media)">
+                </div>
+                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                    <button class="cms-save-btn" onclick="cmsSave('seo')">💾 Save SEO</button>
+                    <span class="cms-saved" id="seo_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const SECTIONS = ['hero','about','services','membership','nav','seo'];
+
+async function loadAllContent() {
+    for (const section of SECTIONS) {
+        try {
+            const snap = await getDoc(doc(db, 'site_content', section));
+            if (snap.exists()) populateSection(section, snap.data());
+        } catch(e) { console.error('Error loading', section, e); }
+    }
+    await loadServices();
+}
+
+function populateSection(section, data) {
+    Object.entries(data).forEach(([key, value]) => {
+        const el = document.getElementById(`${section}_${key}`);
+        if (el) el.value = value;
+        // Show image previews
+        if (key === 'photo' && value) {
+            const preview = document.getElementById(`${section}_photo_preview`);
+            if (preview) { preview.src = value; preview.style.display = 'block'; }
+        }
+    });
+}
+
+async function loadServices() {
+    const snap = await getDocs(collection(db, 'site_content', 'services', 'items'));
+    const items = [];
+    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+    items.sort((a,b) => (a.order||0) - (b.order||0));
+    renderServices(items);
+}
+
+let serviceItems = [];
+
+function renderServices(items) {
+    serviceItems = items;
+    const container = document.getElementById('servicesList');
+    if (!items.length) {
+        container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-light);font-size:0.88rem;">No services yet. Click "+ Add Service" to add one.</div>';
+        return;
+    }
+    container.innerHTML = items.map((s, i) => `
+        <div class="service-card-entry" id="service_${s.id||i}">
+            <div class="service-card-entry-head">
+                <strong>Service ${i+1}</strong>
+                <button class="del-service-btn" onclick="deleteService('${s.id||i}')">✕</button>
+            </div>
+            <div class="cms-row">
+                <div class="cms-field"><label>Icon / Emoji</label><input type="text" id="svc_icon_${s.id||i}" value="${esc(s.icon||'')}" placeholder="🏒"></div>
+                <div class="cms-field"><label>Title</label><input type="text" id="svc_title_${s.id||i}" value="${esc(s.title||'')}" placeholder="Private Lessons"></div>
+            </div>
+            <div class="cms-field"><label>Description</label><textarea id="svc_desc_${s.id||i}" placeholder="Describe this service...">${esc(s.description||'')}</textarea></div>
+            <div class="cms-row">
+                <div class="cms-field"><label>Price / Info</label><input type="text" id="svc_price_${s.id||i}" value="${esc(s.price||'')}" placeholder="e.g. $75/hour"></div>
+                <div class="cms-field"><label>CTA Link</label><input type="text" id="svc_link_${s.id||i}" value="${esc(s.link||'')}" placeholder="e.g. /#contact"></div>
+            </div>
+        </div>`).join('');
+}
+
+window.cmsAddService = function() {
+    const newItem = { id: `new_${Date.now()}`, icon:'', title:'', description:'', price:'', link:'' };
+    serviceItems.push(newItem);
+    renderServices(serviceItems);
+};
+
+window.deleteService = async function(id) {
+    if (!confirm('Delete this service?')) return;
+    if (!id.startsWith('new_')) {
+        try { await deleteDoc(doc(db, 'site_content', 'services', 'items', id)); } catch(e) {}
+    }
+    serviceItems = serviceItems.filter(s => (s.id||'') !== id);
+    renderServices(serviceItems);
+};
+
+window.cmsSave = async function(section) {
+    const btn = document.querySelector(`#cms-${section} .cms-save-btn`);
+    const saved = document.getElementById(`${section}_saved`);
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    try {
+        if (section === 'services') {
+            // Save heading/desc
+            const data = {
+                heading: document.getElementById('services_heading').value.trim(),
+                desc: document.getElementById('services_desc').value.trim(),
+                updatedAt: Date.now()
+            };
+            await setDoc(doc(db, 'site_content', 'services'), data, { merge: true });
+            // Save each service item
+            for (const s of serviceItems) {
+                const sData = {
+                    icon: document.getElementById(`svc_icon_${s.id}`)?.value?.trim() || '',
+                    title: document.getElementById(`svc_title_${s.id}`)?.value?.trim() || '',
+                    description: document.getElementById(`svc_desc_${s.id}`)?.value?.trim() || '',
+                    price: document.getElementById(`svc_price_${s.id}`)?.value?.trim() || '',
+                    link: document.getElementById(`svc_link_${s.id}`)?.value?.trim() || '',
+                    order: serviceItems.indexOf(s),
+                    updatedAt: Date.now()
+                };
+                if (s.id && !s.id.startsWith('new_')) {
+                    await setDoc(doc(db, 'site_content', 'services', 'items', s.id), sData, { merge: true });
+                } else {
+                    await addDoc(collection(db, 'site_content', 'services', 'items'), sData);
+                }
+            }
+            await loadServices();
+        } else {
+            const data = { updatedAt: Date.now() };
+            const prefix = `${section}_`;
+            document.querySelectorAll(`#cms-${section} input, #cms-${section} textarea, #cms-${section} select`).forEach(el => {
+                if (el.id.startsWith(prefix)) {
+                    const key = el.id.replace(prefix, '');
+                    data[key] = el.value.trim();
+                }
+            });
+            await setDoc(doc(db, 'site_content', section), data, { merge: true });
+        }
+
+        saved.classList.add('show');
+        setTimeout(() => saved.classList.remove('show'), 2500);
+    } catch(e) {
+        alert('Error saving: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = `💾 Save ${section.charAt(0).toUpperCase()+section.slice(1)}`;
+    }
+};
+
+window.cmsTab = function(tab) {
+    document.querySelectorAll('.cms-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.cms-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`cms-${tab}`).classList.add('active');
+    event.target.classList.add('active');
+};
+
+window.cmsPreviewImg = function(inputId, previewId) {
+    const url = document.getElementById(inputId).value.trim();
+    const preview = document.getElementById(previewId);
+    if (url) { preview.src = url; preview.style.display = 'block'; }
+    else preview.style.display = 'none';
+};
+
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+loadAllContent();
+</script>

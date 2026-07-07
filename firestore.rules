@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admins collection — only readable by authenticated users
+    match /admins/{email} {
+      allow read: if request.auth != null;
+    }
+
+    // Members — readable by the member themselves or admin
+    match /members/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null;
+      match /{subcollection}/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Goalies — coach can read all, goalie can read their own
+    match /goalies/{goalieId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      match /{subcollection}/{docId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    // Vault content — public categories and pages are readable by all
+    match /vault_books/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /vault_categories/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /vault_pages/{doc} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    match /vault_submissions/{doc} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // Resume — public read for coach portfolio
+    match /resume/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+      match /{subcollection}/{docId} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
+    }
+
+    // Everything else requires auth
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

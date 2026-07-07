@@ -598,9 +598,12 @@ async function checkGoalieAccess() {
     if (!roles.includes('3d-goalie') && !roles.includes('3d-hockey')) return;
     document.getElementById('goalieNav').style.display = 'flex';
     const snap = await getDocs(collection(db,'goalies'));
-    snap.forEach(d => { if (d.data().email === user.email) goalieId = d.id; });
+    snap.forEach(d => {
+        const data = d.data();
+        if (data.email === user.email || data.memberId === user.uid) goalieId = d.id;
+    });
     if (goalieId) renderGoalieTool();
-    else document.getElementById('goalieContent').innerHTML = '<div class="locked-box"><div style="font-size:2.5rem;">🥅</div><h3>3D Goalie Tool</h3><p>Your goalie profile is being set up. Contact Coach Berry if you have questions.</p></div>';
+    else document.getElementById('goalieContent').innerHTML = '<div class="locked-box"><div style="font-size:2.5rem;">🥅</div><h3>3D Goalie Tool</h3><p>Your goalie profile is being set up by Coach Berry. Check back soon or reach out if you have questions.</p></div>';
 }
 
 async function renderGoalieTool() {

@@ -321,6 +321,9 @@
                 <li><a onclick="switchTab('resume')" class="menu-item" data-tab="resume">🏒 Coaching Resume</a></li>
                 <li><a onclick="switchTab('book-club')" class="menu-item" data-tab="book-club">📚 Book Club</a></li>
                 <li><a onclick="switchTab('vault')" class="menu-item" data-tab="vault">🔐 The Vault</a></li>
+                <hr class="sidebar-divider">
+                <div class="sidebar-section-label">Website</div>
+                <li><a onclick="switchTab('content')" class="menu-item" data-tab="content">✏️ Edit Website</a></li>
             </ul>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
@@ -339,6 +342,7 @@
             <div id="resume" class="tab-content"></div>
             <div id="book-club" class="tab-content"></div>
             <div id="vault" class="tab-content"></div>
+            <div id="content" class="tab-content"></div>
         </main>
     </div>
 
@@ -443,7 +447,8 @@
                 goalies: 'Goalies',
                 resume: 'Coaching Resume',
                 'book-club': 'Book Club',
-                vault: 'The Vault'
+                vault: 'The Vault',
+                content: 'Edit Website'
             };
             document.getElementById('pageTitle').textContent = titles[tabName] || 'Admin Dashboard';
 
@@ -488,6 +493,12 @@
                         window.loadUpdates();
                     } else if (tabName === 'inbox' && window.loadInbox) {
                         window.loadInbox();
+                    } else if (tabName === 'goalies' && window.loadGoaliesAdmin) {
+                        window.loadGoaliesAdmin();
+                    } else if (tabName === 'book-club' && window.loadBookClub) {
+                        window.loadBookClub();
+                    } else if (tabName === 'vault' && window.loadVaultAdmin) {
+                        window.loadVaultAdmin();
                     }
                 }, 100);
             } catch (error) {
