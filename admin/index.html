@@ -209,10 +209,11 @@
         }
 
         .logout-btn {
-            position: absolute;
-            bottom: 1rem;
-            left: 1rem;
-            right: 1rem;
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+            margin: 1rem;
             padding: 0.9rem;
             background: var(--danger);
             color: var(--white);
@@ -328,7 +329,7 @@
                 <li><a onclick="switchTab('book-club')" class="menu-item" data-tab="book-club">📚 Book Club</a></li>
                 <li><a onclick="switchTab('vault')" class="menu-item" data-tab="vault">🔐 The Vault</a></li>
                 <li><a onclick="switchTab('content')" class="menu-item" data-tab="content">✏️ Edit Website</a></li>
-                <li><a onclick="switchTab('content')" class="menu-item" data-tab="content">✏️ Edit Website</a></li>
+
             </ul>
             <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
         </aside>
