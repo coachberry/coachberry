@@ -1,259 +1,302 @@
-<!-- Coach Berry - Edit Website Content Tab -->
+<!-- Coach Berry - Edit Website Content Tab (Full) -->
 <style>
     .cms-wrap { max-width:960px; }
-    .cms-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:2rem; overflow-x:auto; }
-    .cms-tab { padding:0.85rem 1.4rem; background:none; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text-light); white-space:nowrap; transition:all 0.2s; }
+    .cms-page-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2rem; }
+    .cms-page-tab { padding:0.6rem 1.2rem; border-radius:8px; border:1.5px solid var(--border); background:white; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; color:var(--text); }
+    .cms-page-tab:hover { border-color:var(--accent); color:var(--accent); }
+    .cms-page-tab.active { background:var(--accent); color:white; border-color:var(--accent); }
+    .cms-page-panel { display:none; }
+    .cms-page-panel.active { display:block; }
+    .cms-section-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:2rem; overflow-x:auto; }
+    .cms-tab { padding:0.8rem 1.3rem; background:none; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; cursor:pointer; font-weight:600; font-size:0.88rem; color:var(--text-light); white-space:nowrap; transition:all 0.2s; }
     .cms-tab:hover { color:var(--text); }
     .cms-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
     .cms-panel { display:none; }
     .cms-panel.active { display:block; }
     .cms-card { background:white; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.07); margin-bottom:1.5rem; overflow:hidden; }
-    .cms-card-head { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.5rem; background:var(--primary-dark); color:white; }
-    .cms-card-head h3 { margin:0; font-size:1rem; font-weight:700; }
+    .cms-card-head { display:flex; justify-content:space-between; align-items:center; padding:1.1rem 1.5rem; background:var(--primary-dark); color:white; gap:1rem; flex-wrap:wrap; }
+    .cms-card-head h3 { margin:0; font-size:0.95rem; font-weight:700; }
     .cms-card-body { padding:1.5rem; }
-    .cms-field { margin-bottom:1.2rem; }
-    .cms-field label { display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.4rem; color:var(--text); }
-    .cms-field input, .cms-field textarea, .cms-field select {
-        width:100%; padding:0.75rem 0.9rem; border:1.5px solid var(--border); border-radius:8px;
-        font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; background:white;
-    }
-    .cms-field input:focus, .cms-field textarea:focus, .cms-field select:focus {
-        outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,36,0,0.08);
-    }
+    .cms-field { margin-bottom:1.1rem; }
+    .cms-field label { display:block; font-weight:600; font-size:0.83rem; margin-bottom:0.35rem; color:var(--text); }
+    .cms-field input, .cms-field textarea, .cms-field select { width:100%; padding:0.7rem 0.9rem; border:1.5px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:inherit; transition:border-color 0.2s; background:white; }
+    .cms-field input:focus, .cms-field textarea:focus, .cms-field select:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(255,36,0,0.08); }
     .cms-field textarea { resize:vertical; min-height:90px; }
-    .cms-field-hint { font-size:0.75rem; color:var(--text-light); margin-top:0.3rem; }
+    .cms-field-hint { font-size:0.74rem; color:var(--text-light); margin-top:0.3rem; }
     .cms-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-    .cms-save-btn {
-        padding:0.7rem 1.8rem; background:var(--accent); color:white; border:none;
-        border-radius:8px; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s;
-    }
+    .cms-save-row { display:flex; align-items:center; gap:1rem; margin-top:0.5rem; flex-wrap:wrap; }
+    .cms-save-btn { padding:0.65rem 1.6rem; background:var(--accent); color:white; border:none; border-radius:7px; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.2s; }
     .cms-save-btn:hover { background:var(--accent-light); transform:translateY(-1px); }
     .cms-save-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
-    .cms-saved { color:#16a34a; font-weight:600; font-size:0.85rem; margin-left:1rem; opacity:0; transition:opacity 0.3s; }
+    .cms-saved { color:#16a34a; font-weight:600; font-size:0.82rem; opacity:0; transition:opacity 0.3s; }
     .cms-saved.show { opacity:1; }
-    .cms-preview-link { font-size:0.8rem; color:var(--accent); text-decoration:none; margin-left:1rem; font-weight:600; }
-    .cms-preview-link:hover { text-decoration:underline; }
-    .service-card-entry { border:1.5px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:0.8rem; background:#fafafa; }
-    .service-card-entry-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; }
-    .service-card-entry-head strong { font-size:0.9rem; }
-    .del-service-btn { background:none; border:none; color:#d1d5db; cursor:pointer; font-size:1rem; }
-    .del-service-btn:hover { color:var(--accent); }
-    .add-service-btn { padding:0.5rem 1.1rem; background:var(--primary-dark); color:white; border:none; border-radius:6px; font-weight:700; font-size:0.82rem; cursor:pointer; transition:all 0.2s; }
-    .add-service-btn:hover { background:var(--accent); }
-    .cms-img-preview { width:100%; max-height:160px; object-fit:cover; border-radius:6px; margin-top:0.5rem; display:none; }
+    .cms-preview-link { font-size:0.8rem; color:rgba(255,255,255,0.7); text-decoration:none; font-weight:600; }
+    .cms-preview-link:hover { color:white; }
+    .cms-img-preview { max-width:120px; max-height:120px; object-fit:cover; border-radius:6px; margin-top:0.5rem; display:none; box-shadow:0 2px 8px rgba(0,0,0,0.12); }
+    .repeater-item { border:1.5px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:0.8rem; background:#fafafa; }
+    .repeater-item-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; }
+    .repeater-item-head strong { font-size:0.88rem; color:var(--text); }
+    .repeater-del { background:none; border:none; color:#d1d5db; cursor:pointer; font-size:1rem; transition:color 0.2s; }
+    .repeater-del:hover { color:var(--accent); }
+    .add-item-btn { padding:0.4rem 0.9rem; background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:6px; font-weight:700; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+    .add-item-btn:hover { background:rgba(255,255,255,0.25); }
+    .cms-tip { background:#f0f9ff; border:1px solid #bae6fd; border-radius:6px; padding:0.7rem 1rem; font-size:0.8rem; color:#0369a1; margin-bottom:1.5rem; }
     @media (max-width:600px) { .cms-row { grid-template-columns:1fr; } }
 </style>
 
 <div class="cms-wrap">
-    <div class="cms-tabs">
-        <button class="cms-tab active" onclick="cmsTab('hero')">🏠 Hero</button>
-        <button class="cms-tab" onclick="cmsTab('about')">👤 About</button>
-        <button class="cms-tab" onclick="cmsTab('services')">🎯 Services</button>
-        <button class="cms-tab" onclick="cmsTab('membership')">🏒 Membership</button>
-        <button class="cms-tab" onclick="cmsTab('nav')">🔗 Navigation</button>
-        <button class="cms-tab" onclick="cmsTab('seo')">🔍 SEO</button>
+    <div class="cms-tip">💡 Changes save instantly to Firestore and update your live site. Use "Preview" links to see each page after saving.</div>
+
+    <div class="cms-page-tabs">
+        <button class="cms-page-tab active" onclick="cmsPageTab('home',this)">🏠 Homepage</button>
+        <button class="cms-page-tab" onclick="cmsPageTab('about',this)">👤 About Page</button>
+        <button class="cms-page-tab" onclick="cmsPageTab('services',this)">🎯 Services Page</button>
+        <button class="cms-page-tab" onclick="cmsPageTab('global',this)">🌐 SEO & Nav</button>
     </div>
 
-    <!-- HERO -->
-    <div class="cms-panel active" id="cms-hero">
-        <div class="cms-card">
-            <div class="cms-card-head">
-                <h3>🏠 Hero Section</h3>
-                <a href="https://coach-berry.com" target="_blank" class="cms-preview-link">Preview Site ↗</a>
+    <!-- HOMEPAGE -->
+    <div class="cms-page-panel active" id="cms-page-home">
+        <div class="cms-section-tabs">
+            <button class="cms-tab active" onclick="cmsSectionTab('home','hero',this)">Hero</button>
+            <button class="cms-tab" onclick="cmsSectionTab('home','about_snap',this)">About Snapshot</button>
+            <button class="cms-tab" onclick="cmsSectionTab('home','services_snap',this)">Services</button>
+            <button class="cms-tab" onclick="cmsSectionTab('home','vault_snap',this)">Vault Section</button>
+            <button class="cms-tab" onclick="cmsSectionTab('home','join',this)">Join CTA</button>
+        </div>
+
+        <div class="cms-panel active" id="home-hero">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🏠 Hero Section</h3><a href="https://coach-berry.com" target="_blank" class="cms-preview-link">Preview ↗</a></div>
+                <div class="cms-card-body">
+                    <div class="cms-field"><label>Eyebrow Text</label><input type="text" id="hero_eyebrow" placeholder="Coach 3erry · Nashville, TN"></div>
+                    <div class="cms-field"><label>Main Headline</label><input type="text" id="hero_headline" placeholder="Elevate Your Hockey Game"></div>
+                    <div class="cms-field"><label>Sub-headline</label><textarea id="hero_sub"></textarea></div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Badge 1</label><input type="text" id="hero_badge1" placeholder="30+ Years Playing"></div>
+                        <div class="cms-field"><label>Badge 2</label><input type="text" id="hero_badge2" placeholder="8+ Years Coaching"></div>
+                    </div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Badge 3</label><input type="text" id="hero_badge3" placeholder="USA Hockey Level 4"></div>
+                        <div class="cms-field"><label>Badge 4</label><input type="text" id="hero_badge4" placeholder="Nashville, TN"></div>
+                    </div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Primary Button Text</label><input type="text" id="hero_btn1_text" placeholder="Meet Coach Berry"></div>
+                        <div class="cms-field"><label>Primary Button Link</label><input type="text" id="hero_btn1_link" placeholder="/about/"></div>
+                    </div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Secondary Button Text</label><input type="text" id="hero_btn2_text" placeholder="Join Free"></div>
+                        <div class="cms-field"><label>Secondary Button Link</label><input type="text" id="hero_btn2_link" placeholder="/member-signup/"></div>
+                    </div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('hero')">💾 Save Hero</button>
+                        <span class="cms-saved" id="hero_saved">✓ Saved!</span>
+                    </div>
+                </div>
             </div>
-            <div class="cms-card-body">
-                <div class="cms-field">
-                    <label>Main Headline</label>
-                    <input type="text" id="hero_headline" placeholder="e.g. Develop Your Game. Build Your Future.">
-                    <div class="cms-field-hint">The big text visitors see first</div>
-                </div>
-                <div class="cms-field">
-                    <label>Sub-headline</label>
-                    <textarea id="hero_sub" placeholder="Supporting text below the headline..."></textarea>
-                </div>
-                <div class="cms-row">
-                    <div class="cms-field">
-                        <label>Primary Button Text</label>
-                        <input type="text" id="hero_btn1_text" placeholder="e.g. Join Now">
-                    </div>
-                    <div class="cms-field">
-                        <label>Primary Button Link</label>
-                        <input type="text" id="hero_btn1_link" placeholder="e.g. /#membership">
+        </div>
+
+        <div class="cms-panel" id="home-about_snap">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>👤 About Snapshot</h3></div>
+                <div class="cms-card-body">
+                    <div class="cms-field-hint" style="margin-bottom:1rem;color:#6b7280;font-size:0.85rem;">Short teaser version shown on homepage. Full bio is on the About Page tab.</div>
+                    <div class="cms-field"><label>Heading</label><input type="text" id="about_heading" placeholder="Hockey Coach & Goaltender Specialist"></div>
+                    <div class="cms-field"><label>Short Bio</label><textarea id="about_bio"></textarea></div>
+                    <div class="cms-field"><label>Credential Pills (one per line)</label><textarea id="about_creds" placeholder="USA Hockey Level 4&#10;Bronze Goaltending Cert&#10;3D Hockey LLC Owner&#10;Nashville, TN"></textarea><div class="cms-field-hint">Each line = one badge pill on the homepage</div></div>
+                    <div class="cms-field"><label>Photo URL</label><input type="text" id="about_photo" placeholder="https://..." oninput="cmsPreviewImg('about_photo','about_photo_prev')"><img id="about_photo_prev" class="cms-img-preview" alt="Preview"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('about')">💾 Save About Snapshot</button>
+                        <span class="cms-saved" id="about_saved">✓ Saved!</span>
                     </div>
                 </div>
-                <div class="cms-row">
-                    <div class="cms-field">
-                        <label>Secondary Button Text</label>
-                        <input type="text" id="hero_btn2_text" placeholder="e.g. Learn More">
+            </div>
+        </div>
+
+        <div class="cms-panel" id="home-services_snap">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🎯 Services</h3><button class="add-item-btn" onclick="cmsAddService()">＋ Add Service</button></div>
+                <div class="cms-card-body">
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Section Heading</label><input type="text" id="services_heading" placeholder="Coaching Services"></div>
+                        <div class="cms-field"><label>Section Description</label><input type="text" id="services_desc" placeholder="Personalized coaching for all levels..."></div>
                     </div>
-                    <div class="cms-field">
-                        <label>Secondary Button Link</label>
-                        <input type="text" id="hero_btn2_link" placeholder="e.g. /#about">
+                    <div id="servicesList" style="margin-top:1rem;"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('services')">💾 Save Services</button>
+                        <span class="cms-saved" id="services_saved">✓ Saved!</span>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
-                    <button class="cms-save-btn" onclick="cmsSave('hero')">💾 Save Hero</button>
-                    <span class="cms-saved" id="hero_saved">✓ Saved!</span>
+            </div>
+        </div>
+
+        <div class="cms-panel" id="home-vault_snap">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🔐 Vault Section</h3></div>
+                <div class="cms-card-body">
+                    <div class="cms-field"><label>Heading</label><input type="text" id="vault_section_heading" placeholder="Everything That Was Once In My Head"></div>
+                    <div class="cms-field"><label>Description</label><textarea id="vault_section_desc"></textarea></div>
+                    <div class="cms-field"><label>Feature Bullets (one per line)</label><textarea id="vault_section_features" placeholder="Goalie development guides&#10;Mental game resources&#10;Coaching philosophy"></textarea><div class="cms-field-hint">Each line = one bullet point</div></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('vault_section')">💾 Save Vault Section</button>
+                        <span class="cms-saved" id="vault_section_saved">✓ Saved!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cms-panel" id="home-join">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🏒 Join / Membership CTA</h3></div>
+                <div class="cms-card-body">
+                    <div class="cms-field"><label>Heading</label><input type="text" id="mem_heading" placeholder="Join the Coach Berry Community"></div>
+                    <div class="cms-field"><label>Description</label><textarea id="mem_desc"></textarea></div>
+                    <div class="cms-field"><label>Benefits (one per line)</label><textarea id="mem_benefits" placeholder="Access to The Vault&#10;Development tracking&#10;Player profile&#10;Free to join"></textarea></div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Button Text</label><input type="text" id="mem_btn_text" placeholder="Join for Free"></div>
+                        <div class="cms-field"><label>Button Link</label><input type="text" id="mem_btn_link" placeholder="/member-signup/"></div>
+                    </div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('membership')">💾 Save Join CTA</button>
+                        <span class="cms-saved" id="membership_saved">✓ Saved!</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ABOUT -->
-    <div class="cms-panel" id="cms-about">
-        <div class="cms-card">
-            <div class="cms-card-head"><h3>👤 About Section</h3></div>
-            <div class="cms-card-body">
-                <div class="cms-field">
-                    <label>Section Heading</label>
-                    <input type="text" id="about_heading" placeholder="e.g. About Coach Berry">
-                </div>
-                <div class="cms-field">
-                    <label>Bio / Description</label>
-                    <textarea id="about_bio" style="min-height:140px;" placeholder="Write your coaching bio here..."></textarea>
-                </div>
-                <div class="cms-field">
-                    <label>Credentials / Highlights</label>
-                    <textarea id="about_creds" placeholder="e.g. USA Hockey Level 4 Certified&#10;10+ years coaching experience&#10;Nashville Predators Development Staff"></textarea>
-                    <div class="cms-field-hint">One per line — will display as a list</div>
-                </div>
-                <div class="cms-field">
-                    <label>Photo URL</label>
-                    <input type="text" id="about_photo" placeholder="https://..." oninput="cmsPreviewImg('about_photo','about_photo_preview')">
-                    <img id="about_photo_preview" class="cms-img-preview" alt="Photo preview">
-                </div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
-                    <button class="cms-save-btn" onclick="cmsSave('about')">💾 Save About</button>
-                    <span class="cms-saved" id="about_saved">✓ Saved!</span>
-                </div>
-            </div>
+    <!-- ABOUT PAGE -->
+    <div class="cms-page-panel" id="cms-page-about">
+        <div class="cms-section-tabs">
+            <button class="cms-tab active" onclick="cmsSectionTab('about','bio',this)">Bio & Profile</button>
+            <button class="cms-tab" onclick="cmsSectionTab('about','philosophy',this)">Philosophy Cards</button>
+            <button class="cms-tab" onclick="cmsSectionTab('about','timeline',this)">Timeline</button>
         </div>
-    </div>
 
-    <!-- SERVICES -->
-    <div class="cms-panel" id="cms-services">
-        <div class="cms-card">
-            <div class="cms-card-head">
-                <h3>🎯 Services Section</h3>
-                <button class="add-service-btn" onclick="cmsAddService()">＋ Add Service</button>
-            </div>
-            <div class="cms-card-body">
-                <div class="cms-field">
-                    <label>Section Heading</label>
-                    <input type="text" id="services_heading" placeholder="e.g. Coaching Services">
-                </div>
-                <div class="cms-field">
-                    <label>Section Description</label>
-                    <textarea id="services_desc" placeholder="Brief description of your services..."></textarea>
-                </div>
-                <div id="servicesList" style="margin-top:1rem;"></div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
-                    <button class="cms-save-btn" onclick="cmsSave('services')">💾 Save Services</button>
-                    <span class="cms-saved" id="services_saved">✓ Saved!</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MEMBERSHIP -->
-    <div class="cms-panel" id="cms-membership">
-        <div class="cms-card">
-            <div class="cms-card-head"><h3>🏒 Membership Section</h3></div>
-            <div class="cms-card-body">
-                <div class="cms-field">
-                    <label>Section Heading</label>
-                    <input type="text" id="mem_heading" placeholder="e.g. Join the Coach Berry Community">
-                </div>
-                <div class="cms-field">
-                    <label>Section Description</label>
-                    <textarea id="mem_desc" placeholder="Describe the benefits of joining..."></textarea>
-                </div>
-                <div class="cms-field">
-                    <label>Member Benefits</label>
-                    <textarea id="mem_benefits" placeholder="e.g. Access to The Vault&#10;Development tracking tools&#10;Direct connection with Coach Berry&#10;Exclusive content and resources"></textarea>
-                    <div class="cms-field-hint">One per line</div>
-                </div>
-                <div class="cms-row">
-                    <div class="cms-field">
-                        <label>CTA Button Text</label>
-                        <input type="text" id="mem_btn_text" placeholder="e.g. Join for Free">
+        <div class="cms-panel active" id="about-bio">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>👤 Bio & Profile</h3><a href="https://coach-berry.com/about/" target="_blank" class="cms-preview-link">Preview ↗</a></div>
+                <div class="cms-card-body">
+                    <div class="cms-field"><label>Page Heading</label><input type="text" id="about_full_heading" placeholder="Hockey Coach & Goaltender Specialist"></div>
+                    <div class="cms-field"><label>Bio Paragraph 1</label><textarea id="about_full_bio_p1" style="min-height:110px;"></textarea></div>
+                    <div class="cms-field"><label>Bio Paragraph 2</label><textarea id="about_full_bio_p2" style="min-height:110px;"></textarea></div>
+                    <div class="cms-field"><label>Credentials (one per line)</label><textarea id="about_full_creds_full" style="min-height:120px;" placeholder="USA Hockey Level 4 Certified&#10;Bronze Goaltending Certification&#10;SafeSport Certified&#10;3D Hockey LLC — Owner/Lead Coach"></textarea></div>
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Stat 1 Number</label><input type="text" id="about_full_stat1_num" placeholder="30+"></div>
+                        <div class="cms-field"><label>Stat 1 Label</label><input type="text" id="about_full_stat1_label" placeholder="Years Playing"></div>
                     </div>
-                    <div class="cms-field">
-                        <label>CTA Button Link</label>
-                        <input type="text" id="mem_btn_link" placeholder="e.g. /member-signup/">
+                    <div class="cms-row">
+                        <div class="cms-field"><label>Stat 2 Number</label><input type="text" id="about_full_stat2_num" placeholder="8+"></div>
+                        <div class="cms-field"><label>Stat 2 Label</label><input type="text" id="about_full_stat2_label" placeholder="Years Coaching"></div>
+                    </div>
+                    <div class="cms-field"><label>Photo URL</label><input type="text" id="about_full_photo" placeholder="https://..." oninput="cmsPreviewImg('about_full_photo','about_full_photo_prev')"><img id="about_full_photo_prev" class="cms-img-preview" alt="Preview"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('about_full')">💾 Save About Page</button>
+                        <span class="cms-saved" id="about_full_saved">✓ Saved!</span>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
-                    <button class="cms-save-btn" onclick="cmsSave('membership')">💾 Save Membership</button>
-                    <span class="cms-saved" id="membership_saved">✓ Saved!</span>
+            </div>
+        </div>
+
+        <div class="cms-panel" id="about-philosophy">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🧠 Philosophy Cards</h3><button class="add-item-btn" onclick="cmsAddPhilosophy()">＋ Add Card</button></div>
+                <div class="cms-card-body">
+                    <div id="philosophyList"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('philosophy')">💾 Save Philosophy</button>
+                        <span class="cms-saved" id="philosophy_saved">✓ Saved!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cms-panel" id="about-timeline">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>📅 Coaching Timeline</h3><button class="add-item-btn" onclick="cmsAddTimeline()">＋ Add Entry</button></div>
+                <div class="cms-card-body">
+                    <div id="timelineList"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('timeline')">💾 Save Timeline</button>
+                        <span class="cms-saved" id="timeline_saved">✓ Saved!</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- NAV -->
-    <div class="cms-panel" id="cms-nav">
-        <div class="cms-card">
-            <div class="cms-card-head"><h3>🔗 Navigation Links</h3></div>
-            <div class="cms-card-body">
-                <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:1.2rem;">Current nav order: Home · About · Services · Blog · Book Club · The Vault · Login · Join Now</p>
-                <div class="cms-field">
-                    <label>Primary CTA Button Text</label>
-                    <input type="text" id="nav_cta_text" placeholder="e.g. Join Now">
+    <!-- SERVICES PAGE -->
+    <div class="cms-page-panel" id="cms-page-services">
+        <div class="cms-section-tabs">
+            <button class="cms-tab active" onclick="cmsSectionTab('services','cards',this)">Service Cards</button>
+            <button class="cms-tab" onclick="cmsSectionTab('services','faq',this)">FAQ</button>
+            <button class="cms-tab" onclick="cmsSectionTab('services','process',this)">How It Works</button>
+        </div>
+
+        <div class="cms-panel active" id="services-cards">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🎯 Service Cards</h3><a href="https://coach-berry.com/services/" target="_blank" class="cms-preview-link">Preview ↗</a><button class="add-item-btn" onclick="cmsAddService()">＋ Add</button></div>
+                <div class="cms-card-body">
+                    <div id="servicesList2"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('services')">💾 Save Services</button>
+                        <span class="cms-saved" id="services2_saved">✓ Saved!</span>
+                    </div>
                 </div>
-                <div class="cms-field">
-                    <label>Primary CTA Button Link</label>
-                    <input type="text" id="nav_cta_link" placeholder="e.g. /#membership">
+            </div>
+        </div>
+
+        <div class="cms-panel" id="services-faq">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>❓ FAQ</h3><button class="add-item-btn" onclick="cmsAddFaq()">＋ Add Question</button></div>
+                <div class="cms-card-body">
+                    <div id="faqList"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('faq')">💾 Save FAQ</button>
+                        <span class="cms-saved" id="faq_saved">✓ Saved!</span>
+                    </div>
                 </div>
-                <div class="cms-field">
-                    <label>Show Blog in Nav?</label>
-                    <select id="nav_show_blog">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                </div>
-                <div class="cms-field">
-                    <label>Show Book Club in Nav?</label>
-                    <select id="nav_show_bookclub">
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
-                    </select>
-                </div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
-                    <button class="cms-save-btn" onclick="cmsSave('nav')">💾 Save Nav Settings</button>
-                    <span class="cms-saved" id="nav_saved">✓ Saved!</span>
+            </div>
+        </div>
+
+        <div class="cms-panel" id="services-process">
+            <div class="cms-card">
+                <div class="cms-card-head"><h3>🔄 How It Works</h3><button class="add-item-btn" onclick="cmsAddProcess()">＋ Add Step</button></div>
+                <div class="cms-card-body">
+                    <div id="processList"></div>
+                    <div class="cms-save-row">
+                        <button class="cms-save-btn" onclick="cmsSave('process')">💾 Save Steps</button>
+                        <span class="cms-saved" id="process_saved">✓ Saved!</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SEO -->
-    <div class="cms-panel" id="cms-seo">
+    <!-- GLOBAL / SEO -->
+    <div class="cms-page-panel" id="cms-page-global">
         <div class="cms-card">
             <div class="cms-card-head"><h3>🔍 SEO & Meta Tags</h3></div>
             <div class="cms-card-body">
-                <div class="cms-field">
-                    <label>Site Title</label>
-                    <input type="text" id="seo_title" placeholder="e.g. Coach Berry — Hockey Development">
-                    <div class="cms-field-hint">Shown in browser tabs and Google results</div>
-                </div>
-                <div class="cms-field">
-                    <label>Meta Description</label>
-                    <textarea id="seo_desc" style="min-height:80px;" placeholder="Brief description of your site for Google..."></textarea>
-                    <div class="cms-field-hint">Keep under 160 characters for best SEO</div>
-                </div>
-                <div class="cms-field">
-                    <label>Keywords</label>
-                    <input type="text" id="seo_keywords" placeholder="e.g. hockey coaching, goalie development, Nashville hockey">
-                    <div class="cms-field-hint">Comma separated</div>
-                </div>
-                <div class="cms-field">
-                    <label>Social Share Image URL</label>
-                    <input type="text" id="seo_og_image" placeholder="https://... (image shown when shared on social media)">
-                </div>
-                <div style="display:flex;align-items:center;margin-top:0.5rem;">
+                <div class="cms-field"><label>Site Title</label><input type="text" id="seo_title" placeholder="Coach Berry — Hockey Coaching & Development"><div class="cms-field-hint">Shown in browser tabs and Google results</div></div>
+                <div class="cms-field"><label>Meta Description</label><textarea id="seo_desc" placeholder="Coach Matt Berry — USA Hockey Level 4 certified..."></textarea><div class="cms-field-hint">Keep under 160 characters</div></div>
+                <div class="cms-field"><label>Keywords</label><input type="text" id="seo_keywords" placeholder="hockey coaching, goalie development, Nashville hockey"></div>
+                <div class="cms-field"><label>Social Share Image URL</label><input type="text" id="seo_og_image" placeholder="https://..."></div>
+                <div class="cms-save-row">
                     <button class="cms-save-btn" onclick="cmsSave('seo')">💾 Save SEO</button>
                     <span class="cms-saved" id="seo_saved">✓ Saved!</span>
+                </div>
+            </div>
+        </div>
+        <div class="cms-card">
+            <div class="cms-card-head"><h3>🔗 Navigation</h3></div>
+            <div class="cms-card-body">
+                <div class="cms-row">
+                    <div class="cms-field"><label>Primary CTA Text</label><input type="text" id="nav_cta_text" placeholder="Join Now"></div>
+                    <div class="cms-field"><label>Primary CTA Link</label><input type="text" id="nav_cta_link" placeholder="/member-signup/"></div>
+                </div>
+                <div class="cms-save-row">
+                    <button class="cms-save-btn" onclick="cmsSave('nav')">💾 Save Nav</button>
+                    <span class="cms-saved" id="nav_saved">✓ Saved!</span>
                 </div>
             </div>
         </div>
@@ -276,155 +319,241 @@ const firebaseConfig = window.getFirebaseConfig ? window.getFirebaseConfig() : {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const SECTIONS = ['hero','about','services','membership','nav','seo'];
+let serviceItems = [], philosophyItems = [], timelineItems = [], faqItems = [], processItems = [];
 
-async function loadAllContent() {
-    for (const section of SECTIONS) {
+async function loadAll() {
+    const sections = ['hero','about','services','membership','vault_section','seo','nav','about_full'];
+    for (const s of sections) {
         try {
-            const snap = await getDoc(doc(db, 'site_content', section));
-            if (snap.exists()) populateSection(section, snap.data());
-        } catch(e) { console.error('Error loading', section, e); }
+            const snap = await getDoc(doc(db,'site_content',s));
+            if (snap.exists()) populate(s, snap.data());
+        } catch(e) {}
     }
-    await loadServices();
+    await Promise.all([loadServices(), loadPhilosophy(), loadTimeline(), loadFaq(), loadProcess()]);
 }
 
-function populateSection(section, data) {
-    Object.entries(data).forEach(([key, value]) => {
+function populate(section, data) {
+    Object.entries(data).forEach(([key, val]) => {
+        if (typeof val !== 'string') return;
         const el = document.getElementById(`${section}_${key}`);
-        if (el) el.value = value;
-        // Show image previews
-        if (key === 'photo' && value) {
-            const preview = document.getElementById(`${section}_photo_preview`);
-            if (preview) { preview.src = value; preview.style.display = 'block'; }
+        if (el) el.value = val;
+        if (key.includes('photo') && val) {
+            const prev = document.getElementById(`${section}_${key}_prev`) || document.getElementById(`${section}_photo_prev`);
+            if (prev) { prev.src = val; prev.style.display = 'block'; }
         }
     });
 }
 
 async function loadServices() {
-    const snap = await getDocs(collection(db, 'site_content', 'services', 'items'));
-    const items = [];
-    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-    items.sort((a,b) => (a.order||0) - (b.order||0));
-    renderServices(items);
+    const snap = await getDocs(collection(db,'site_content','services','items'));
+    serviceItems = [];
+    snap.forEach(d => serviceItems.push({ id:d.id, ...d.data() }));
+    serviceItems.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderServices();
+}
+async function loadPhilosophy() {
+    const snap = await getDocs(collection(db,'site_content','philosophy','items'));
+    philosophyItems = [];
+    snap.forEach(d => philosophyItems.push({ id:d.id, ...d.data() }));
+    philosophyItems.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderPhilosophy();
+}
+async function loadTimeline() {
+    const snap = await getDocs(collection(db,'site_content','timeline','items'));
+    timelineItems = [];
+    snap.forEach(d => timelineItems.push({ id:d.id, ...d.data() }));
+    timelineItems.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderTimeline();
+}
+async function loadFaq() {
+    const snap = await getDocs(collection(db,'site_content','faq','items'));
+    faqItems = [];
+    snap.forEach(d => faqItems.push({ id:d.id, ...d.data() }));
+    faqItems.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderFaq();
+}
+async function loadProcess() {
+    const snap = await getDocs(collection(db,'site_content','process','items'));
+    processItems = [];
+    snap.forEach(d => processItems.push({ id:d.id, ...d.data() }));
+    processItems.sort((a,b)=>(a.order||0)-(b.order||0));
+    renderProcess();
 }
 
-let serviceItems = [];
-
-function renderServices(items) {
-    serviceItems = items;
-    const container = document.getElementById('servicesList');
-    if (!items.length) {
-        container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-light);font-size:0.88rem;">No services yet. Click "+ Add Service" to add one.</div>';
-        return;
-    }
-    container.innerHTML = items.map((s, i) => `
-        <div class="service-card-entry" id="service_${s.id||i}">
-            <div class="service-card-entry-head">
-                <strong>Service ${i+1}</strong>
-                <button class="del-service-btn" onclick="deleteService('${s.id||i}')">✕</button>
-            </div>
+function svcHTML(items) {
+    if (!items.length) return '<p style="color:#6b7280;font-size:0.88rem;padding:0.5rem 0;">No services yet. Click "+ Add" to add one.</p>';
+    return items.map((s,i) => `
+        <div class="repeater-item">
+            <div class="repeater-item-head"><strong>Service ${i+1}</strong><button class="repeater-del" onclick="delItem('service','${s.id}')">✕</button></div>
             <div class="cms-row">
-                <div class="cms-field"><label>Icon / Emoji</label><input type="text" id="svc_icon_${s.id||i}" value="${esc(s.icon||'')}" placeholder="🏒"></div>
-                <div class="cms-field"><label>Title</label><input type="text" id="svc_title_${s.id||i}" value="${esc(s.title||'')}" placeholder="Private Lessons"></div>
+                <div class="cms-field"><label>Icon</label><input type="text" id="svc_icon_${s.id}" value="${esc(s.icon||'')}" placeholder="🏒"></div>
+                <div class="cms-field"><label>Title</label><input type="text" id="svc_title_${s.id}" value="${esc(s.title||'')}" placeholder="Service name"></div>
             </div>
-            <div class="cms-field"><label>Description</label><textarea id="svc_desc_${s.id||i}" placeholder="Describe this service...">${esc(s.description||'')}</textarea></div>
+            <div class="cms-field"><label>Description</label><textarea id="svc_desc_${s.id}">${esc(s.description||'')}</textarea></div>
+            <div class="cms-field"><label>Features (one per line — shown on Services page)</label><textarea id="svc_features_${s.id}" style="min-height:80px;">${esc(s.features||'')}</textarea></div>
             <div class="cms-row">
-                <div class="cms-field"><label>Price / Info</label><input type="text" id="svc_price_${s.id||i}" value="${esc(s.price||'')}" placeholder="e.g. $75/hour"></div>
-                <div class="cms-field"><label>CTA Link</label><input type="text" id="svc_link_${s.id||i}" value="${esc(s.link||'')}" placeholder="e.g. /#contact"></div>
+                <div class="cms-field"><label>Price</label><input type="text" id="svc_price_${s.id}" value="${esc(s.price||'')}" placeholder="e.g. $75/hour"></div>
+                <div class="cms-field"><label>CTA Link</label><input type="text" id="svc_link_${s.id}" value="${esc(s.link||'')}" placeholder="/member-signup/"></div>
             </div>
         </div>`).join('');
 }
 
-window.cmsAddService = function() {
-    const newItem = { id: `new_${Date.now()}`, icon:'', title:'', description:'', price:'', link:'' };
-    serviceItems.push(newItem);
-    renderServices(serviceItems);
-};
+function renderServices() {
+    const html = svcHTML(serviceItems);
+    document.getElementById('servicesList').innerHTML = html;
+    document.getElementById('servicesList2').innerHTML = html;
+}
+function renderPhilosophy() {
+    document.getElementById('philosophyList').innerHTML = !philosophyItems.length
+        ? '<p style="color:#6b7280;font-size:0.88rem;">No cards yet.</p>'
+        : philosophyItems.map((p,i) => `
+        <div class="repeater-item">
+            <div class="repeater-item-head"><strong>Card ${i+1}</strong><button class="repeater-del" onclick="delItem('philosophy','${p.id}')">✕</button></div>
+            <div class="cms-row">
+                <div class="cms-field"><label>Icon</label><input type="text" id="phil_icon_${p.id}" value="${esc(p.icon||'')}" placeholder="🧠"></div>
+                <div class="cms-field"><label>Title</label><input type="text" id="phil_title_${p.id}" value="${esc(p.title||'')}" placeholder="Card title"></div>
+            </div>
+            <div class="cms-field"><label>Description</label><textarea id="phil_desc_${p.id}">${esc(p.description||'')}</textarea></div>
+        </div>`).join('');
+}
+function renderTimeline() {
+    document.getElementById('timelineList').innerHTML = !timelineItems.length
+        ? '<p style="color:#6b7280;font-size:0.88rem;">No entries yet.</p>'
+        : timelineItems.map((t,i) => `
+        <div class="repeater-item">
+            <div class="repeater-item-head"><strong>Entry ${i+1}</strong><button class="repeater-del" onclick="delItem('timeline','${t.id}')">✕</button></div>
+            <div class="cms-row">
+                <div class="cms-field"><label>Year</label><input type="text" id="tl_year_${t.id}" value="${esc(t.year||'')}" placeholder="2021"></div>
+                <div class="cms-field"><label>Title</label><input type="text" id="tl_title_${t.id}" value="${esc(t.title||'')}" placeholder="Founded 3D Hockey LLC"></div>
+            </div>
+            <div class="cms-field"><label>Description</label><textarea id="tl_desc_${t.id}">${esc(t.description||'')}</textarea></div>
+        </div>`).join('');
+}
+function renderFaq() {
+    document.getElementById('faqList').innerHTML = !faqItems.length
+        ? '<p style="color:#6b7280;font-size:0.88rem;">No FAQs yet.</p>'
+        : faqItems.map((f,i) => `
+        <div class="repeater-item">
+            <div class="repeater-item-head"><strong>Q${i+1}</strong><button class="repeater-del" onclick="delItem('faq','${f.id}')">✕</button></div>
+            <div class="cms-field"><label>Question</label><input type="text" id="faq_q_${f.id}" value="${esc(f.question||'')}" placeholder="Frequently asked question..."></div>
+            <div class="cms-field"><label>Answer</label><textarea id="faq_a_${f.id}">${esc(f.answer||'')}</textarea></div>
+        </div>`).join('');
+}
+function renderProcess() {
+    document.getElementById('processList').innerHTML = !processItems.length
+        ? '<p style="color:#6b7280;font-size:0.88rem;">No steps yet.</p>'
+        : processItems.map((p,i) => `
+        <div class="repeater-item">
+            <div class="repeater-item-head"><strong>Step ${i+1}</strong><button class="repeater-del" onclick="delItem('process','${p.id}')">✕</button></div>
+            <div class="cms-row">
+                <div class="cms-field"><label>Title</label><input type="text" id="proc_title_${p.id}" value="${esc(p.title||'')}" placeholder="Create an Account"></div>
+                <div class="cms-field"><label>Description</label><input type="text" id="proc_desc_${p.id}" value="${esc(p.description||'')}" placeholder="Brief step description..."></div>
+            </div>
+        </div>`).join('');
+}
 
-window.deleteService = async function(id) {
-    if (!confirm('Delete this service?')) return;
+window.cmsAddService = function() { serviceItems.push({ id:`new_${Date.now()}`, icon:'', title:'', description:'', features:'', price:'', link:'' }); renderServices(); };
+window.cmsAddPhilosophy = function() { philosophyItems.push({ id:`new_${Date.now()}`, icon:'', title:'', description:'' }); renderPhilosophy(); };
+window.cmsAddTimeline = function() { timelineItems.push({ id:`new_${Date.now()}`, year:'', title:'', description:'' }); renderTimeline(); };
+window.cmsAddFaq = function() { faqItems.push({ id:`new_${Date.now()}`, question:'', answer:'' }); renderFaq(); };
+window.cmsAddProcess = function() { processItems.push({ id:`new_${Date.now()}`, title:'', description:'' }); renderProcess(); };
+
+window.delItem = async function(type, id) {
+    if (!confirm('Delete this item?')) return;
+    const colMap = { service:'services', philosophy:'philosophy', timeline:'timeline', faq:'faq', process:'process' };
     if (!id.startsWith('new_')) {
-        try { await deleteDoc(doc(db, 'site_content', 'services', 'items', id)); } catch(e) {}
+        try { await deleteDoc(doc(db,'site_content',colMap[type],'items',id)); } catch(e) {}
     }
-    serviceItems = serviceItems.filter(s => (s.id||'') !== id);
-    renderServices(serviceItems);
+    if (type==='service') { serviceItems=serviceItems.filter(s=>s.id!==id); renderServices(); }
+    else if (type==='philosophy') { philosophyItems=philosophyItems.filter(p=>p.id!==id); renderPhilosophy(); }
+    else if (type==='timeline') { timelineItems=timelineItems.filter(t=>t.id!==id); renderTimeline(); }
+    else if (type==='faq') { faqItems=faqItems.filter(f=>f.id!==id); renderFaq(); }
+    else if (type==='process') { processItems=processItems.filter(p=>p.id!==id); renderProcess(); }
 };
 
 window.cmsSave = async function(section) {
-    const btn = document.querySelector(`#cms-${section} .cms-save-btn`);
-    const saved = document.getElementById(`${section}_saved`);
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-
+    const btns = document.querySelectorAll(`[onclick="cmsSave('${section}')"]`);
+    btns.forEach(b => { b.disabled=true; b.textContent='Saving...'; });
+    const v = id => document.getElementById(id)?.value?.trim() || '';
     try {
-        if (section === 'services') {
-            // Save heading/desc
-            const data = {
-                heading: document.getElementById('services_heading').value.trim(),
-                desc: document.getElementById('services_desc').value.trim(),
-                updatedAt: Date.now()
-            };
-            await setDoc(doc(db, 'site_content', 'services'), data, { merge: true });
-            // Save each service item
-            for (const s of serviceItems) {
-                const sData = {
-                    icon: document.getElementById(`svc_icon_${s.id}`)?.value?.trim() || '',
-                    title: document.getElementById(`svc_title_${s.id}`)?.value?.trim() || '',
-                    description: document.getElementById(`svc_desc_${s.id}`)?.value?.trim() || '',
-                    price: document.getElementById(`svc_price_${s.id}`)?.value?.trim() || '',
-                    link: document.getElementById(`svc_link_${s.id}`)?.value?.trim() || '',
-                    order: serviceItems.indexOf(s),
-                    updatedAt: Date.now()
-                };
-                if (s.id && !s.id.startsWith('new_')) {
-                    await setDoc(doc(db, 'site_content', 'services', 'items', s.id), sData, { merge: true });
-                } else {
-                    await addDoc(collection(db, 'site_content', 'services', 'items'), sData);
+        const repeaterSections = ['services','philosophy','timeline','faq','process'];
+        if (repeaterSections.includes(section)) {
+            if (section==='services') {
+                await setDoc(doc(db,'site_content','services'), { heading:v('services_heading'), desc:v('services_desc'), updatedAt:Date.now() }, {merge:true});
+                for (let i=0; i<serviceItems.length; i++) {
+                    const s = serviceItems[i];
+                    const data = { icon:v(`svc_icon_${s.id}`), title:v(`svc_title_${s.id}`), description:v(`svc_desc_${s.id}`), features:v(`svc_features_${s.id}`), price:v(`svc_price_${s.id}`), link:v(`svc_link_${s.id}`), order:i, updatedAt:Date.now() };
+                    s.id.startsWith('new_') ? await addDoc(collection(db,'site_content','services','items'), data) : await setDoc(doc(db,'site_content','services','items',s.id), data, {merge:true});
                 }
+                await loadServices();
+            } else if (section==='philosophy') {
+                for (let i=0; i<philosophyItems.length; i++) {
+                    const p = philosophyItems[i];
+                    const data = { icon:v(`phil_icon_${p.id}`), title:v(`phil_title_${p.id}`), description:v(`phil_desc_${p.id}`), order:i, updatedAt:Date.now() };
+                    p.id.startsWith('new_') ? await addDoc(collection(db,'site_content','philosophy','items'), data) : await setDoc(doc(db,'site_content','philosophy','items',p.id), data, {merge:true});
+                }
+                await loadPhilosophy();
+            } else if (section==='timeline') {
+                for (let i=0; i<timelineItems.length; i++) {
+                    const t = timelineItems[i];
+                    const data = { year:v(`tl_year_${t.id}`), title:v(`tl_title_${t.id}`), description:v(`tl_desc_${t.id}`), order:i, updatedAt:Date.now() };
+                    t.id.startsWith('new_') ? await addDoc(collection(db,'site_content','timeline','items'), data) : await setDoc(doc(db,'site_content','timeline','items',t.id), data, {merge:true});
+                }
+                await loadTimeline();
+            } else if (section==='faq') {
+                for (let i=0; i<faqItems.length; i++) {
+                    const f = faqItems[i];
+                    const data = { question:v(`faq_q_${f.id}`), answer:v(`faq_a_${f.id}`), order:i, updatedAt:Date.now() };
+                    f.id.startsWith('new_') ? await addDoc(collection(db,'site_content','faq','items'), data) : await setDoc(doc(db,'site_content','faq','items',f.id), data, {merge:true});
+                }
+                await loadFaq();
+            } else if (section==='process') {
+                for (let i=0; i<processItems.length; i++) {
+                    const p = processItems[i];
+                    const data = { title:v(`proc_title_${p.id}`), description:v(`proc_desc_${p.id}`), order:i, updatedAt:Date.now() };
+                    p.id.startsWith('new_') ? await addDoc(collection(db,'site_content','process','items'), data) : await setDoc(doc(db,'site_content','process','items',p.id), data, {merge:true});
+                }
+                await loadProcess();
             }
-            await loadServices();
         } else {
-            const data = { updatedAt: Date.now() };
+            const data = { updatedAt:Date.now() };
             const prefix = `${section}_`;
-            document.querySelectorAll(`#cms-${section} input, #cms-${section} textarea, #cms-${section} select`).forEach(el => {
-                if (el.id.startsWith(prefix)) {
-                    const key = el.id.replace(prefix, '');
-                    data[key] = el.value.trim();
-                }
+            document.querySelectorAll(`input[id^="${prefix}"], textarea[id^="${prefix}"]`).forEach(el => {
+                const key = el.id.replace(prefix,'');
+                if (!key.includes('prev') && !key.includes('saved')) data[key] = el.value.trim();
             });
-            await setDoc(doc(db, 'site_content', section), data, { merge: true });
+            await setDoc(doc(db,'site_content',section), data, {merge:true});
         }
-
-        saved.classList.add('show');
-        setTimeout(() => saved.classList.remove('show'), 2500);
-    } catch(e) {
-        alert('Error saving: ' + e.message);
-    } finally {
-        btn.disabled = false;
-        btn.textContent = `💾 Save ${section.charAt(0).toUpperCase()+section.slice(1)}`;
-    }
+        document.querySelectorAll(`.cms-saved[id^="${section}"]`).forEach(el => { el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); });
+        const savedEl = document.getElementById(`${section}_saved`) || document.getElementById(`${section}2_saved`);
+        if (savedEl) { savedEl.classList.add('show'); setTimeout(()=>savedEl.classList.remove('show'),2500); }
+    } catch(e) { alert('Error saving: '+e.message); }
+    finally { btns.forEach(b => { b.disabled=false; b.textContent='💾 Save'; }); }
 };
 
-window.cmsTab = function(tab) {
-    document.querySelectorAll('.cms-tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.cms-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById(`cms-${tab}`).classList.add('active');
-    event.target.classList.add('active');
+window.cmsPageTab = function(page, btn) {
+    document.querySelectorAll('.cms-page-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.cms-page-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`cms-page-${page}`).classList.add('active');
+    btn.classList.add('active');
+};
+
+window.cmsSectionTab = function(page, section, btn) {
+    const panel = document.getElementById(`cms-page-${page}`);
+    panel.querySelectorAll('.cms-tab').forEach(b=>b.classList.remove('active'));
+    panel.querySelectorAll('.cms-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(`${page}-${section}`).classList.add('active');
+    btn.classList.add('active');
 };
 
 window.cmsPreviewImg = function(inputId, previewId) {
-    const url = document.getElementById(inputId).value.trim();
-    const preview = document.getElementById(previewId);
-    if (url) { preview.src = url; preview.style.display = 'block'; }
-    else preview.style.display = 'none';
+    const url = document.getElementById(inputId)?.value?.trim();
+    const prev = document.getElementById(previewId);
+    if (prev) { prev.src=url||''; prev.style.display=url?'block':'none'; }
 };
 
-function esc(str) {
-    if (!str) return '';
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
-}
+function esc(str) { if(!str) return ''; const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
 
-loadAllContent();
+window.loadCMSContent = loadAll;
+loadAll();
 </script>
