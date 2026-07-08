@@ -6,1289 +6,457 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coach Berry - Hockey Coaching & Training</title>
+    <title>Coach Berry — Hockey Coaching & Development</title>
+    <meta name="description" content="Coach Matt Berry — USA Hockey Level 4 certified coach, goaltender specialist, and hockey development expert based in Nashville, TN.">
     <link rel="stylesheet" href="styles.css?v=3">
     <script src="header.js"></script>
     <script src="footer.js"></script>
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
-        authDomain: "coach-berry.firebaseapp.com",
-        projectId: "coach-berry",
-        storageBucket: "coach-berry.firebasestorage.app",
-        messagingSenderId: "170282824286",
-        appId: "1:170282824286:web:5387ec9826c38466c07acf"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function loadSiteContent() {
-        try {
-            // Load hero
-            const heroSnap = await getDoc(doc(db, 'site_content', 'hero'));
-            if (heroSnap.exists()) {
-                const h = heroSnap.data();
-                if (h.headline) {
-                    const h1 = document.querySelector('.hero h1');
-                    if (h1) h1.innerHTML = h.headline.replace(/hockey/gi, '<span>Hockey</span>');
-                }
-                if (h.sub) {
-                    const p = document.querySelector('.hero p');
-                    if (p) p.textContent = h.sub;
-                }
-                if (h.btn1_text && h.btn1_link) {
-                    const btn1 = document.querySelector('.hero-buttons a:first-child');
-                    if (btn1) { btn1.textContent = h.btn1_text; btn1.href = h.btn1_link; }
-                }
-                if (h.btn2_text && h.btn2_link) {
-                    const btn2 = document.querySelector('.hero-buttons a:last-child');
-                    if (btn2) { btn2.textContent = h.btn2_text; btn2.href = h.btn2_link; }
-                }
-            }
-
-            // Load about
-            const aboutSnap = await getDoc(doc(db, 'site_content', 'about'));
-            if (aboutSnap.exists()) {
-                const a = aboutSnap.data();
-                if (a.heading) {
-                    const h3 = document.querySelector('.about-text h3');
-                    if (h3) h3.textContent = a.heading;
-                }
-                if (a.bio) {
-                    const paras = document.querySelectorAll('.about-text > p');
-                    if (paras.length) paras[0].textContent = a.bio;
-                }
-                if (a.creds) {
-                    const credList = document.querySelector('.credentials-list ul');
-                    if (credList) {
-                        credList.innerHTML = a.creds.split('\n').filter(c => c.trim()).map(c =>
-                            `<li>${c.trim()}</li>`
-                        ).join('');
-                    }
-                }
-                if (a.photo) {
-                    const imgWrap = document.querySelector('.about-image');
-                    if (imgWrap) imgWrap.innerHTML = `<img src="${a.photo}" alt="Coach Berry" style="width:100%;height:400px;object-fit:cover;">`;
-                }
-            }
-
-            // Load services
-            const servicesSnap = await getDoc(doc(db, 'site_content', 'services'));
-            if (servicesSnap.exists()) {
-                const s = servicesSnap.data();
-                if (s.heading) {
-                    const h2 = document.querySelector('#services h2');
-                    if (h2) h2.textContent = s.heading;
-                }
-            }
-            const serviceItemsSnap = await getDocs(collection(db, 'site_content', 'services', 'items'));
-            const items = [];
-            serviceItemsSnap.forEach(d => items.push(d.data()));
-            items.sort((a,b) => (a.order||0) - (b.order||0));
-            if (items.length) {
-                const grid = document.querySelector('.services-grid');
-                if (grid) {
-                    grid.innerHTML = items.map(item => `
-                        <div class="service-card">
-                            <div class="service-icon">${item.icon||'🏒'}</div>
-                            <h3>${item.title||''}</h3>
-                            <p>${item.description||''}</p>
-                            ${item.price ? `<p style="font-weight:700;color:var(--accent);margin-top:0.5rem;">${item.price}</p>` : ''}
-                            ${item.link ? `<a href="${item.link}" class="cta-button" style="margin-top:1rem;display:inline-block;font-size:0.9rem;padding:0.7rem 1.5rem;">Learn More</a>` : ''}
-                        </div>`).join('');
-                }
-            }
-
-            // Load membership section
-            const memSnap = await getDoc(doc(db, 'site_content', 'membership'));
-            if (memSnap.exists()) {
-                const m = memSnap.data();
-                if (m.heading) {
-                    const h2 = document.querySelector('#membership h2');
-                    if (h2) h2.textContent = m.heading;
-                }
-                if (m.desc) {
-                    const intro = document.querySelector('.membership-intro p');
-                    if (intro) intro.textContent = m.desc;
-                }
-            }
-
-            // Load SEO
-            const seoSnap = await getDoc(doc(db, 'site_content', 'seo'));
-            if (seoSnap.exists()) {
-                const s = seoSnap.data();
-                if (s.title) document.title = s.title;
-                if (s.desc) {
-                    let meta = document.querySelector('meta[name="description"]');
-                    if (!meta) { meta = document.createElement('meta'); meta.name = 'description'; document.head.appendChild(meta); }
-                    meta.content = s.desc;
-                }
-                if (s.og_image) {
-                    let og = document.querySelector('meta[property="og:image"]');
-                    if (!og) { og = document.createElement('meta'); og.setAttribute('property','og:image'); document.head.appendChild(og); }
-                    og.content = s.og_image;
-                }
-            }
-        } catch(e) {
-            console.log('CMS load error (using defaults):', e.message);
-        }
-    }
-
-    loadSiteContent();
-    </script>
     <style>
-        /* Page-specific styles for homepage only */
-        
-        /* Hero Section */
+        /* ── HERO ── */
         .hero {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: var(--white);
-            padding: 5rem 2rem;
-            text-align: center;
-            min-height: 700px;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 60%, #2d0a00 100%);
+            color: white;
+            min-height: 90vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            padding: 5rem 2rem;
             position: relative;
             overflow: hidden;
         }
-
         .hero::before {
             content: '';
             position: absolute;
-            top: -50%;
+            top: -30%;
             right: -10%;
-            width: 600px;
-            height: 600px;
-            background: rgba(255, 36, 0, 0.08);
+            width: 700px;
+            height: 700px;
+            background: rgba(255,36,0,0.07);
             border-radius: 50%;
-            animation: float 8s ease-in-out infinite;
+            animation: float 10s ease-in-out infinite;
         }
-
         .hero::after {
             content: '';
             position: absolute;
-            bottom: -30%;
+            bottom: -20%;
             left: -5%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 36, 0, 0.05);
+            width: 500px;
+            height: 500px;
+            background: rgba(255,36,0,0.04);
             border-radius: 50%;
-            animation: float 10s ease-in-out infinite 1s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(40px); }
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 900px;
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-
-        .hero h1 span {
-            color: var(--accent);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            opacity: 0.95;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        /* About Section */
-        #about {
-            background: var(--white);
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            margin-top: 3rem;
-        }
-
-        .about-image {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        .about-image img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .about-text h3 {
-            font-size: 2rem;
-            color: var(--primary-dark);
-            margin-bottom: 1.5rem;
-            font-weight: 700;
-        }
-
-        .about-text p {
-            margin-bottom: 1.5rem;
-            line-height: 1.9;
-            font-size: 1.05rem;
-        }
-
-        .credentials-list {
-            background: var(--light-gray);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            border-left: 4px solid var(--accent);
-        }
-
-        .credentials-list h4 {
-            color: var(--accent);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .credentials-list ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .credentials-list li {
-            padding: 0.5rem 0;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .credentials-list li::before {
-            content: '✓ ';
-            color: var(--accent);
-            font-weight: 800;
-            margin-right: 0.8rem;
-        }
-
-        /* Services Section */
-        #services {
-            background: var(--light-gray);
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-
-        .service-card {
-            background: var(--white);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border-top: 5px solid var(--accent);
-        }
-
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
-
-        .service-card h3 {
-            font-size: 1.6rem;
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .service-card p {
-            color: var(--text-light);
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
-        }
-
-        .service-features {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .service-features li {
-            font-size: 0.95rem;
-            color: var(--text);
-            margin: 0.6rem 0;
-            list-style: none;
-        }
-
-        .service-features li::before {
-            content: '→ ';
-            color: var(--accent);
-            font-weight: 700;
-            margin-right: 0.5rem;
-        }
-
-        /* Content Hub Section */
-        #content {
-            background: var(--white);
-        }
-
-        .content-intro {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            font-size: 1.1rem;
-            color: var(--text-light);
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .content-card {
-            background: var(--light-gray);
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .content-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .content-card-icon {
-            font-size: 2.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .content-card h3 {
-            color: var(--primary-dark);
-            font-size: 1.4rem;
-            margin-bottom: 0.8rem;
-            font-weight: 700;
-        }
-
-        .content-card p {
-            font-size: 0.95rem;
-            color: var(--text-light);
-        }
-
-        /* Blog Section */
-        #blog {
-            background: var(--white);
-        }
-
-        /* Membership Section */
-        #membership {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: var(--white);
-        }
-
-        #membership h2 {
-            color: var(--white);
-        }
-
-        #membership h2::after {
-            background: var(--accent);
-        }
-
-        .membership-container {
-            max-width: 1000px;
-            margin: 3rem auto 0;
-        }
-
-        .membership-intro {
-            text-align: center;
-            margin-bottom: 3rem;
-            font-size: 1.1rem;
-            opacity: 0.95;
-        }
-
-        .form-group {
-            margin-bottom: 1.8rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-            font-size: 0.95rem;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.9rem;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 1rem;
-            background: rgba(255,255,255,0.95);
-            color: var(--text);
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgba(255, 36, 0, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .checkbox-group {
-            display: flex;
-            gap: 2rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .form-submit {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .form-submit button {
-            flex: 1;
-            padding: 1.1rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .form-submit .submit-btn {
-            background: var(--accent);
-            color: var(--white);
-        }
-
-        .form-submit .submit-btn:hover {
-            background: var(--accent-light);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 36, 0, 0.3);
-        }
-
-        .form-submit .reset-btn {
-            background: rgba(255,255,255,0.2);
-            color: var(--white);
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .form-submit .reset-btn:hover {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
-        }
-
-        .details-section {
-            background: rgba(0,0,0,0.2);
-            padding: 2rem;
-            border-radius: 10px;
-            margin-top: 2rem;
-            display: none;
-        }
-
-        .details-section.active {
-            display: block;
-        }
-
-        .details-section h4 {
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .kid-entry {
-            background: rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border-left: 3px solid var(--accent);
-        }
-
-        .add-kid-btn {
-            background: rgba(255, 36, 0, 0.8);
-            color: var(--white);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .add-kid-btn:hover {
-            background: var(--accent);
-        }
-
-        .success-message {
-            background: rgba(76, 175, 80, 0.2);
-            border: 2px solid #4CAF50;
-            color: var(--white);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            display: none;
-            text-align: center;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1.1rem;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .checkbox-group {
-                gap: 1rem;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-            }
-
-            .hero-buttons a {
-                width: 100%;
-                text-align: center;
-            }
+            animation: float 14s ease-in-out infinite 2s;
+        }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(40px)} }
+        .hero-content { position:relative; z-index:2; max-width:850px; animation:slideUp 0.8s ease-out; }
+        @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+        .hero-eyebrow { font-size:0.85rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FF2400; margin-bottom:1.2rem; display:block; }
+        .hero h1 { font-size:clamp(2.8rem,6vw,5rem); font-weight:900; line-height:1.05; margin-bottom:1.5rem; letter-spacing:-1px; }
+        .hero h1 span { color:#FF2400; }
+        .hero p { font-size:clamp(1rem,2vw,1.25rem); color:rgba(255,255,255,0.75); max-width:650px; margin:0 auto 2.5rem; line-height:1.7; }
+        .hero-badges { display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+        .hero-badge { font-size:0.82rem; color:rgba(255,255,255,0.55); display:flex; align-items:center; gap:0.4rem; }
+        .hero-badge strong { color:rgba(255,255,255,0.85); }
+        .hero-buttons { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+        /* ── ABOUT SNAPSHOT ── */
+        .about-snap { background:white; padding:6rem 2rem; }
+        .about-snap-inner { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+        .about-snap-image { border-radius:16px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.15); background:linear-gradient(135deg,#000,#1a1a1a); height:420px; display:flex; align-items:center; justify-content:center; font-size:6rem; }
+        .about-snap-image img { width:100%; height:100%; object-fit:cover; display:block; }
+        .about-snap-text .eyebrow { font-size:0.78rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FF2400; margin-bottom:1rem; display:block; }
+        .about-snap-text h2 { font-size:2.2rem; font-weight:900; margin-bottom:1.2rem; color:#000; line-height:1.2; }
+        .about-snap-text p { color:#4a4a4a; line-height:1.8; margin-bottom:1rem; font-size:1rem; }
+        .about-creds-mini { margin:1.5rem 0; display:flex; flex-wrap:wrap; gap:0.5rem; }
+        .cred-pill { display:inline-flex; align-items:center; gap:0.4rem; padding:0.35rem 0.8rem; background:#f8f9fa; border-radius:20px; font-size:0.78rem; font-weight:600; color:#374151; border:1px solid #e0e0e0; }
+
+        /* ── SERVICES SNAPSHOT ── */
+        .services-snap { background:#f5f5f5; padding:6rem 2rem; }
+        .services-snap-inner { max-width:1100px; margin:0 auto; }
+        .section-label { text-align:center; margin-bottom:3rem; }
+        .section-label .eyebrow { font-size:0.78rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FF2400; display:block; margin-bottom:0.8rem; }
+        .section-label h2 { font-size:2.2rem; font-weight:900; color:#000; margin:0 0 0.8rem; }
+        .section-label p { color:#6b7280; font-size:1rem; max-width:550px; margin:0 auto; }
+        .services-snap-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:2.5rem; }
+        .service-snap-card { background:white; border-radius:14px; padding:2rem; box-shadow:0 2px 16px rgba(0,0,0,0.07); transition:all 0.25s; border-top:4px solid transparent; }
+        .service-snap-card:hover { transform:translateY(-5px); box-shadow:0 12px 32px rgba(0,0,0,0.12); border-top-color:#FF2400; }
+        .service-snap-icon { font-size:2.5rem; margin-bottom:1rem; display:block; }
+        .service-snap-card h3 { font-size:1.1rem; font-weight:800; margin-bottom:0.6rem; color:#000; }
+        .service-snap-card p { font-size:0.88rem; color:#6b7280; line-height:1.6; margin:0; }
+
+        /* ── VAULT TEASER ── */
+        .vault-teaser { background:linear-gradient(135deg,#000 0%,#1a1a1a 100%); color:white; padding:6rem 2rem; }
+        .vault-teaser-inner { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+        .vault-teaser h2 { font-size:2.2rem; font-weight:900; margin-bottom:1rem; }
+        .vault-teaser h2 span { color:#FF2400; }
+        .vault-teaser p { color:rgba(255,255,255,0.7); line-height:1.7; margin-bottom:1.5rem; }
+        .vault-features { list-style:none; padding:0; margin:0 0 2rem; }
+        .vault-features li { display:flex; align-items:center; gap:0.7rem; padding:0.5rem 0; color:rgba(255,255,255,0.8); font-size:0.92rem; border-bottom:1px solid rgba(255,255,255,0.08); }
+        .vault-features li:last-child { border-bottom:none; }
+        .vault-features li::before { content:'→'; color:#FF2400; font-weight:700; flex-shrink:0; }
+        .vault-cat-preview { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+        .vault-cat-tile { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1.2rem; transition:all 0.2s; }
+        .vault-cat-tile:hover { background:rgba(255,36,0,0.1); border-color:rgba(255,36,0,0.3); }
+        .vault-cat-tile .vt-icon { font-size:1.5rem; margin-bottom:0.4rem; display:block; }
+        .vault-cat-tile .vt-name { font-weight:700; font-size:0.88rem; }
+        .vault-cat-tile .vt-desc { font-size:0.75rem; color:rgba(255,255,255,0.5); margin-top:0.2rem; }
+
+        /* ── BOOK CLUB TEASER ── */
+        .bc-teaser { background:white; padding:6rem 2rem; }
+        .bc-teaser-inner { max-width:1100px; margin:0 auto; }
+        .bc-books-preview { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1.5rem; margin:2.5rem 0; }
+        .bc-book-tile { text-align:center; }
+        .bc-book-cover { width:100%; height:180px; object-fit:cover; border-radius:6px; box-shadow:0 6px 20px rgba(0,0,0,0.15); margin-bottom:0.6rem; background:#e0e0e0; display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
+        .bc-book-cover img { width:100%; height:100%; object-fit:cover; border-radius:6px; }
+        .bc-book-title { font-weight:700; font-size:0.82rem; color:#000; line-height:1.3; }
+        .bc-book-author { font-size:0.75rem; color:#6b7280; margin-top:0.2rem; }
+
+        /* ── MEMBERSHIP CTA ── */
+        .join-cta { background:linear-gradient(135deg,#FF2400 0%,#cc1d00 100%); color:white; padding:6rem 2rem; text-align:center; }
+        .join-cta-inner { max-width:700px; margin:0 auto; }
+        .join-cta h2 { font-size:2.5rem; font-weight:900; margin-bottom:1rem; }
+        .join-cta p { font-size:1.1rem; color:rgba(255,255,255,0.85); margin-bottom:2rem; line-height:1.6; }
+        .join-benefits { display:flex; justify-content:center; gap:2rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+        .join-benefit { display:flex; align-items:center; gap:0.5rem; font-size:0.9rem; color:rgba(255,255,255,0.9); font-weight:600; }
+        .join-benefit::before { content:'✓'; font-weight:800; }
+        .join-cta-btn { display:inline-block; padding:1rem 3rem; background:white; color:#FF2400; border-radius:50px; font-weight:800; font-size:1.05rem; text-decoration:none; transition:all 0.2s; margin-right:1rem; }
+        .join-cta-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,0.2); }
+        .join-login-link { display:inline-block; color:rgba(255,255,255,0.75); font-size:0.9rem; text-decoration:none; margin-top:1.2rem; }
+        .join-login-link:hover { color:white; }
+
+        /* ── BLOG TEASER ── */
+        .blog-teaser { background:#f5f5f5; padding:6rem 2rem; }
+        .blog-teaser-inner { max-width:1100px; margin:0 auto; }
+        .blog-posts-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; margin:2rem 0; }
+        .blog-post-card { background:white; border-radius:12px; padding:1.5rem; box-shadow:0 2px 10px rgba(0,0,0,0.06); transition:all 0.2s; text-decoration:none; color:#1a1a1a; display:block; }
+        .blog-post-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.1); }
+        .blog-post-date { font-size:0.75rem; color:#9ca3af; margin-bottom:0.5rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .blog-post-title { font-size:1rem; font-weight:800; margin-bottom:0.5rem; line-height:1.4; }
+        .blog-post-excerpt { font-size:0.85rem; color:#6b7280; line-height:1.5; }
+
+        /* ── SHARED ── */
+        .center-cta { text-align:center; margin-top:2rem; }
+        .btn-primary { display:inline-block; padding:0.85rem 2.2rem; background:#FF2400; color:white; border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; font-size:0.95rem; }
+        .btn-primary:hover { background:#FF3a1f; transform:translateY(-2px); }
+        .btn-outline { display:inline-block; padding:0.85rem 2.2rem; background:transparent; color:#FF2400; border:2px solid #FF2400; border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; font-size:0.95rem; margin-left:0.8rem; }
+        .btn-outline:hover { background:#FF2400; color:white; }
+        .btn-white-outline { display:inline-block; padding:0.85rem 2.2rem; background:transparent; color:white; border:2px solid rgba(255,255,255,0.5); border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; font-size:0.95rem; }
+        .btn-white-outline:hover { background:rgba(255,255,255,0.1); border-color:white; }
+
+        @media (max-width:900px) {
+            .about-snap-inner, .vault-teaser-inner { grid-template-columns:1fr; gap:2.5rem; }
+            .services-snap-grid { grid-template-columns:1fr; }
+            .vault-cat-preview { grid-template-columns:1fr 1fr; }
+            .about-snap-image { height:280px; }
+        }
+        @media (max-width:600px) {
+            .hero { min-height:80vh; padding:4rem 1.5rem; }
+            .about-snap, .services-snap, .vault-teaser, .bc-teaser, .join-cta, .blog-teaser { padding:4rem 1.5rem; }
+            .vault-cat-preview { grid-template-columns:1fr; }
+            .join-benefits { flex-direction:column; align-items:center; gap:0.8rem; }
         }
     </style>
 </head>
 <body>
-    <!-- Header loaded from header.js -->
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Elevate Your <span>Hockey Game</span></h1>
-            <p>Learn from Coach Matt Berry with 30+ years of playing experience and 8+ years of coaching expertise. Master goaltending, strategy, and game analysis.</p>
-            <div class="hero-buttons">
-                <a href="#services" class="cta-button">Explore Services</a>
-                <a href="#membership" class="cta-button cta-button-secondary">Become a Member</a>
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-eyebrow" id="heroEyebrow">Coach 3erry · Nashville, TN</span>
+        <h1 id="heroHeadline">Elevate Your <span>Hockey Game</span></h1>
+        <p id="heroSub">Learn from Coach Matt Berry — USA Hockey Level 4 certified, goaltender specialist, and hockey development coach with 30+ years of experience on and off the ice.</p>
+        <div class="hero-badges">
+            <div class="hero-badge"><strong>30+</strong> Years Playing</div>
+            <div class="hero-badge"><strong>8+</strong> Years Coaching</div>
+            <div class="hero-badge"><strong>USA Hockey</strong> Level 4 Certified</div>
+            <div class="hero-badge"><strong>Nashville, TN</strong></div>
+        </div>
+        <div class="hero-buttons">
+            <a href="/about/" class="btn-primary" id="heroBtn1">Meet Coach Berry</a>
+            <a href="/member-signup/" class="btn-white-outline" id="heroBtn2">Join Free</a>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT SNAPSHOT -->
+<section class="about-snap" id="about">
+    <div class="about-snap-inner">
+        <div class="about-snap-image" id="aboutImageWrap">🏒</div>
+        <div class="about-snap-text">
+            <span class="eyebrow">About Coach Berry</span>
+            <h2 id="aboutHeading">Hockey Coach &amp; Goaltender Specialist</h2>
+            <p id="aboutBio">With 30+ years of playing experience across all positions and 8+ years of dedicated coaching, I'm passionate about developing players both on and off the ice. I'm the Owner/Lead Coach of 3D Hockey LLC and 3D Goaltending, coaching players from youth to university level.</p>
+            <div class="about-creds-mini" id="aboutCreds">
+                <span class="cred-pill">✓ USA Hockey Level 4</span>
+                <span class="cred-pill">✓ Bronze Goaltending Cert</span>
+                <span class="cred-pill">✓ 3D Hockey LLC Owner</span>
+                <span class="cred-pill">✓ Nashville, TN</span>
+            </div>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                <a href="/about/" class="btn-primary">Full Bio & Credentials</a>
+                <a href="/services/" class="btn-outline">View Services</a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <h2>About Coach Berry</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <h3>Hockey Coach & Goaltender Specialist</h3>
-                    <p>With 30+ years of playing experience across all positions and 8+ years of dedicated coaching, I'm passionate about developing players both on and off the ice through open communication and innovative training techniques.</p>
-                    <p>Currently, I'm the Owner/Lead Coach of 3D Hockey LLC, Head Coach of the U18 Nashvillains Summer Team, and Assistant Coach at Page-Summit High School. I've coached at every level from youth to university, including Stevenson University ACHA D2 & D3 and Johns Hopkins University.</p>
-                    <p>My coaching philosophy centers on individualized programs tailored to each player's unique needs and challenges, combined with high-quality video analysis and educational content.</p>
-                    
-                    <div class="credentials-list">
-                        <h4>Certifications & Credentials</h4>
-                        <ul>
-                            <li>USA Hockey Level 4 Coach (CEP #492091)</li>
-                            <li>USA Hockey Bronze Goaltending Certification</li>
-                            <li>USA Hockey Level 2 Officiating (ID #1182200)</li>
-                            <li>B.A. in Psychology - University of Maryland</li>
-                            <li>Google Project Management Professional</li>
-                            <li>HubSpot Inbound Certification</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); height: 400px; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 5rem;">🏒</div>
-                </div>
+<!-- SERVICES SNAPSHOT -->
+<section class="services-snap" id="services">
+    <div class="services-snap-inner">
+        <div class="section-label">
+            <span class="eyebrow">What I Offer</span>
+            <h2>Coaching Services</h2>
+            <p>Personalized coaching for goalies, players, and teams at every level.</p>
+        </div>
+        <div class="services-snap-grid" id="servicesGrid">
+            <div class="service-snap-card">
+                <span class="service-snap-icon">🧤</span>
+                <h3>Private Goaltender Coaching</h3>
+                <p>One-on-one coaching focused on goaltending fundamentals, positioning, and advanced techniques tailored to your game.</p>
+            </div>
+            <div class="service-snap-card">
+                <span class="service-snap-icon">📊</span>
+                <h3>Video Analysis Coaching</h3>
+                <p>Deep-dive analysis of your game film. Identify strengths, weaknesses, and opportunities through detailed breakdown and actionable feedback.</p>
+            </div>
+            <div class="service-snap-card">
+                <span class="service-snap-icon">⛺</span>
+                <h3>Hockey Camps & Clinics</h3>
+                <p>Intensive group training programs designed to build skills, foster team chemistry, and create an engaging environment for players of all levels.</p>
             </div>
         </div>
-    </section>
+        <div class="center-cta">
+            <a href="/services/" class="btn-primary">View All Services & Pricing</a>
+        </div>
+    </div>
+</section>
 
-    <!-- Services Section -->
-    <section id="services">
-        <div class="container">
-            <h2>Services & Programs</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">🧤</div>
-                    <h3>Private Goaltender Coaching</h3>
-                    <p>One-on-one personalized coaching focused on goaltending fundamentals, positioning, and advanced techniques. Perfect for players looking to elevate their game.</p>
-                    <ul class="service-features">
-                        <li>Customized training plans</li>
-                        <li>Technique refinement</li>
-                        <li>Confidence building</li>
-                    </ul>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📊</div>
-                    <h3>Video Analysis Coaching</h3>
-                    <p>Deep-dive analysis of your game film. Identify strengths, weaknesses, and opportunities for improvement through detailed video breakdown and actionable feedback.</p>
-                    <ul class="service-features">
-                        <li>Game & practice footage review</li>
-                        <li>Performance metrics</li>
-                        <li>Custom training adjustments</li>
-                    </ul>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">⛺</div>
-                    <h3>Hockey Camps & Clinics</h3>
-                    <p>Intensive group training programs designed to build skills, foster team chemistry, and create an engaging learning environment for players of all levels.</p>
-                    <ul class="service-features">
-                        <li>Multi-day intensive programs</li>
-                        <li>Group & position-specific drills</li>
-                        <li>Tournament opportunities</li>
-                    </ul>
-                </div>
+<!-- VAULT TEASER -->
+<section class="vault-teaser" id="vault">
+    <div class="vault-teaser-inner">
+        <div>
+            <span style="font-size:0.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FF2400;display:block;margin-bottom:1rem;">The Vault</span>
+            <h2>Everything That Was Once <span>In My Head</span></h2>
+            <p>The Vault is my resource hub for players, parents, and coaches. Free content available to everyone. Members get access to exclusive development resources.</p>
+            <ul class="vault-features">
+                <li>Goalie development guides and drills</li>
+                <li>Mental game and confidence resources</li>
+                <li>Coaching philosophy and systems</li>
+                <li>Player development frameworks</li>
+                <li>Member-exclusive content</li>
+            </ul>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                <a href="/vault/" class="btn-primary">Explore The Vault</a>
+                <a href="/member-signup/" class="btn-white-outline">Join Free for More</a>
             </div>
         </div>
-    </section>
-
-    <!-- Content Hub Section -->
-    <section id="content">
-        <div class="container">
-            <h2>Hockey Knowledge Hub</h2>
-            <div class="content-intro">
-                <p>Access a comprehensive repository of hockey knowledge exclusively for our members. Learn strategies, drills, plays, and game analysis from a certified USA Hockey Level 4 Coach.</p>
-            </div>
-            <div class="content-grid">
-                <div class="content-card">
-                    <div class="content-card-icon">🎯</div>
-                    <h3>Hockey Drills</h3>
-                    <p>Step-by-step drill videos and instructions organized by position and skill level. From basics to advanced techniques.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">📋</div>
-                    <h3>Strategies & Plays</h3>
-                    <p>Learn offensive and defensive strategies, team plays, and game management tactics used at elite levels.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">🎬</div>
-                    <h3>Video Analysis</h3>
-                    <p>Professional game footage analysis, breakdowns, and coaching sessions demonstrating key concepts in action.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">💪</div>
-                    <h3>Training Plans</h3>
-                    <p>Structured training programs and practice plans for individual skill development and team preparation.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">🏆</div>
-                    <h3>Mental Game</h3>
-                    <p>Resources on confidence, focus, resilience, and the psychological aspects of competitive hockey.</p>
-                </div>
-                <div class="content-card">
-                    <div class="content-card-icon">📚</div>
-                    <h3>Educational Guides</h3>
-                    <p>In-depth guides on positioning, skating techniques, goaltending fundamentals, and more.</p>
-                </div>
-            </div>
+        <div class="vault-cat-preview" id="vaultCatPreview">
+            <div class="vault-cat-tile"><span class="vt-icon">🧠</span><div class="vt-name">Mental Game</div><div class="vt-desc">Confidence, focus, resilience</div></div>
+            <div class="vault-cat-tile"><span class="vt-icon">🥅</span><div class="vt-name">Goalie Development</div><div class="vt-desc">Technique, positioning, saves</div></div>
+            <div class="vault-cat-tile"><span class="vt-icon">📋</span><div class="vt-name">Drills & Systems</div><div class="vt-desc">On-ice training content</div></div>
+            <div class="vault-cat-tile"><span class="vt-icon">📚</span><div class="vt-name">Resources</div><div class="vt-desc">Books, guides, and more</div></div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Blog Section -->
-    <section id="blog">
-        <div class="container">
-            <h2>Latest Blog Posts</h2>
-            <div class="content-intro">
-                <p>Discover hockey tips, strategies, drills, and coaching insights from Coach Matt Berry. Read our latest articles and improve your game.</p>
-            </div>
-            <div class="content-grid" id="recentBlogPosts">
-                <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-light);">
-                    <p>Loading recent blog posts...</p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="blog/" class="cta-button">View All Blog Posts →</a>
-            </div>
+<!-- BOOK CLUB TEASER -->
+<section class="bc-teaser" id="books">
+    <div class="bc-teaser-inner">
+        <div class="section-label">
+            <span class="eyebrow">Coach Berry's Book Club</span>
+            <h2>Books That Changed How I Coach</h2>
+            <p>Every book I recommend has shaped how I think about the game, development, and life. On and off the ice.</p>
         </div>
-    </section>
-
-    <!-- Membership Section -->
-    <section id="membership">
-        <div class="container">
-            <h2>Join Coach Berry's Community</h2>
-            <div class="membership-container">
-                <div class="membership-intro">
-                    <p>Get free access to our hockey knowledge hub. Sign up with your information below to unlock drills, strategies, videos, and exclusive coaching content.</p>
-                </div>
-
-                <div class="success-message" id="successMessage">
-                    ✓ Welcome to Coach Berry's Community! Check your email for next steps.
-                </div>
-
-                <form id="membershipForm" onsubmit="handleMembershipSubmit(event)">
-                    <!-- Basic Info -->
-                    <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="firstName">First Name *</label>
-                                <input type="text" id="firstName" name="firstName" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" name="lastName" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="email">Email Address *</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Role Selection (No Title) -->
-                    <div style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 2px solid rgba(255,255,255,0.2);">
-                        <div class="checkbox-group">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="rolePlayer" name="roles" value="player" onchange="updateRoleDisplay()">
-                                <label for="rolePlayer">Player</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="roleCoach" name="roles" value="coach" onchange="updateRoleDisplay()">
-                                <label for="roleCoach">Coach</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="roleParent" name="roles" value="parent" onchange="updateRoleDisplay()">
-                                <label for="roleParent">Parent</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Player Details -->
-                    <div class="details-section" id="playerDetails" style="display: none;">
-                        <h4>Your Playing Experience</h4>
-                        
-                        <div class="form-group">
-                            <label>Position</label>
-                            <div class="checkbox-group" style="margin-top: 0.5rem;">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posForward" name="positions" value="forward">
-                                    <label for="posForward">Forward</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posDefense" name="positions" value="defense">
-                                    <label for="posDefense">Defense</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="posGoalie" name="positions" value="goalie">
-                                    <label for="posGoalie">Goalie</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="playerYearsExp">Years of Playing Experience</label>
-                                <input type="number" id="playerYearsExp" name="playerYearsExp" min="0" max="80">
-                            </div>
-                            <div class="form-group">
-                                <label for="playerBirthYear">Birth Year</label>
-                                <input type="number" id="playerBirthYear" name="playerBirthYear" min="1980" max="2030">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 1rem; display: block;">Current Teams</label>
-                            <div id="playerTeamsContainer"></div>
-                            <button type="button" class="add-kid-btn" onclick="addPlayerTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
-                        </div>
-                    </div>
-
-                    <!-- Coach Details -->
-                    <div class="details-section" id="coachDetails" style="display: none;">
-                        <h4>Your Coaching Experience</h4>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="coachYearsExp">Years of Coaching Experience</label>
-                                <input type="number" id="coachYearsExp" name="coachYearsExp" min="0" max="80">
-                            </div>
-                            <div class="form-group">
-                                <label for="coachUSALevel">USA Hockey Certification Level</label>
-                                <input type="number" id="coachUSALevel" name="coachUSALevel" min="0" max="5" placeholder="e.g., 1, 2, 3, 4, etc.">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 1rem; display: block;">Coaching Teams</label>
-                            <div id="coachTeamsContainer"></div>
-                            <button type="button" class="add-kid-btn" onclick="addCoachTeam()" style="margin-top: 0.5rem;">+ Add Team</button>
-                        </div>
-                    </div>
-
-                    <!-- Parent Details -->
-                    <div class="details-section" id="parentDetails" style="display: none;">
-                        <h4>Your Child's Information</h4>
-                        <div id="kidsContainer"></div>
-                        <button type="button" class="add-kid-btn" onclick="addKidEntry()">+ Add Another Child</button>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="form-submit">
-                        <button type="submit" class="submit-btn">Create My Account</button>
-                        <button type="reset" class="reset-btn">Clear Form</button>
-                    </div>
-                </form>
-            </div>
+        <div class="bc-books-preview" id="bcBooksPreview">
+            <div class="bc-book-tile"><div class="bc-book-cover">📖</div><div class="bc-book-title">Loading...</div></div>
         </div>
-    </section>
+        <div class="center-cta">
+            <a href="/book-club/" class="btn-primary">See All Recommended Books</a>
+        </div>
+    </div>
+</section>
 
-    <!-- Footer loaded from footer.js -->
+<!-- BLOG TEASER -->
+<section class="blog-teaser" id="blog">
+    <div class="blog-teaser-inner">
+        <div class="section-label">
+            <span class="eyebrow">Latest from Coach Berry</span>
+            <h2>From the Blog</h2>
+            <p>Hockey tips, coaching insights, and development content from Coach Berry.</p>
+        </div>
+        <div class="blog-posts-grid" id="blogPostsGrid">
+            <div style="grid-column:1/-1;text-align:center;padding:2rem;color:#6b7280;">Loading posts...</div>
+        </div>
+        <div class="center-cta">
+            <a href="/blog/" class="btn-primary">View All Posts</a>
+        </div>
+    </div>
+</section>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+<!-- JOIN CTA -->
+<section class="join-cta" id="membership">
+    <div class="join-cta-inner">
+        <h2 id="joinHeading">Join the Coach Berry Community</h2>
+        <p id="joinDesc">Free membership gets you access to The Vault, development tracking tools, and direct connection with Coach Berry. No credit card required.</p>
+        <div class="join-benefits">
+            <div class="join-benefit">Access to The Vault</div>
+            <div class="join-benefit">Development tracking</div>
+            <div class="join-benefit">Player profile</div>
+            <div class="join-benefit">Free to join</div>
+        </div>
+        <div>
+            <a href="/member-signup/" class="join-cta-btn" id="joinBtn">Join for Free</a>
+        </div>
+        <div>
+            <a href="/member-login/" class="join-login-link">Already a member? Sign in →</a>
+        </div>
+    </div>
+</section>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
-            authDomain: "coach-berry.firebaseapp.com",
-            projectId: "coach-berry",
-            storageBucket: "coach-berry.firebasestorage.app",
-            messagingSenderId: "170282824286",
-            appId: "1:170282824286:web:5387ec9826c38466c07acf"
-        };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+const firebaseConfig = {
+    apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+    authDomain: "coach-berry.firebaseapp.com",
+    projectId: "coach-berry",
+    storageBucket: "coach-berry.firebasestorage.app",
+    messagingSenderId: "170282824286",
+    appId: "1:170282824286:web:5387ec9826c38466c07acf"
+};
 
-        // Membership Form Handler - Create Auth Account & Save Profile
-        function handleMembershipSubmit(event) {
-            event.preventDefault();
-            
-            // Collect form data
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const roles = Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(cb => cb.value);
-            
-            if (roles.length === 0) {
-                alert('Please select at least one role');
-                return;
-            }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-            // Collect role-specific data
-            const memberData = {
-                firstName,
-                lastName,
-                email,
-                phone,
-                roles,
-                dateJoined: new Date(),
-                permissions: {
-                    viewDashboard: true,
-                    saveBlogPosts: true,
-                    useMessaging: true,
-                    viewContent: true
-                },
-                savedPosts: []
-            };
+function esc(str) {
+    if (!str) return '';
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
 
-            // Add parent data if role is parent
-            if (roles.includes('parent')) {
-                const children = [];
-                document.querySelectorAll('.kid-entry').forEach(entry => {
-                    const birthYear = entry.querySelector('input[name="kidBirthYear"]').value;
-                    const gender = entry.querySelector('select[name="kidGender"]').value;
-                    const team = entry.querySelector('input[name="kidTeam"]').value;
-                    
-                    if (birthYear) {
-                        children.push({ birthYear, gender, team });
-                    }
-                });
-                memberData.children = children;
-            }
+async function loadAll() {
+    try {
+        // CMS content
+        const [heroSnap, aboutSnap, servicesSnap, memSnap, seoSnap] = await Promise.all([
+            getDoc(doc(db, 'site_content', 'hero')),
+            getDoc(doc(db, 'site_content', 'about')),
+            getDoc(doc(db, 'site_content', 'services')),
+            getDoc(doc(db, 'site_content', 'membership')),
+            getDoc(doc(db, 'site_content', 'seo'))
+        ]);
 
-            // Add player data if role is player
-            if (roles.includes('player')) {
-                const positions = Array.from(document.querySelectorAll('input[name="positions"]:checked')).map(cb => cb.value);
-                const yearsExp = document.getElementById('playerYearsExp').value;
-                const birthYear = document.getElementById('playerBirthYear').value;
-                const teams = [];
-
-                document.querySelectorAll('.player-team-entry').forEach(entry => {
-                    const teamName = entry.querySelector('input[name="playerTeam"]').value;
-                    if (teamName) {
-                        teams.push(teamName);
-                    }
-                });
-
-                memberData.playerProfile = {
-                    positions: positions,
-                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
-                    birthYear: birthYear ? parseInt(birthYear) : null,
-                    teams: teams
-                };
-            }
-
-            // Add coach data if role is coach
-            if (roles.includes('coach')) {
-                const yearsExp = document.getElementById('coachYearsExp').value;
-                const usaLevel = document.getElementById('coachUSALevel').value;
-                const teams = [];
-
-                document.querySelectorAll('.coach-team-entry').forEach(entry => {
-                    const teamName = entry.querySelector('input[name="coachTeamName"]').value;
-                    const position = entry.querySelector('input[name="coachPosition"]').value;
-                    if (teamName || position) {
-                        teams.push({ 
-                            name: teamName, 
-                            position: position 
-                        });
-                    }
-                });
-
-                memberData.coachProfile = {
-                    yearsOfExperience: yearsExp ? parseInt(yearsExp) : null,
-                    usaHockeyLevel: usaLevel ? parseInt(usaLevel) : null,
-                    teams: teams
-                };
-            }
-
-            // Create account and save profile
-            const submitBtn = document.querySelector('#membershipForm .submit-btn');
-            const successMsg = document.getElementById('successMessage');
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span> Creating Account...';
-            successMsg.classList.remove('show');
-
-            // Generate temporary password
-            const tempPassword = generatePassword();
-
-            // 1. Create Auth account
-            createUserWithEmailAndPassword(auth, email, tempPassword)
-                .then(async (userCredential) => {
-                    // 2. Save member profile to Firestore
-                    return addDoc(collection(db, 'members'), memberData);
-                })
-                .then(async () => {
-                    // Sign out the user immediately after creation so they must log in
-                    await auth.signOut();
-                    
-                    // Send welcome email
-                    sendWelcomeEmail(firstName, lastName, email, tempPassword);
-                    
-                    successMsg.innerHTML = `
-                        <strong>✓ Account Created Successfully!</strong><br><br>
-                        Your member account is ready. You can now log in to your dashboard using:<br><br>
-                        <strong>Email:</strong> ${email}<br>
-                        <strong>Temporary Password:</strong> <code style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 3px; font-family: monospace;">${tempPassword}</code><br><br>
-                        A welcome email has been sent to <strong>${email}</strong> with your login details.<br><br>
-                        <a href="/member-login/" style="color: var(--accent); text-decoration: none; font-weight: 600;">Go to Member Login →</a>
-                    `;
-                    successMsg.classList.add('show');
-                    document.getElementById('membershipForm').reset();
-                    
-                    // Reset role-specific sections
-                    document.getElementById('parentDetails').classList.remove('active');
-                    document.getElementById('coachDetails').classList.remove('active');
-                    document.getElementById('kidsContainer').innerHTML = '';
-
-                    // Scroll to success message
-                    successMsg.scrollIntoView({ behavior: 'smooth' });
-                })
-                .catch((error) => {
-                    let errorMsg = error.message;
-                    if (error.code === 'auth/email-already-in-use') {
-                        errorMsg = 'This email is already registered. Please log in or use a different email.';
-                    } else if (error.code === 'auth/weak-password') {
-                        errorMsg = 'There was an issue creating your account. Please try again.';
-                    }
-                    alert('Error creating account: ' + errorMsg);
-                    console.error('Error:', error);
-                })
-                .finally(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Create My Account';
-                });
+        if (heroSnap.exists()) {
+            const h = heroSnap.data();
+            if (h.headline) document.getElementById('heroHeadline').innerHTML = esc(h.headline).replace(/hockey/gi, '<span>Hockey</span>');
+            if (h.sub) document.getElementById('heroSub').textContent = h.sub;
+            if (h.btn1_text) document.getElementById('heroBtn1').textContent = h.btn1_text;
+            if (h.btn1_link) document.getElementById('heroBtn1').href = h.btn1_link;
+            if (h.btn2_text) document.getElementById('heroBtn2').textContent = h.btn2_text;
+            if (h.btn2_link) document.getElementById('heroBtn2').href = h.btn2_link;
         }
 
-        // Generate temporary password
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-            let password = '';
-            for (let i = 0; i < 12; i++) {
-                password += chars.charAt(Math.floor(Math.random() * chars.length));
+        if (aboutSnap.exists()) {
+            const a = aboutSnap.data();
+            if (a.heading) document.getElementById('aboutHeading').textContent = a.heading;
+            if (a.bio) document.getElementById('aboutBio').textContent = a.bio;
+            if (a.photo) {
+                document.getElementById('aboutImageWrap').innerHTML = `<img src="${esc(a.photo)}" alt="Coach Berry">`;
             }
-            return password;
+            if (a.creds) {
+                document.getElementById('aboutCreds').innerHTML = a.creds.split('\n').filter(c=>c.trim()).map(c =>
+                    `<span class="cred-pill">✓ ${esc(c.trim())}</span>`
+                ).join('');
+            }
         }
 
-        // Send welcome email with login credentials
-        function sendWelcomeEmail(firstName, lastName, email, tempPassword) {
-            const emailData = {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                tempPassword: tempPassword
-            };
-
-            // Send email using Firebase Cloud Function
-            fetch('https://sendwelcomeemail-fw3357ljjq-uc.a.run.app', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(emailData)
-            })
-            .then(response => {
-                if (response.ok) {
-                    console.log('Welcome email sent successfully via Firebase');
-                } else {
-                    console.warn('Firebase email send response:', response.status);
-                }
-            })
-            .catch(error => {
-                console.error('Error sending email via Firebase:', error);
-                // Don't block account creation if email fails
-            });
+        if (memSnap.exists()) {
+            const m = memSnap.data();
+            if (m.heading) document.getElementById('joinHeading').textContent = m.heading;
+            if (m.desc) document.getElementById('joinDesc').textContent = m.desc;
+            if (m.btn_text) document.getElementById('joinBtn').textContent = m.btn_text;
+            if (m.btn_link) document.getElementById('joinBtn').href = m.btn_link;
         }
 
-        // Expose to window
-        window.handleMembershipSubmit = handleMembershipSubmit;
+        if (seoSnap.exists()) {
+            const s = seoSnap.data();
+            if (s.title) document.title = s.title;
+            if (s.desc) {
+                let meta = document.querySelector('meta[name="description"]');
+                if (!meta) { meta = document.createElement('meta'); meta.name='description'; document.head.appendChild(meta); }
+                meta.content = s.desc;
+            }
+        }
 
-        // Role checkbox handlers
-        const roleCheckboxes = document.querySelectorAll('input[name="roles"]');
-        roleCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', updateDetailsDisplay);
-        });
+        // Services from CMS
+        const itemsSnap = await getDocs(collection(db, 'site_content', 'services', 'items'));
+        const items = [];
+        itemsSnap.forEach(d => items.push(d.data()));
+        items.sort((a,b) => (a.order||0)-(b.order||0));
+        if (items.length) {
+            document.getElementById('servicesGrid').innerHTML = items.map(s => `
+                <div class="service-snap-card">
+                    <span class="service-snap-icon">${esc(s.icon||'🏒')}</span>
+                    <h3>${esc(s.title)}</h3>
+                    <p>${esc(s.description)}</p>
+                    ${s.price ? `<p style="font-weight:700;color:#FF2400;margin-top:0.5rem;font-size:0.88rem;">${esc(s.price)}</p>` : ''}
+                </div>`).join('');
+        }
 
-        function updateDetailsDisplay() {
-            const parentDetails = document.getElementById('parentDetails');
-            const coachDetails = document.getElementById('coachDetails');
-            const rolePlayer = document.getElementById('rolePlayer').checked;
-            const roleCoach = document.getElementById('roleCoach').checked;
-            const roleParent = document.getElementById('roleParent').checked;
+        // Vault categories
+        const catSnap = await getDocs(collection(db, 'vault_categories'));
+        const cats = [];
+        catSnap.forEach(d => cats.push(d.data()));
+        const topCats = cats.filter(c => !c.parentId).slice(0, 4);
+        if (topCats.length) {
+            document.getElementById('vaultCatPreview').innerHTML = topCats.map(c => `
+                <div class="vault-cat-tile">
+                    <span class="vt-icon">${c.icon||'📂'}</span>
+                    <div class="vt-name">${esc(c.name)}</div>
+                    <div class="vt-desc">${esc(c.description||'')}</div>
+                </div>`).join('');
+        }
 
-            if (roleParent) {
-                parentDetails.classList.add('active');
-                if (document.getElementById('kidsContainer').children.length === 0) {
-                    addKidEntry();
-                }
+        // Books preview
+        const booksSnap = await getDocs(collection(db, 'vault_books'));
+        const books = [];
+        booksSnap.forEach(d => books.push(d.data()));
+        const pubBooks = books.filter(b => b.visibility === 'public').slice(0, 5);
+        if (pubBooks.length) {
+            document.getElementById('bcBooksPreview').innerHTML = pubBooks.map(b => `
+                <div class="bc-book-tile">
+                    <div class="bc-book-cover">${b.cover ? `<img src="${esc(b.cover)}" alt="${esc(b.title)}">` : '📖'}</div>
+                    <div class="bc-book-title">${esc(b.title)}</div>
+                    <div class="bc-book-author">by ${esc(b.author)}</div>
+                </div>`).join('');
+        }
+
+        // Blog posts
+        try {
+            const blogSnap = await getDocs(query(collection(db, 'posts'), orderBy('date', 'desc'), limit(3)));
+            const posts = [];
+            blogSnap.forEach(d => posts.push({ id: d.id, ...d.data() }));
+            if (posts.length) {
+                document.getElementById('blogPostsGrid').innerHTML = posts.map(p => `
+                    <a href="/blog/${p.slug||p.id}/" class="blog-post-card">
+                        <div class="blog-post-date">${p.date ? new Date(p.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : ''}</div>
+                        <div class="blog-post-title">${esc(p.title)}</div>
+                        <div class="blog-post-excerpt">${esc((p.excerpt||p.content||'').substring(0,120))}...</div>
+                    </a>`).join('');
             } else {
-                parentDetails.classList.remove('active');
+                document.getElementById('blogPostsGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#6b7280;">Blog posts coming soon.</div>';
             }
-
-            if (roleCoach) {
-                coachDetails.classList.add('active');
-            } else {
-                coachDetails.classList.remove('active');
-            }
+        } catch(e) {
+            document.getElementById('blogPostsGrid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#6b7280;">Blog posts coming soon.</div>';
         }
 
-        function addKidEntry() {
-            const container = document.getElementById('kidsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'kid-entry';
-            entry.innerHTML = `
-                <h5 style="color: var(--accent); margin-bottom: 1rem;">Child ${entryCount}</h5>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Birth Year</label>
-                        <input type="number" name="kidBirthYear" placeholder="e.g., 2012" min="1980" max="2030">
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <select name="kidGender">
-                            <option value="">Select...</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Current Team</label>
-                    <input type="text" name="kidTeam" placeholder="Team name (optional)">
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0;" onclick="this.parentElement.remove()">Remove Child</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-    </script>
+    } catch(e) {
+        console.log('CMS load error (using defaults):', e.message);
+    }
+}
 
-    <script>
-        // Non-module functions for form display
-        function updateRoleDisplay() {
-            const rolePlayer = document.getElementById('rolePlayer').checked;
-            const roleCoach = document.getElementById('roleCoach').checked;
-            const roleParent = document.getElementById('roleParent').checked;
-
-            // Show/hide Player details
-            if (rolePlayer) {
-                document.getElementById('playerDetails').style.display = 'block';
-            } else {
-                document.getElementById('playerDetails').style.display = 'none';
-            }
-
-            // Show/hide Coach details
-            if (roleCoach) {
-                document.getElementById('coachDetails').style.display = 'block';
-            } else {
-                document.getElementById('coachDetails').style.display = 'none';
-            }
-
-            // Show/hide Parent details
-            if (roleParent) {
-                document.getElementById('parentDetails').style.display = 'block';
-                if (document.getElementById('kidsContainer').children.length === 0) {
-                    addKidEntry();
-                }
-            } else {
-                document.getElementById('parentDetails').style.display = 'none';
-            }
-        }
-
-        // Add player team
-        function addPlayerTeam() {
-            const container = document.getElementById('playerTeamsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'player-team-entry';
-            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
-            entry.innerHTML = `
-                <div class="form-group">
-                    <label>Team ${entryCount}</label>
-                    <input type="text" name="playerTeam" placeholder="Team name (optional)">
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-
-        // Add coach team
-        function addCoachTeam() {
-            const container = document.getElementById('coachTeamsContainer');
-            const entryCount = container.children.length + 1;
-            
-            const entry = document.createElement('div');
-            entry.className = 'coach-team-entry';
-            entry.style.cssText = 'background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;';
-            entry.innerHTML = `
-                <h5 style="color: var(--accent); margin-bottom: 1rem; margin-top: 0;">Team ${entryCount}</h5>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Team Name</label>
-                        <input type="text" name="coachTeamName" placeholder="Team name">
-                    </div>
-                    <div class="form-group">
-                        <label>Coaching Position</label>
-                        <input type="text" name="coachPosition" placeholder="e.g., Head Coach, Asst Coach, Goalie Coach">
-                    </div>
-                </div>
-                ${entryCount > 1 ? `<button type="button" class="add-kid-btn" style="background: rgba(255, 36, 0, 0.5); margin-top: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;" onclick="this.parentElement.remove()">Remove Team</button>` : ''}
-            `;
-            container.appendChild(entry);
-        }
-    </script>
+loadAll();
+</script>
 </body>
 </html>

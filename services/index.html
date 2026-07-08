@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services — Coach Berry Hockey Coaching</title>
+    <meta name="description" content="Private goaltender coaching, video analysis, camps and clinics from Coach Matt Berry — USA Hockey Level 4 certified coach based in Nashville, TN.">
+    <link rel="stylesheet" href="/styles.css?v=3">
+    <script src="/header.js"></script>
+    <script src="/footer.js"></script>
+    <style>
+        .svc-hero {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+        .svc-hero-inner { max-width: 700px; margin: 0 auto; }
+        .eyebrow { font-size:0.78rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FF2400; display:block; margin-bottom:1rem; }
+        .svc-hero h1 { font-size: clamp(2.2rem,5vw,3.5rem); font-weight: 900; margin-bottom: 1rem; }
+        .svc-hero p { color: rgba(255,255,255,0.7); font-size: 1.05rem; line-height: 1.7; }
+
+        .svc-main { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+
+        .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 5rem; }
+
+        .svc-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+        }
+        .svc-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+        .svc-card-top { background: #000; color: white; padding: 2rem; }
+        .svc-card-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+        .svc-card-top h3 { font-size: 1.2rem; font-weight: 800; margin: 0 0 0.5rem; }
+        .svc-card-top p { font-size: 0.88rem; color: rgba(255,255,255,0.65); margin: 0; line-height: 1.5; }
+        .svc-card-body { padding: 1.8rem; flex: 1; display: flex; flex-direction: column; }
+        .svc-features { list-style: none; padding: 0; margin: 0 0 1.5rem; flex: 1; }
+        .svc-features li { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; font-size: 0.88rem; color: #374151; border-bottom: 1px solid #f5f5f5; line-height: 1.4; }
+        .svc-features li:last-child { border-bottom: none; }
+        .svc-features li::before { content: '→'; color: #FF2400; font-weight: 700; flex-shrink: 0; margin-top: 0.05rem; }
+        .svc-price { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding: 0.8rem 1rem; background: #f8f9fa; border-radius: 8px; }
+        .svc-price-label { font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+        .svc-price-amount { font-size: 1rem; font-weight: 800; color: #FF2400; }
+        .svc-cta { display: block; padding: 0.8rem; background: #FF2400; color: white; border-radius: 8px; font-weight: 700; font-size: 0.9rem; text-align: center; text-decoration: none; transition: all 0.2s; }
+        .svc-cta:hover { background: #FF3a1f; }
+
+        .svc-process { background: #f8f9fa; border-radius: 16px; padding: 3rem; margin-bottom: 4rem; }
+        .svc-process h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.5rem; color: #000; }
+        .svc-process > p { color: #6b7280; margin-bottom: 2rem; }
+        .process-steps { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+        .process-step { text-align: center; padding: 1.5rem 1rem; }
+        .process-num { width: 48px; height: 48px; border-radius: 50%; background: #FF2400; color: white; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+        .process-step h4 { font-size: 0.92rem; font-weight: 800; margin-bottom: 0.4rem; color: #000; }
+        .process-step p { font-size: 0.8rem; color: #6b7280; line-height: 1.5; margin: 0; }
+
+        .svc-faq { margin-bottom: 4rem; }
+        .svc-faq h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 1.5rem; color: #000; }
+        .faq-item { border: 1.5px solid #e0e0e0; border-radius: 10px; margin-bottom: 0.8rem; overflow: hidden; }
+        .faq-q { padding: 1.1rem 1.4rem; font-weight: 700; font-size: 0.92rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: white; transition: background 0.2s; }
+        .faq-q:hover { background: #f8f9fa; }
+        .faq-q.open { color: #FF2400; }
+        .faq-toggle { font-size: 1.2rem; color: #9ca3af; transition: transform 0.2s; }
+        .faq-q.open .faq-toggle { transform: rotate(45deg); color: #FF2400; }
+        .faq-a { padding: 0 1.4rem 1.1rem; font-size: 0.88rem; color: #4a4a4a; line-height: 1.7; display: none; }
+        .faq-a.open { display: block; }
+
+        .svc-contact { background: linear-gradient(135deg, #FF2400 0%, #cc1d00 100%); color: white; border-radius: 16px; padding: 3rem; text-align: center; }
+        .svc-contact h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 0.8rem; }
+        .svc-contact p { color: rgba(255,255,255,0.85); margin-bottom: 1.5rem; line-height: 1.6; }
+        .svc-contact-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-white { display:inline-block; padding:0.8rem 2rem; background:white; color:#FF2400; border-radius:8px; font-weight:800; text-decoration:none; transition:all 0.2s; }
+        .btn-white:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
+        .btn-ghost { display:inline-block; padding:0.8rem 2rem; background:transparent; color:white; border:2px solid rgba(255,255,255,0.5); border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; }
+        .btn-ghost:hover { background:rgba(255,255,255,0.1); border-color:white; }
+
+        @media (max-width: 600px) {
+            .svc-main { padding: 3rem 1.5rem; }
+            .svc-process { padding: 2rem 1.5rem; }
+            .process-steps { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="svc-hero">
+        <div class="svc-hero-inner">
+            <span class="eyebrow">Coaching Services</span>
+            <h1>Train with Coach Berry</h1>
+            <p>Personalized coaching for goalies, players, and teams at every level — from youth hockey to university.</p>
+        </div>
+    </div>
+
+    <div class="svc-main">
+
+        <div class="svc-grid" id="servicesGrid">
+            <!-- Default services — overridden by CMS if available -->
+            <div class="svc-card">
+                <div class="svc-card-top">
+                    <span class="svc-card-icon">🧤</span>
+                    <h3>Private Goaltender Coaching</h3>
+                    <p>One-on-one sessions focused entirely on your game.</p>
+                </div>
+                <div class="svc-card-body">
+                    <ul class="svc-features">
+                        <li>Butterfly technique and positioning</li>
+                        <li>Post integration and VH technique</li>
+                        <li>Crease movement and tracking</li>
+                        <li>Rebound control and puck handling</li>
+                        <li>Mental game and compete level</li>
+                        <li>Video review and feedback</li>
+                    </ul>
+                    <div class="svc-price">
+                        <span class="svc-price-label">Starting at</span>
+                        <span class="svc-price-amount">Contact for pricing</span>
+                    </div>
+                    <a href="/member-signup/" class="svc-cta">Get Started</a>
+                </div>
+            </div>
+
+            <div class="svc-card">
+                <div class="svc-card-top">
+                    <span class="svc-card-icon">📊</span>
+                    <h3>Video Analysis Coaching</h3>
+                    <p>Deep-dive breakdown of your game footage.</p>
+                </div>
+                <div class="svc-card-body">
+                    <ul class="svc-features">
+                        <li>Full game or practice film review</li>
+                        <li>Timestamped breakdown with notes</li>
+                        <li>Strength and weakness identification</li>
+                        <li>Specific drills to address gaps</li>
+                        <li>Written report with action items</li>
+                        <li>Follow-up session available</li>
+                    </ul>
+                    <div class="svc-price">
+                        <span class="svc-price-label">Starting at</span>
+                        <span class="svc-price-amount">Contact for pricing</span>
+                    </div>
+                    <a href="/member-signup/" class="svc-cta">Get Started</a>
+                </div>
+            </div>
+
+            <div class="svc-card">
+                <div class="svc-card-top">
+                    <span class="svc-card-icon">⛺</span>
+                    <h3>Camps &amp; Clinics</h3>
+                    <p>Group training programs for teams and organizations.</p>
+                </div>
+                <div class="svc-card-body">
+                    <ul class="svc-features">
+                        <li>Goalie-specific camps and clinics</li>
+                        <li>Skills and skating clinics</li>
+                        <li>Team development programs</li>
+                        <li>Available for associations and clubs</li>
+                        <li>Custom curriculum development</li>
+                        <li>All age groups and levels</li>
+                    </ul>
+                    <div class="svc-price">
+                        <span class="svc-price-label">Starting at</span>
+                        <span class="svc-price-amount">Contact for pricing</span>
+                    </div>
+                    <a href="/member-signup/" class="svc-cta">Get Started</a>
+                </div>
+            </div>
+
+            <div class="svc-card">
+                <div class="svc-card-top">
+                    <span class="svc-card-icon">🎯</span>
+                    <h3>3D Goalie Tool Access</h3>
+                    <p>Dedicated tracking and development platform for goalies.</p>
+                </div>
+                <div class="svc-card-body">
+                    <ul class="svc-features">
+                        <li>Pre-session intake forms</li>
+                        <li>Goal and save logging with zones</li>
+                        <li>Coach notes and feedback</li>
+                        <li>AI-powered development insights</li>
+                        <li>Progress tracking over time</li>
+                        <li>Direct coach-goalie communication</li>
+                    </ul>
+                    <div class="svc-price">
+                        <span class="svc-price-label">Currently</span>
+                        <span class="svc-price-amount">Free for 3D Goalies</span>
+                    </div>
+                    <a href="/member-signup/" class="svc-cta">Join & Apply</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="svc-process">
+            <h2>How It Works</h2>
+            <p>Getting started with Coach Berry is simple.</p>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="process-num">1</div>
+                    <h4>Create an Account</h4>
+                    <p>Join as a free member to access resources and connect with Coach Berry.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">2</div>
+                    <h4>Reach Out</h4>
+                    <p>Message Coach Berry through your dashboard to discuss your goals and needs.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">3</div>
+                    <h4>Build a Plan</h4>
+                    <p>Together we'll design a coaching plan tailored specifically to you.</p>
+                </div>
+                <div class="process-step">
+                    <div class="process-num">4</div>
+                    <h4>Get to Work</h4>
+                    <p>Train, track, improve, and keep grinding. The work starts now.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="svc-faq">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Where are you located? Do you coach remotely? <span class="faq-toggle">+</span></div>
+                <div class="faq-a">I'm based in Nashville, TN and coach primarily in the Nashville area. I also offer video analysis and remote coaching sessions for players anywhere in the country.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">What age groups do you work with? <span class="faq-toggle">+</span></div>
+                <div class="faq-a">I work with players from youth hockey all the way through university level. I tailor my coaching approach to the age and experience level of each player.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">Do you only coach goalies? <span class="faq-toggle">+</span></div>
+                <div class="faq-a">Goaltending is my specialty through 3D Goaltending, but I coach all positions through 3D Hockey LLC. I offer skills coaching, team coaching, and development programs for skaters at all levels.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">How do I get pricing information? <span class="faq-toggle">+</span></div>
+                <div class="faq-a">Pricing depends on the type of service, frequency, and location. Create a free account and reach out through your member dashboard — I'll get back to you quickly with details.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q" onclick="toggleFaq(this)">What is the 3D Goalie Tool? <span class="faq-toggle">+</span></div>
+                <div class="faq-a">The 3D Goalie Tool is a development platform I built for my goalie coaching clients. Goalies can log goals, saves, and submit pre-session intake forms. I review everything and add coach notes, plus the system generates AI-powered development insights. Access is currently free for my active goalie clients.</div>
+            </div>
+        </div>
+
+        <div class="svc-contact">
+            <h2>Ready to Get Started?</h2>
+            <p>Create a free account and reach out through your dashboard. I'll respond within 24 hours to discuss how we can work together.</p>
+            <div class="svc-contact-btns">
+                <a href="/member-signup/" class="btn-white">Create Free Account</a>
+                <a href="/about/" class="btn-ghost">Learn More About Me</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+        authDomain: "coach-berry.firebaseapp.com",
+        projectId: "coach-berry",
+        storageBucket: "coach-berry.firebasestorage.app",
+        messagingSenderId: "170282824286",
+        appId: "1:170282824286:web:5387ec9826c38466c07acf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function esc(str) { if(!str) return ''; const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+    async function loadServices() {
+        try {
+            const snap = await getDocs(collection(db, 'site_content', 'services', 'items'));
+            const items = [];
+            snap.forEach(d => items.push(d.data()));
+            items.sort((a,b) => (a.order||0)-(b.order||0));
+            if (!items.length) return;
+            document.getElementById('servicesGrid').innerHTML = items.map(s => `
+                <div class="svc-card">
+                    <div class="svc-card-top">
+                        <span class="svc-card-icon">${esc(s.icon||'🏒')}</span>
+                        <h3>${esc(s.title)}</h3>
+                        <p>${esc(s.description||'')}</p>
+                    </div>
+                    <div class="svc-card-body">
+                        ${s.features ? `<ul class="svc-features">${s.features.split('\n').filter(f=>f.trim()).map(f=>`<li>${esc(f.trim())}</li>`).join('')}</ul>` : ''}
+                        ${s.price ? `<div class="svc-price"><span class="svc-price-label">Pricing</span><span class="svc-price-amount">${esc(s.price)}</span></div>` : ''}
+                        ${s.link ? `<a href="${esc(s.link)}" class="svc-cta">Get Started</a>` : '<a href="/member-signup/" class="svc-cta">Get Started</a>'}
+                    </div>
+                </div>`).join('');
+        } catch(e) { console.log('Services CMS error:', e.message); }
+    }
+
+    loadServices();
+    </script>
+
+    <script>
+    function toggleFaq(el) {
+        const answer = el.nextElementSibling;
+        const isOpen = el.classList.contains('open');
+        document.querySelectorAll('.faq-q').forEach(q => { q.classList.remove('open'); q.nextElementSibling.classList.remove('open'); });
+        if (!isOpen) { el.classList.add('open'); answer.classList.add('open'); }
+    }
+    </script>
+</body>
+</html>

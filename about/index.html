@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Coach Berry — Hockey Coach & Goaltender Specialist</title>
+    <meta name="description" content="Meet Coach Matt Berry — USA Hockey Level 4 certified, goaltender specialist, and founder of 3D Hockey LLC and 3D Goaltending.">
+    <link rel="stylesheet" href="/styles.css?v=3">
+    <script src="/header.js"></script>
+    <script src="/footer.js"></script>
+    <style>
+        .about-hero {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 5rem 2rem 4rem;
+            text-align: center;
+        }
+        .about-hero-inner { max-width: 700px; margin: 0 auto; }
+        .about-hero .eyebrow { font-size:0.78rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#FF2400; display:block; margin-bottom:1rem; }
+        .about-hero h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 1rem; }
+        .about-hero p { color: rgba(255,255,255,0.7); font-size: 1.05rem; line-height: 1.7; }
+
+        .about-main { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+
+        .about-profile { display: grid; grid-template-columns: 340px 1fr; gap: 4rem; align-items: start; margin-bottom: 5rem; }
+        .about-photo-wrap { position: sticky; top: 90px; }
+        .about-photo { border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); background: linear-gradient(135deg,#000,#1a1a1a); height: 380px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+        .about-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .about-quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1.2rem; }
+        .about-stat { background: white; border-radius: 10px; padding: 1rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .about-stat-num { font-size: 1.5rem; font-weight: 800; color: #FF2400; display: block; }
+        .about-stat-label { font-size: 0.72rem; color: #6b7280; display: block; margin-top: 0.15rem; }
+
+        .about-bio h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 1rem; color: #000; }
+        .about-bio h3 { font-size: 1.1rem; font-weight: 800; margin: 2rem 0 0.8rem; color: #000; padding-bottom: 0.5rem; border-bottom: 2px solid #f0f0f0; }
+        .about-bio p { color: #4a4a4a; line-height: 1.85; margin-bottom: 1rem; font-size: 0.97rem; }
+
+        .creds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin: 1rem 0; }
+        .cred-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.7rem 0.9rem; background: #f8f9fa; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #374151; border-left: 3px solid #FF2400; }
+
+        .philosophy-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.2rem; margin: 1.5rem 0; }
+        .phil-card { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); border-top: 3px solid #FF2400; }
+        .phil-card-icon { font-size: 1.8rem; margin-bottom: 0.6rem; display: block; }
+        .phil-card h4 { font-size: 0.92rem; font-weight: 800; margin-bottom: 0.5rem; color: #000; }
+        .phil-card p { font-size: 0.82rem; color: #6b7280; line-height: 1.5; margin: 0; }
+
+        .timeline { margin: 1.5rem 0; }
+        .timeline-item { display: flex; gap: 1.2rem; padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-year { font-weight: 800; font-size: 0.85rem; color: #FF2400; flex-shrink: 0; width: 60px; padding-top: 0.1rem; }
+        .timeline-content { flex: 1; }
+        .timeline-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.2rem; }
+        .timeline-desc { font-size: 0.82rem; color: #6b7280; line-height: 1.5; }
+
+        .about-cta { background: linear-gradient(135deg, #000, #1a1a1a); color: white; border-radius: 16px; padding: 3rem; text-align: center; margin-top: 4rem; }
+        .about-cta h3 { font-size: 1.6rem; font-weight: 900; margin-bottom: 0.8rem; }
+        .about-cta p { color: rgba(255,255,255,0.7); margin-bottom: 1.5rem; }
+        .about-cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-red { display:inline-block; padding:0.8rem 2rem; background:#FF2400; color:white; border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; }
+        .btn-red:hover { background:#FF3a1f; transform:translateY(-2px); }
+        .btn-ghost { display:inline-block; padding:0.8rem 2rem; background:transparent; color:white; border:2px solid rgba(255,255,255,0.4); border-radius:8px; font-weight:700; text-decoration:none; transition:all 0.2s; }
+        .btn-ghost:hover { background:rgba(255,255,255,0.1); border-color:white; }
+
+        @media (max-width: 900px) {
+            .about-profile { grid-template-columns: 1fr; gap: 2rem; }
+            .about-photo-wrap { position: static; }
+            .about-photo { height: 260px; }
+            .philosophy-cards { grid-template-columns: 1fr; }
+            .creds-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .about-main { padding: 3rem 1.5rem; }
+            .about-quick-stats { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="about-hero">
+        <div class="about-hero-inner">
+            <span class="eyebrow">About</span>
+            <h1>Coach Matt Berry</h1>
+            <p>Hockey coach, goaltender specialist, and founder of 3D Hockey LLC — passionate about developing players on and off the ice.</p>
+        </div>
+    </div>
+
+    <div class="about-main">
+        <div class="about-profile">
+            <div class="about-photo-wrap">
+                <div class="about-photo" id="aboutPhoto">🏒</div>
+                <div class="about-quick-stats">
+                    <div class="about-stat"><span class="about-stat-num">30+</span><span class="about-stat-label">Years Playing</span></div>
+                    <div class="about-stat"><span class="about-stat-num">8+</span><span class="about-stat-label">Years Coaching</span></div>
+                    <div class="about-stat"><span class="about-stat-num">L4</span><span class="about-stat-label">USA Hockey Cert</span></div>
+                    <div class="about-stat"><span class="about-stat-num">3D</span><span class="about-stat-label">Hockey LLC</span></div>
+                </div>
+            </div>
+
+            <div class="about-bio">
+                <h2 id="aboutBioHeading">Hockey Coach &amp; Goaltender Specialist</h2>
+                <p id="aboutBioPara1">With over 30 years of playing experience across all positions and 8+ years of dedicated coaching, I'm passionate about developing players both on and off the ice. I'm the Owner and Lead Coach of 3D Hockey LLC and 3D Goaltending, based in Nashville, TN.</p>
+                <p id="aboutBioPara2">My coaching philosophy is built on the belief that development happens on and off the ice. I work with players to build technical skills, mental toughness, and the character traits that make great players and great people.</p>
+
+                <h3>Certifications & Credentials</h3>
+                <div class="creds-grid" id="credsGrid">
+                    <div class="cred-item">USA Hockey Level 4 Certified</div>
+                    <div class="cred-item">Bronze Goaltending Certification</div>
+                    <div class="cred-item">SafeSport Certified</div>
+                    <div class="cred-item">3D Hockey LLC — Owner/Lead Coach</div>
+                    <div class="cred-item">3D Goaltending — Founder</div>
+                    <div class="cred-item">Nashville, TN Based</div>
+                </div>
+
+                <h3>Coaching Philosophy</h3>
+                <div class="philosophy-cards">
+                    <div class="phil-card">
+                        <span class="phil-card-icon">🧠</span>
+                        <h4>Mental First</h4>
+                        <p>The mental game separates good players from great ones. I teach focus, resilience, and the ability to compete under pressure.</p>
+                    </div>
+                    <div class="phil-card">
+                        <span class="phil-card-icon">📊</span>
+                        <h4>Data Driven</h4>
+                        <p>Video analysis, tracking, and honest feedback are central to how I coach. If you can see it, you can fix it.</p>
+                    </div>
+                    <div class="phil-card">
+                        <span class="phil-card-icon">🔄</span>
+                        <h4>Continuous Growth</h4>
+                        <p>Development never stops. I push players to reflect, adjust, and commit to getting better every single session.</p>
+                    </div>
+                </div>
+
+                <h3>Coaching Journey</h3>
+                <div class="timeline" id="coachingTimeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">2016</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Started Coaching</div>
+                            <div class="timeline-desc">Began coaching youth hockey, focusing on goaltender development and skills coaching.</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2019</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">USA Hockey Level 4 Certification</div>
+                            <div class="timeline-desc">Achieved the highest level of USA Hockey coaching certification, along with Bronze Goaltending credentials.</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2021</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Founded 3D Hockey LLC</div>
+                            <div class="timeline-desc">Launched 3D Hockey LLC and 3D Goaltending to provide dedicated coaching services to players and goalies in Nashville and beyond.</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">Now</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Coach Berry Platform</div>
+                            <div class="timeline-desc">Building a digital platform to share knowledge, track player development, and connect with hockey players, parents, and coaches everywhere.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-cta">
+                    <h3>Ready to Work Together?</h3>
+                    <p>Whether you're a goalie, a skater, or a team looking for a camp — let's talk about how I can help you reach the next level.</p>
+                    <div class="about-cta-btns">
+                        <a href="/services/" class="btn-red">View Services</a>
+                        <a href="/member-signup/" class="btn-ghost">Join for Free</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAtLNJJoVBqWdKjDxfddEkdBYAWGrnpuhw",
+        authDomain: "coach-berry.firebaseapp.com",
+        projectId: "coach-berry",
+        storageBucket: "coach-berry.firebasestorage.app",
+        messagingSenderId: "170282824286",
+        appId: "1:170282824286:web:5387ec9826c38466c07acf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    function esc(str) { if(!str) return ''; const d=document.createElement('div'); d.textContent=str; return d.innerHTML; }
+
+    async function loadAboutContent() {
+        try {
+            const snap = await getDoc(doc(db, 'site_content', 'about'));
+            if (!snap.exists()) return;
+            const a = snap.data();
+            if (a.heading) document.getElementById('aboutBioHeading').textContent = a.heading;
+            if (a.bio) document.getElementById('aboutBioPara1').textContent = a.bio;
+            if (a.photo) {
+                document.getElementById('aboutPhoto').innerHTML = `<img src="${esc(a.photo)}" alt="Coach Berry">`;
+            }
+            if (a.creds) {
+                document.getElementById('credsGrid').innerHTML = a.creds.split('\n').filter(c=>c.trim()).map(c =>
+                    `<div class="cred-item">${esc(c.trim())}</div>`
+                ).join('');
+            }
+        } catch(e) { console.log('About CMS error:', e.message); }
+    }
+
+    loadAboutContent();
+    </script>
+</body>
+</html>

@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <a href="/" class="logo"><img src="https://coachberry.github.io/coachberry/CoachBerryLOGO-transparent-lightbg.png" alt="Coach Berry Logo"></a>
                 <ul id="navMenu">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/#about">About</a></li>
-                    <li><a href="/#services">Services</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/services/">Services</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/book-club/">Book Club</a></li>
                     <li><a href="/vault/">The Vault</a></li>
